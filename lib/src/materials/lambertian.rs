@@ -2,7 +2,13 @@ use std::sync::Arc;
 
 use rand::rngs::ThreadRng;
 
-use crate::{colour::Colour, hittable::Hit, ray::Ray, textures::{solid::Solid, texture::Texture}, vec3::Vec3};
+use crate::{
+    colour::Colour,
+    hittable::Hit,
+    ray::Ray,
+    textures::{solid::Solid, texture::Texture},
+    vec3::Vec3,
+};
 
 use super::material::Material;
 

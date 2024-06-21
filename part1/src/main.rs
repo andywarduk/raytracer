@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::sync::Arc;
 
 use rand::{thread_rng, Rng};
@@ -86,5 +87,5 @@ fn main() {
     cam.set_time_span(1.0);
 
     // Render
-    cam.render(&bvh_world);
+    cam.render(&bvh_world, Path::new("part1.png"));
 }

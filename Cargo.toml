@@ -3,5 +3,6 @@ members = [
     "lib",
     "part1",
     "part2",
+    "part3",
 ]
 resolver = "2"

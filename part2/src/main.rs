@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::sync::Arc;
 
 use rand::{thread_rng, Rng};
@@ -18,7 +19,11 @@ fn main() {
 
     let mut world = HittableList::new();
 
-    let checker = Arc::new(Checker::new_with_colours(0.32, Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
+    let checker = Arc::new(Checker::new_with_colours(
+        0.32,
+        Colour::new(0.2, 0.3, 0.1),
+        Colour::new(0.9, 0.9, 0.9),
+    ));
     let ground_material = Arc::new(Lambertian::new_with_texture(checker));
 
     world.add(Sphere::new(
@@ -89,5 +94,5 @@ fn main() {
     cam.set_time_span(1.0);
 
     // Render
-    cam.render(&bvh_world);
+    cam.render(&bvh_world, Path::new("part2.png"));
 }

@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 use rayon::prelude::*;
 
@@ -112,13 +114,17 @@ impl Camera {
         self.time_span = time_span;
     }
 
-    pub fn render(&self, world: &HittableList) {
-        println!("P3\n{} {}\n255", self.image_width, self.image_height);
+    pub fn render(&self, world: &HittableList, output: &Path) {
+        // Create image buffer
+        let mut imgbuf = image::ImageBuffer::new(self.image_width as u32, self.image_height as u32);
 
+        // For each scan line...
         for j in 0..self.image_height {
             eprint!("\rScanlines remaining: {} ", self.image_height - j);
 
+            // For each column...
             for i in 0..self.image_width {
+                // Calculate pixel colour
                 let pixel_colour: Colour = (0..self.samples_per_pixel)
                     .into_par_iter()
                     .map(|_| {
@@ -128,9 +134,16 @@ impl Camera {
                     })
                     .sum();
 
-                Self::write_colour(&(self.pixel_samples_scale * pixel_colour));
+                // Covnert to RGB with gamma correction
+                let (r, g, b) = (self.pixel_samples_scale * pixel_colour).to_rgb_gamma();
+
+                // Add to image data buffer
+                let pixel = imgbuf.get_pixel_mut(i as u32, j as u32);
+                *pixel = image::Rgb([r, g, b]);
             }
         }
+
+        imgbuf.save(output).expect("Error saving image");
 
         eprintln!("\nDone");
     }
@@ -232,12 +245,5 @@ impl Camera {
                 }
             },
         }
-    }
-
-    fn write_colour(colour: &Colour) {
-        let (r, g, b) = colour.to_rgb_gamma();
-
-        // Write out the pixel color components
-        println!("{r} {g} {b}");
     }
 }
