@@ -1,3 +1,3 @@
-Ray Tracing in one weekend in Rust
+Ray Tracing: The Next Week in Rust
 
-From [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+From [_Ray Tracing: The Next Week_](https://raytracing.github.io/books/RayTracingTheNextWeek.html)

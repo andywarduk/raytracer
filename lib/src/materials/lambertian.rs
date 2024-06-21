@@ -1,17 +1,23 @@
+use std::sync::Arc;
+
 use rand::rngs::ThreadRng;
 
-use crate::{colour::Colour, hittable::Hit, ray::Ray, vec3::Vec3};
+use crate::{colour::Colour, hittable::Hit, ray::Ray, textures::{solid::Solid, texture::Texture}, vec3::Vec3};
 
 use super::material::Material;
 
 #[derive(Debug)]
 pub struct Lambertian {
-    albedo: Colour,
+    texture: Arc<dyn Texture>,
 }
 
 impl Lambertian {
-    pub fn new(albedo: Colour) -> Self {
-        Self { albedo }
+    pub fn new_with_colour(albedo: Colour) -> Self {
+        Self::new_with_texture(Arc::new(Solid::new(albedo)))
+    }
+
+    pub fn new_with_texture(texture: Arc<dyn Texture>) -> Self {
+        Self { texture }
     }
 }
 
@@ -26,6 +32,6 @@ impl Material for Lambertian {
 
         let scattered = Ray::new(hit.p.clone(), scatter_direction, ray.time());
 
-        Some((self.albedo.clone(), Some(scattered)))
+        Some((self.texture.value(hit.u, hit.v, &hit.p), Some(scattered)))
     }
 }

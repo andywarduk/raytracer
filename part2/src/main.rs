@@ -10,6 +10,7 @@ use raytracer_lib::materials::lambertian::Lambertian;
 use raytracer_lib::materials::material::Material;
 use raytracer_lib::materials::metal::Metal;
 use raytracer_lib::shapes::sphere::Sphere;
+use raytracer_lib::textures::checker::Checker;
 use raytracer_lib::vec3::{Point3, Vec3};
 
 fn main() {
@@ -17,7 +18,9 @@ fn main() {
 
     let mut world = HittableList::new();
 
-    let ground_material = Arc::new(Lambertian::new_with_colour(Colour::new(0.5, 0.5, 0.5)));
+    let checker = Arc::new(Checker::new_with_colours(0.32, Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
+    let ground_material = Arc::new(Lambertian::new_with_texture(checker));
+
     world.add(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,

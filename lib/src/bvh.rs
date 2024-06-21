@@ -15,7 +15,9 @@ pub struct BvhNode {
 
 impl BvhNode {
     pub fn new(mut objects: Vec<Box<dyn Hittable>>) -> Self {
-        let bbox = objects.iter().fold(Aabb::default(), |bbox, object| Aabb::new_from_bbox(&bbox, object.bounding_box()));
+        let bbox = objects.iter().fold(Aabb::default(), |bbox, object| {
+            Aabb::new_from_bbox(&bbox, object.bounding_box())
+        });
 
         let axis = bbox.longest_axis();
 

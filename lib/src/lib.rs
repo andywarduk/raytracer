@@ -7,4 +7,5 @@ pub mod hittable_list;
 pub mod materials;
 pub mod ray;
 pub mod shapes;
+pub mod textures;
 pub mod vec3;
