@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::colour::Colour;
+use crate::{colour::Colour, vec3::Point3};
 
 use super::{solid::Solid, texture::Texture};
 
@@ -29,7 +29,7 @@ impl Checker {
 }
 
 impl Texture for Checker {
-    fn value(&self, u: f64, v: f64, p: &crate::vec3::Point3) -> crate::colour::Colour {
+    fn value(&self, u: f64, v: f64, p: &Point3) -> Colour {
         let x = (self.inv_scale * p.x()).floor() as i64;
         let y = (self.inv_scale * p.y()).floor() as i64;
         let z = (self.inv_scale * p.z()).floor() as i64;

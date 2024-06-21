@@ -5,6 +5,7 @@ pub mod colour;
 pub mod hittable;
 pub mod hittable_list;
 pub mod materials;
+pub mod perlin;
 pub mod ray;
 pub mod shapes;
 pub mod textures;

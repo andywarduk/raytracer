@@ -9,11 +9,13 @@ use raytracer_lib::textures::image::Image;
 use raytracer_lib::vec3::{Point3, Vec3};
 
 fn main() {
-    let mut world = HittableList::new();
-
     // Textures
     let earth_texture = Image::new_from_file(Path::new("earthmap.jpg"));
     let earth_surface = Lambertian::new_with_texture(Arc::new(earth_texture));
+
+    // Objects
+    let mut world = HittableList::new();
+
     let globe = Sphere::new(Point3::new(0.0, 0.0, 0.0), 2.0, Arc::new(earth_surface));
 
     world.add(globe);
