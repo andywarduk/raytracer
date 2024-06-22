@@ -1,12 +1,17 @@
 use std::ops::Range;
 
-use crate::{ray::Ray, vec3::Point3};
+use auto_ops::impl_op_ex_commutative;
+
+use crate::{
+    ray::Ray,
+    vec3::{Point3, Vec3},
+};
 
 #[derive(Debug, Default, Clone)]
 pub struct Aabb {
-    x: Range<f64>,
-    y: Range<f64>,
-    z: Range<f64>,
+    pub x: Range<f64>,
+    pub y: Range<f64>,
+    pub z: Range<f64>,
 }
 
 impl Aabb {
@@ -140,3 +145,12 @@ impl Aabb {
         r.end += half;
     }
 }
+
+// Operator implementations
+impl_op_ex_commutative!(+ |a: &Aabb, b: &Vec3| -> Aabb {
+    let x = (a.x.start + b.x())..(a.x.end + b.x());
+    let y = (a.y.start + b.y())..(a.y.end + b.y());
+    let z = (a.z.start + b.z())..(a.z.end + b.z());
+
+    Aabb::new_from_ranges(x, y, z)
+});

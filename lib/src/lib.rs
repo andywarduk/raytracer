@@ -7,4 +7,5 @@ pub mod perlin;
 pub mod ray;
 pub mod shapes;
 pub mod textures;
+pub mod transforms;
 pub mod vec3;
