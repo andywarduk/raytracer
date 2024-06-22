@@ -1,10 +1,6 @@
 use std::{cmp::Ordering, ops::Range};
 
-use crate::{
-    aabb::Aabb,
-    hittable::{Hit, Hittable},
-    ray::Ray,
-};
+use crate::{hittable::aabb::Aabb, hittable::hit::Hit, hittable::hittable::Hittable, ray::Ray};
 
 #[derive(Debug)]
 pub struct BvhNode {

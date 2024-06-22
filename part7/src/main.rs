@@ -4,7 +4,7 @@ use std::sync::Arc;
 use raytracer_lib::ambience::gradient_light::GradientLight;
 use raytracer_lib::camera::Camera;
 use raytracer_lib::colour::Colour;
-use raytracer_lib::hittable_list::HittableList;
+use raytracer_lib::hittable::hittable_list::HittableList;
 use raytracer_lib::materials::lambertian::Lambertian;
 use raytracer_lib::shapes::quad::Quad;
 use raytracer_lib::vec3::{Point3, Vec3};

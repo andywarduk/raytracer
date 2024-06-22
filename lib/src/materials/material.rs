@@ -1,7 +1,7 @@
 use rand::rngs::ThreadRng;
 use std::fmt::Debug;
 
-use crate::{colour::Colour, hittable::Hit, ray::Ray};
+use crate::{colour::Colour, hittable::hit::Hit, ray::Ray};
 
 pub type Scattered = (Option<Colour>, Option<Colour>, Option<Ray>);
 

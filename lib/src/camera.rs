@@ -6,8 +6,8 @@ use rayon::prelude::*;
 use crate::{
     ambience::ambience::Ambience,
     colour::Colour,
-    hittable::Hittable,
-    hittable_list::HittableList,
+    hittable::hittable::Hittable,
+    hittable::hittable_list::HittableList,
     ray::Ray,
     vec3::{Point3, Vec3},
 };

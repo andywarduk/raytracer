@@ -1,10 +1,7 @@
-pub mod aabb;
 pub mod ambience;
-pub mod bvh;
 pub mod camera;
 pub mod colour;
 pub mod hittable;
-pub mod hittable_list;
 pub mod materials;
 pub mod perlin;
 pub mod ray;

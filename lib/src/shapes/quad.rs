@@ -1,8 +1,9 @@
 use std::{ops::Range, sync::Arc};
 
 use crate::{
-    aabb::Aabb,
-    hittable::{Hit, Hittable},
+    hittable::aabb::Aabb,
+    hittable::hit::Hit,
+    hittable::hittable::Hittable,
     materials::material::Material,
     ray::Ray,
     vec3::{Point3, Vec3},

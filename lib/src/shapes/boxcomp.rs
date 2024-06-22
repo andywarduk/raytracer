@@ -1,9 +1,10 @@
 use std::{ops::Range, sync::Arc};
 
 use crate::{
-    aabb::Aabb,
-    hittable::{Hit, Hittable},
-    hittable_list::HittableList,
+    hittable::aabb::Aabb,
+    hittable::hit::Hit,
+    hittable::hittable::Hittable,
+    hittable::hittable_list::HittableList,
     materials::material::Material,
     ray::Ray,
     vec3::{Point3, Vec3},

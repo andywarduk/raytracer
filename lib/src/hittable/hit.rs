@@ -1,7 +1,5 @@
-use std::fmt::Debug;
-use std::{ops::Range, sync::Arc};
+use std::sync::Arc;
 
-use crate::aabb::Aabb;
 use crate::{
     materials::material::Material,
     ray::Ray,
@@ -47,9 +45,4 @@ impl Hit {
             material,
         }
     }
-}
-
-pub trait Hittable: Debug + Send + Sync {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit>;
-    fn bounding_box(&self) -> &Aabb;
 }

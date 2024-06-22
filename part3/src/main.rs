@@ -4,7 +4,7 @@ use std::sync::Arc;
 use raytracer_lib::ambience::ambient_light::AmbientLight;
 use raytracer_lib::camera::Camera;
 use raytracer_lib::colour::Colour;
-use raytracer_lib::hittable_list::HittableList;
+use raytracer_lib::hittable::hittable_list::HittableList;
 use raytracer_lib::materials::lambertian::Lambertian;
 use raytracer_lib::shapes::sphere::Sphere;
 use raytracer_lib::textures::image::Image;
