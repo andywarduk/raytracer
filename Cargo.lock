@@ -578,6 +578,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "part6"
+version = "0.1.0"
+dependencies = [
+ "raytracer_lib",
+]
+
+[[package]]
 name = "paste"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
