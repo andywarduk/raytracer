@@ -549,6 +549,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "part10"
+version = "0.1.0"
+dependencies = [
+ "raytracer_lib",
+]
+
+[[package]]
 name = "part2"
 version = "0.1.0"
 dependencies = [
