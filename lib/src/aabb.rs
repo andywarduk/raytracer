@@ -122,9 +122,15 @@ impl Aabb {
     fn pad_to_minimums(&mut self) {
         // Adjust the AABB so that no side is narrower than some delta, padding if necessary.
 
-        if self.x.end - self.x.start < Self::DELTA { Self::expand_range(&mut self.x) }
-        if self.y.end - self.y.start < Self::DELTA { Self::expand_range(&mut self.y) }
-        if self.z.end - self.z.start < Self::DELTA { Self::expand_range(&mut self.z) }
+        if self.x.end - self.x.start < Self::DELTA {
+            Self::expand_range(&mut self.x)
+        }
+        if self.y.end - self.y.start < Self::DELTA {
+            Self::expand_range(&mut self.y)
+        }
+        if self.z.end - self.z.start < Self::DELTA {
+            Self::expand_range(&mut self.z)
+        }
     }
 
     fn expand_range(r: &mut Range<f64>) {

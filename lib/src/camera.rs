@@ -4,6 +4,7 @@ use rand::{rngs::ThreadRng, thread_rng, Rng};
 use rayon::prelude::*;
 
 use crate::{
+    ambience::ambience::Ambience,
     colour::Colour,
     hittable::Hittable,
     hittable_list::HittableList,
@@ -114,7 +115,7 @@ impl Camera {
         self.time_span = time_span;
     }
 
-    pub fn render(&self, world: &HittableList, output: &Path) {
+    pub fn render(&self, world: &HittableList, ambience: &dyn Ambience, output: &Path) {
         // Create image buffer
         let mut imgbuf = image::ImageBuffer::new(self.image_width as u32, self.image_height as u32);
 
@@ -130,7 +131,7 @@ impl Camera {
                     .map(|_| {
                         let mut rng = thread_rng();
                         let ray = self.get_ray(i, j, &mut rng);
-                        Self::ray_colour(&mut rng, &ray, world, self.max_depth)
+                        Self::ray_colour(&mut rng, &ray, world, ambience, self.max_depth)
                     })
                     .sum();
 
@@ -221,29 +222,37 @@ impl Camera {
         &self.look_from + (p.x() * &self.defocus_disk_u) + (p.y() * &self.defocus_disk_v)
     }
 
-    fn ray_colour(rng: &mut ThreadRng, ray: &Ray, world: &HittableList, depth: u64) -> Colour {
+    fn ray_colour(
+        rng: &mut ThreadRng,
+        ray: &Ray,
+        world: &HittableList,
+        ambience: &dyn Ambience,
+        depth: u64,
+    ) -> Colour {
         if depth == 0 {
             return Colour::new(0.0, 0.0, 0.0);
         }
 
         match world.hit(ray, 0.001..f64::MAX) {
-            None => {
-                // Get unit vector of ray direction
-                let unit_direction = ray.direction().unit_vector();
+            None => ambience.value(ray),
+            Some(hit) => {
+                let (attenuation, emitted, next_ray) = hit.material.scatter(rng, ray, &hit);
 
-                // Convert y component from (-1..1) to (0..1)
-                let a = 0.5 * (unit_direction.y() + 1.0);
+                let mut colour = match emitted {
+                    None => Colour::new(0.0, 0.0, 0.0),
+                    Some(emitted) => emitted.clone(),
+                };
 
-                // Blend white with light blue
-                (1.0 - a) * Colour::new(1.0, 1.0, 1.0) + a * Colour::new(0.5, 0.7, 1.0)
-            }
-            Some(hit) => match hit.material.scatter(rng, ray, &hit) {
-                None => Colour::new(0.0, 0.0, 0.0),
-                Some((attenuation, None)) => attenuation,
-                Some((attenuation, Some(next_ray))) => {
-                    attenuation * Self::ray_colour(rng, &next_ray, world, depth - 1)
+                let mut attenuation = attenuation.unwrap_or_else(|| Colour::new(0.0, 0.0, 0.0));
+
+                if let Some(ray) = next_ray {
+                    attenuation *= Self::ray_colour(rng, &ray, world, ambience, depth - 1);
                 }
-            },
+
+                colour += attenuation;
+
+                colour
+            }
         }
     }
 }

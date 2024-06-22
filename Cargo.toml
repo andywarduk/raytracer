@@ -8,5 +8,6 @@ members = [
     "part5",
     "part6",
     "part7",
+    "part8",
 ]
 resolver = "2"

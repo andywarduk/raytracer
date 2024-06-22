@@ -1,4 +1,5 @@
 pub mod aabb;
+pub mod ambience;
 pub mod bvh;
 pub mod camera;
 pub mod colour;

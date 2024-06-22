@@ -2,6 +2,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use rand::{thread_rng, Rng};
+use raytracer_lib::ambience::gradient_light::GradientLight;
 use raytracer_lib::bvh::BvhNode;
 use raytracer_lib::camera::Camera;
 use raytracer_lib::colour::Colour;
@@ -87,5 +88,9 @@ fn main() {
     cam.set_time_span(1.0);
 
     // Render
-    cam.render(&bvh_world, Path::new("part1.png"));
+    cam.render(
+        &bvh_world,
+        &GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
+        Path::new("part1.png"),
+    );
 }

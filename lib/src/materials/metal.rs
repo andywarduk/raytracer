@@ -2,7 +2,7 @@ use rand::rngs::ThreadRng;
 
 use crate::{colour::Colour, hittable::Hit, ray::Ray, vec3::Vec3};
 
-use super::material::Material;
+use super::material::{Material, Scattered};
 
 #[derive(Debug)]
 pub struct Metal {
@@ -20,16 +20,16 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Option<(Colour, Option<Ray>)> {
+    fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
         let mut reflected = ray.direction().reflect(&hit.normal);
         reflected = reflected.unit_vector() + (self.fuzz * Vec3::new_random_unit_vector(rng));
 
         let scattered = Ray::new(hit.p.clone(), reflected, ray.time());
 
         if scattered.direction().dot(&hit.normal) > 0.0 {
-            Some((self.albedo.clone(), Some(scattered)))
+            (Some(self.albedo.clone()), None, Some(scattered))
         } else {
-            None
+            (None, None, None)
         }
     }
 }

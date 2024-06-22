@@ -1,18 +1,21 @@
 use std::path::Path;
 use std::sync::Arc;
 
-use raytracer_lib::ambience::gradient_light::GradientLight;
+use raytracer_lib::ambience::ambient_light::AmbientLight;
 use raytracer_lib::camera::Camera;
 use raytracer_lib::colour::Colour;
 use raytracer_lib::hittable_list::HittableList;
+use raytracer_lib::materials::diffuse_light::DiffuseLight;
 use raytracer_lib::materials::lambertian::Lambertian;
+use raytracer_lib::shapes::quad::Quad;
 use raytracer_lib::shapes::sphere::Sphere;
 use raytracer_lib::textures::marble::Marble;
 use raytracer_lib::vec3::{Point3, Vec3};
 
 fn main() {
-    // Textures
+    // Materials
     let pertext = Arc::new(Marble::new(4.0, 7, 2));
+    let difflight = Arc::new(DiffuseLight::new_with_colour(Colour::new(4.0, 4.0, 4.0)));
 
     // Objects
     let mut world = HittableList::new();
@@ -25,7 +28,13 @@ fn main() {
     world.add(Sphere::new(
         Point3::new(0.0, 2.0, 0.0),
         2.0,
-        Arc::new(Lambertian::new_with_texture(pertext.clone())),
+        Arc::new(Lambertian::new_with_texture(pertext)),
+    ));
+    world.add(Quad::new(
+        Point3::new(3.0, 1.0, -2.0),
+        Vec3::new(2.0, 0.0, 0.0),
+        Vec3::new(0.0, 2.0, 0.0),
+        difflight,
     ));
 
     // Camera
@@ -35,14 +44,14 @@ fn main() {
 
     // Render
     cam.set_view(
-        Point3::new(13.0, 2.0, 3.0),
-        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(26.0, 3.0, 6.0),
+        Point3::new(0.0, 2.0, 0.0),
         Vec3::new(0.0, 1.0, 0.0),
     );
 
     cam.render(
         &world,
-        &GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
-        Path::new("part6.png"),
+        &AmbientLight::new(Colour::default()),
+        Path::new("part8.png"),
     );
 }

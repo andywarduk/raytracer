@@ -24,6 +24,8 @@ impl Marble {
 impl Texture for Marble {
     fn value(&self, _u: f64, _v: f64, p: &Point3) -> Colour {
         Colour::new(0.5, 0.5, 0.5)
-            * (1.0 + (self.scale * p.e[self.axis] + 10.0 * self.perlin.turbulence(p, self.depth)).sin())
+            * (1.0
+                + (self.scale * p.e[self.axis] + 10.0 * self.perlin.turbulence(p, self.depth))
+                    .sin())
     }
 }

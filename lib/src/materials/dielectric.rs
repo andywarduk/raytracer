@@ -2,7 +2,7 @@ use rand::{rngs::ThreadRng, Rng};
 
 use crate::{colour::Colour, hittable::Hit, ray::Ray};
 
-use super::material::Material;
+use super::material::{Material, Scattered};
 
 #[derive(Debug)]
 pub struct Dielectric {
@@ -23,7 +23,7 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Option<(Colour, Option<Ray>)> {
+    fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
         let ri = if hit.front_face {
             1.0 / self.refraction_index
         } else {
@@ -46,6 +46,6 @@ impl Material for Dielectric {
 
         let scattered = Ray::new(hit.p.clone(), direction, ray.time());
 
-        Some((Colour::new(1.0, 1.0, 1.0), Some(scattered)))
+        (Some(Colour::new(1.0, 1.0, 1.0)), None, Some(scattered))
     }
 }

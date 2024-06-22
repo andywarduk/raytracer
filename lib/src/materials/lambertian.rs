@@ -10,7 +10,7 @@ use crate::{
     vec3::Vec3,
 };
 
-use super::material::Material;
+use super::material::{Material, Scattered};
 
 #[derive(Debug)]
 pub struct Lambertian {
@@ -28,7 +28,7 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Option<(Colour, Option<Ray>)> {
+    fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
         let mut scatter_direction = &hit.normal + Vec3::new_random_unit_vector(rng);
 
         // Catch degenerate scatter direction
@@ -38,6 +38,10 @@ impl Material for Lambertian {
 
         let scattered = Ray::new(hit.p.clone(), scatter_direction, ray.time());
 
-        Some((self.texture.value(hit.u, hit.v, &hit.p), Some(scattered)))
+        (
+            Some(self.texture.value(hit.u, hit.v, &hit.p)),
+            None,
+            Some(scattered),
+        )
     }
 }

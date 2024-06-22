@@ -1,4 +1,4 @@
-use std::{f64::consts::PI, ops::Range, sync::Arc};
+use std::{ops::Range, sync::Arc};
 
 use crate::{
     aabb::Aabb,
@@ -53,7 +53,8 @@ impl Quad {
         let u_movement = &u1 - &u0;
         let v_movement = &u1 - &u0;
 
-        let moving = p_movement.length() > 0.0 || u_movement.length() > 0.0  || v_movement.length() > 0.0;
+        let moving =
+            p_movement.length() > 0.0 || u_movement.length() > 0.0 || v_movement.length() > 0.0;
 
         // Calculate normals
         let n0 = u0.cross(&v0).unit_vector();
@@ -61,7 +62,7 @@ impl Quad {
 
         // Calculate normal movement
         let n_movement = &n1 - &n0;
-        
+
         // Calculate bounding box
         let bbox = if moving {
             let box1 = Self::calc_bbox(&p0, &u0, &v0);
@@ -136,7 +137,7 @@ impl Hittable for Quad {
         let intersection = ray.at(t);
 
         let planar_hitpt_vector = &intersection - &p;
-        
+
         let n = u.cross(&v);
         let w = &n / n.dot(&n);
 

@@ -1,7 +1,9 @@
 use std::path::Path;
 use std::sync::Arc;
 
+use raytracer_lib::ambience::gradient_light::GradientLight;
 use raytracer_lib::camera::Camera;
+use raytracer_lib::colour::Colour;
 use raytracer_lib::hittable_list::HittableList;
 use raytracer_lib::materials::lambertian::Lambertian;
 use raytracer_lib::shapes::sphere::Sphere;
@@ -38,5 +40,9 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, Path::new("part4.png"));
+    cam.render(
+        &world,
+        &GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
+        Path::new("part4.png"),
+    );
 }

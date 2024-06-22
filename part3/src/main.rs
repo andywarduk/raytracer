@@ -1,7 +1,9 @@
 use std::path::Path;
 use std::sync::Arc;
 
+use raytracer_lib::ambience::ambient_light::AmbientLight;
 use raytracer_lib::camera::Camera;
+use raytracer_lib::colour::Colour;
 use raytracer_lib::hittable_list::HittableList;
 use raytracer_lib::materials::lambertian::Lambertian;
 use raytracer_lib::shapes::sphere::Sphere;
@@ -20,6 +22,9 @@ fn main() {
 
     world.add(globe);
 
+    // Ambient light
+    let ambiance = AmbientLight::new(Colour::new(1.0, 1.0, 1.0));
+
     // Camera
     let mut cam = Camera::new(400, 16.0 / 9.0, 100, 50);
 
@@ -32,7 +37,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, Path::new("part3-1.png"));
+    cam.render(&world, &ambiance, Path::new("part3-1.png"));
 
     // Render
     cam.set_view(
@@ -41,7 +46,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, Path::new("part3-2.png"));
+    cam.render(&world, &ambiance, Path::new("part3-2.png"));
 
     // Render
     cam.set_view(
@@ -50,7 +55,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, Path::new("part3-3.png"));
+    cam.render(&world, &ambiance, Path::new("part3-3.png"));
 
     // Render
     cam.set_view(
@@ -59,7 +64,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, Path::new("part3-4.png"));
+    cam.render(&world, &ambiance, Path::new("part3-4.png"));
 
     // Render
     cam.set_view(
@@ -68,7 +73,7 @@ fn main() {
         Vec3::new(1.0, 0.0, 0.0),
     );
 
-    cam.render(&world, Path::new("part3-5.png"));
+    cam.render(&world, &ambiance, Path::new("part3-5.png"));
 
     // Render
     cam.set_view(
@@ -77,5 +82,5 @@ fn main() {
         Vec3::new(-1.0, 0.0, 0.0),
     );
 
-    cam.render(&world, Path::new("part3-6.png"));
+    cam.render(&world, &ambiance, Path::new("part3-6.png"));
 }
