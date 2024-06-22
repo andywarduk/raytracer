@@ -5,4 +5,3 @@ edition = "2021"
 
 [dependencies]
 raytracer_lib = { path = "../lib" }
-rand = "0.8.5"

@@ -16,7 +16,9 @@ impl PerlinNoise {
     pub fn new() -> Self {
         let mut rng = thread_rng();
 
-        let randvec = (0..POINT_COUNT).map(|_| Vec3::new_random_clamped(&mut rng, -1.0, 1.0).unit_vector()).collect();
+        let randvec = (0..POINT_COUNT)
+            .map(|_| Vec3::new_random_clamped(&mut rng, -1.0, 1.0).unit_vector())
+            .collect();
 
         let perm_x = Self::generate_perm(&mut rng);
         let perm_y = Self::generate_perm(&mut rng);
@@ -31,9 +33,9 @@ impl PerlinNoise {
     }
 
     pub fn noise(&self, p: &Point3) -> f64 {
-        let u = p.x() - p.x().floor();
-        let v = p.y() - p.y().floor();
-        let w = p.z() - p.z().floor();
+        let u = p.x() - (p.x().floor());
+        let v = p.y() - (p.y().floor());
+        let w = p.z() - (p.z().floor());
 
         let u = u * u * (3.0 - 2.0 * u);
         let v = v * v * (3.0 - 2.0 * v);
@@ -50,12 +52,21 @@ impl PerlinNoise {
                 for (dk, ck) in cj.iter_mut().enumerate() {
                     *ck = self.randvec[self.perm_x[((i + di as i64) & 255) as usize]
                         ^ self.perm_y[((j + dj as i64) & 255) as usize]
-                        ^ self.perm_z[((k + dk as i64) & 255) as usize]].clone();
+                        ^ self.perm_z[((k + dk as i64) & 255) as usize]]
+                        .clone();
                 }
             }
         }
 
         Self::perlin_interp(c, u, v, w)
+    }
+
+    pub fn turbulence(&self, p: &Point3, depth: usize) -> f64 {
+        let (accum, _, _) = (0..depth).fold((0.0, p.clone(), 1.0), |(accum, p, weight), _| {
+            (accum + (weight * self.noise(&p)), p * 2.0, weight * 0.5)
+        });
+
+        return accum.abs();
     }
 
     fn generate_perm(rng: &mut ThreadRng) -> Vec<usize> {
@@ -74,10 +85,11 @@ impl PerlinNoise {
     }
 
     fn perlin_interp(c: Vec<Vec<Vec<Vec3>>>, u: f64, v: f64, w: f64) -> f64 {
+        // Hermitian smoothing
         let uu = u * u * (3.0 - 2.0 * u);
         let vv = v * v * (3.0 - 2.0 * v);
         let ww = w * w * (3.0 - 2.0 * w);
-        
+
         let mut accum = 0.0;
 
         for (i, ci) in c.iter().enumerate() {

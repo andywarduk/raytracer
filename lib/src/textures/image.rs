@@ -14,8 +14,14 @@ pub struct Image {
 
 impl Image {
     pub fn new_from_file(file: &Path) -> Self {
-        let file_path = Self::find_file(file).expect("Unable to find file");
+        let file_path = if file.exists() {
+            PathBuf::from(file)
+        } else {
+            Self::find_file(file).expect("Unable to find file")
+        };
+
         eprintln!("Loading image {}", file_path.display());
+
         let img = ImageReader::open(file_path).expect("Unable to open image");
         let dynimg = img.decode().expect("Unable to decode image");
         let width = dynimg.width();

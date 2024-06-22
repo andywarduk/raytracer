@@ -560,7 +560,6 @@ dependencies = [
 name = "part3"
 version = "0.1.0"
 dependencies = [
- "rand",
  "raytracer_lib",
 ]
 
@@ -568,7 +567,13 @@ dependencies = [
 name = "part4"
 version = "0.1.0"
 dependencies = [
- "rand",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part5"
+version = "0.1.0"
+dependencies = [
  "raytracer_lib",
 ]
 
