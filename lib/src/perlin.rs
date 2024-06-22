@@ -66,7 +66,7 @@ impl PerlinNoise {
             (accum + (weight * self.noise(&p)), p * 2.0, weight * 0.5)
         });
 
-        return accum.abs();
+        accum.abs()
     }
 
     fn generate_perm(rng: &mut ThreadRng) -> Vec<usize> {

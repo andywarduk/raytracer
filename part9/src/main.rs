@@ -30,7 +30,11 @@ fn main() {
         2.0,
         Arc::new(Lambertian::new_with_texture(pertext)),
     ));
-    world.add(Sphere::new(Point3::new(0.0,7.0,0.0), 2.0, difflight.clone()));
+    world.add(Sphere::new(
+        Point3::new(0.0, 7.0, 0.0),
+        2.0,
+        difflight.clone(),
+    ));
     world.add(Quad::new(
         Point3::new(3.0, 1.0, -2.0),
         Vec3::new(2.0, 0.0, 0.0),
