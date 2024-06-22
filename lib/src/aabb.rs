@@ -11,7 +11,11 @@ pub struct Aabb {
 
 impl Aabb {
     pub fn new_from_ranges(x: Range<f64>, y: Range<f64>, z: Range<f64>) -> Self {
-        Self { x, y, z }
+        let mut res = Self { x, y, z };
+
+        res.pad_to_minimums();
+
+        res
     }
 
     pub fn new_from_points(a: &Point3, b: &Point3) -> Self {
@@ -31,7 +35,11 @@ impl Aabb {
             b.z()..a.z()
         };
 
-        Self { x, y, z }
+        let mut res = Self { x, y, z };
+
+        res.pad_to_minimums();
+
+        res
     }
 
     pub fn new_from_bbox(a: &Aabb, b: &Aabb) -> Self {
@@ -39,7 +47,11 @@ impl Aabb {
         let y = (a.y.start.min(b.y.start))..(a.y.end.max(b.y.end));
         let z = (a.z.start.min(b.z.start))..(a.z.end.max(b.z.end));
 
-        Self { x, y, z }
+        let mut res = Self { x, y, z };
+
+        res.pad_to_minimums();
+
+        res
     }
 
     pub fn axis_interval(&self, axis: usize) -> &Range<f64> {
@@ -103,5 +115,22 @@ impl Aabb {
         } else {
             2
         }
+    }
+
+    const DELTA: f64 = 0.0001;
+
+    fn pad_to_minimums(&mut self) {
+        // Adjust the AABB so that no side is narrower than some delta, padding if necessary.
+
+        if self.x.end - self.x.start < Self::DELTA { Self::expand_range(&mut self.x) }
+        if self.y.end - self.y.start < Self::DELTA { Self::expand_range(&mut self.y) }
+        if self.z.end - self.z.start < Self::DELTA { Self::expand_range(&mut self.z) }
+    }
+
+    fn expand_range(r: &mut Range<f64>) {
+        let half = Self::DELTA / 2.0;
+
+        r.start -= half;
+        r.end += half;
     }
 }

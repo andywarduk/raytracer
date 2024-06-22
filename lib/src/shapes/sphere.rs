@@ -12,7 +12,7 @@ use crate::{
 pub struct Sphere {
     /// Centre at time 0
     center0: Point3,
-    // Is moving?
+    /// Is moving?
     moving: bool,
     /// Movement per time unit
     movement: Vec3,
