@@ -4,7 +4,11 @@ use rand::{thread_rng, Rng};
 
 use crate::{
     colour::Colour,
-    hittable::{aabb::Aabb, hit::Hit, hittable::Hittable},
+    hittable::{
+        aabb::Aabb,
+        hit::Hit,
+        hittable::{Hittable, T_MIN},
+    },
     materials::{isotropic::Isotropic, material::Material},
     ray::Ray,
     textures::texture::Texture,
@@ -54,16 +58,19 @@ impl ConstantMedium {
 
 impl Hittable for ConstantMedium {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
-        let mut hit1 = match self.boundary.hit(ray, 0.0..f64::MAX) {
+        // Does this ray enter the boundary?
+        let mut hit1 = match self.boundary.hit(ray, f64::MIN..f64::MAX) {
             None => return None,
             Some(hit) => hit,
         };
 
-        let mut hit2 = match self.boundary.hit(ray, (hit1.t + 0.0001)..f64::MAX) {
+        // Does the ray exit the boundary again?
+        let mut hit2 = match self.boundary.hit(ray, (hit1.t + T_MIN)..f64::MAX) {
             None => return None,
             Some(hit) => hit,
         };
 
+        // Sanitise the ranges in the hits to max and min
         if hit1.t < t_range.start {
             hit1.t = t_range.start
         };
@@ -71,10 +78,12 @@ impl Hittable for ConstantMedium {
             hit2.t = t_range.end
         };
 
+        // Check hit order
         if hit1.t >= hit2.t {
             return None;
         }
 
+        // Check hit is not before the boundary
         if hit1.t < 0.0 {
             hit1.t = 0.0
         };

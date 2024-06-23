@@ -3,16 +3,45 @@ use std::{iter::Sum, ops::Index};
 use auto_ops::*;
 use rand::{rngs::ThreadRng, Rng};
 
-#[derive(Debug, Default, PartialEq, Clone)]
-pub struct Vec3 {
+use std::marker::PhantomData;
+
+/// Base class for triple
+#[derive(Default, Debug, PartialEq, Clone)]
+pub struct Triple<SubClassMixin> {
+    /// Values
     pub e: [f64; 3],
+    phantom: PhantomData<SubClassMixin>,
 }
 
-impl Vec3 {
+/// Vector mixin
+#[derive(Default, Debug, PartialEq, Clone)]
+pub struct VecMixin;
+
+/// Point mixin
+#[derive(Default, Debug, PartialEq, Clone)]
+pub struct PointMixin;
+
+/// Vector type
+pub type Vec3 = Triple<VecMixin>;
+
+/// Point tyoe
+pub type Point3 = Triple<PointMixin>;
+
+/// Common methods
+impl<Mixin> Triple<Mixin> {
+    /// Create new triple from values
     pub const fn new(e1: f64, e2: f64, e3: f64) -> Self {
-        Self { e: [e1, e2, e3] }
+        Self::new_from_array([e1, e2, e3])
     }
 
+    pub const fn new_from_array(e: [f64; 3]) -> Self {
+        Self {
+            e,
+            phantom: PhantomData,
+        }
+    }
+
+    /// Creates a new random triple with values in the range 0.0 to 1.0
     pub fn new_random(rng: &mut ThreadRng) -> Self {
         Self::new(
             rng.gen_range(0.0..1.0),
@@ -21,6 +50,7 @@ impl Vec3 {
         )
     }
 
+    /// Creates a new random triple with values in the given range
     pub fn new_random_clamped(rng: &mut ThreadRng, min: f64, max: f64) -> Self {
         Self::new(
             rng.gen_range(min..max),
@@ -29,6 +59,25 @@ impl Vec3 {
         )
     }
 
+    /// Returns the x value
+    pub fn x(&self) -> f64 {
+        self.e[0]
+    }
+
+    /// Returns the y value
+    pub fn y(&self) -> f64 {
+        self.e[1]
+    }
+
+    /// Returns the z value
+    pub fn z(&self) -> f64 {
+        self.e[2]
+    }
+}
+
+/// Methods for vectors
+impl Vec3 {
+    /// Creates a new random vector within a sphere if radius 1.0
     pub fn new_random_in_unit_sphere(rng: &mut ThreadRng) -> Self {
         loop {
             let p = Self::new_random_clamped(rng, -1.0, 1.0);
@@ -39,6 +88,7 @@ impl Vec3 {
         }
     }
 
+    /// Creates a new random vector within a disc of radius 1.0 on the xy plane
     pub fn new_random_in_unit_disk(rng: &mut ThreadRng) -> Self {
         loop {
             let p = Self::new(rng.gen_range(0.0..1.0), rng.gen_range(0.0..1.0), 0.0);
@@ -49,10 +99,12 @@ impl Vec3 {
         }
     }
 
+    /// Creates a new random unit vector for the surface of a sphere with radius 1.0
     pub fn new_random_unit_vector(rng: &mut ThreadRng) -> Self {
         Self::new_random_in_unit_sphere(rng).unit_vector()
     }
 
+    /// Creates a new random unit vector for the surface of a hemisphere with radius 1.0
     pub fn new_random_on_hemisphere(rng: &mut ThreadRng, normal: &Vec3) -> Self {
         let on_unit_sphere = Self::new_random_unit_vector(rng);
 
@@ -64,30 +116,22 @@ impl Vec3 {
         }
     }
 
-    pub fn x(&self) -> f64 {
-        self.e[0]
-    }
-
-    pub fn y(&self) -> f64 {
-        self.e[1]
-    }
-
-    pub fn z(&self) -> f64 {
-        self.e[2]
-    }
-
+    /// Returns the length of the vector
     pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
+    /// Returns the length squared of the vector
     pub fn length_squared(&self) -> f64 {
         self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
     }
 
-    pub fn dot(&self, other: &Self) -> f64 {
+    /// Returns the dot product of this triple with another triple
+    pub fn dot<T>(&self, other: &Triple<T>) -> f64 {
         self.e[0] * other.e[0] + self.e[1] * other.e[1] + self.e[2] * other.e[2]
     }
 
+    /// Returns the cross product of this vector with another vector
     pub fn cross(&self, other: &Self) -> Vec3 {
         Vec3::new(
             self.e[1] * other.e[2] - self.e[2] * other.e[1],
@@ -96,14 +140,17 @@ impl Vec3 {
         )
     }
 
+    /// Returns the unit vector for this vector
     pub fn unit_vector(&self) -> Vec3 {
         self / self.length()
     }
 
+    /// Reflects the vector around a normal vector
     pub fn reflect(&self, n: &Vec3) -> Vec3 {
         self - 2.0 * self.dot(n) * n
     }
 
+    /// Refracts the vector
     pub fn refract(&self, n: &Vec3, etai_over_etat: f64) -> Vec3 {
         let cos_theta = -self.dot(n).min(1.0);
         let r_out_perp = etai_over_etat * (self + cos_theta * n);
@@ -112,53 +159,32 @@ impl Vec3 {
         r_out_perp + r_out_parallel
     }
 
+    /// Return true if the vector is close to zero in all dimensions.
     pub fn near_zero(&self) -> bool {
-        // Return true if the vector is close to zero in all dimensions.
         let s = 1e-8;
         self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s
     }
 }
 
-// Operator implementations
-impl_op_ex!(+ |a: &Vec3, b: &Vec3| -> Vec3 { Vec3 { e: [a.e[0] + b.e[0], a.e[1] + b.e[1], a.e[2] + b.e[2]] } });
-impl_op_ex!(+= |a: &mut Vec3, b: &Vec3| { a.e[0] += b.e[0]; a.e[1] += b.e[1]; a.e[2] += b.e[2]; });
-impl_op_ex!(-|a: &Vec3, b: &Vec3| -> Vec3 {
-    Vec3 {
-        e: [a.e[0] - b.e[0], a.e[1] - b.e[1], a.e[2] - b.e[2]],
+/// Methods for points
+impl Point3 {
+    pub fn to_vec3(self) -> Vec3 {
+        Vec3::new_from_array(self.e)
     }
-});
-impl_op_ex!(-|a: &Vec3| -> Vec3 {
-    Vec3 {
-        e: [-a.e[0], -a.e[1], -a.e[2]],
-    }
-});
-impl_op_ex!(-= |a: &mut Vec3, b: &Vec3| { a.e[0] -= b.e[0]; a.e[1] -= b.e[1]; a.e[2] -= b.e[2]; });
-impl_op_ex_commutative!(*|a: &Vec3, b: f64| -> Vec3 {
-    Vec3 {
-        e: [a.e[0] * b, a.e[1] * b, a.e[2] * b],
-    }
-});
-impl_op_ex!(*|a: &Vec3, b: &Vec3| -> Vec3 {
-    Vec3 {
-        e: [a.e[0] * b.e[0], a.e[1] * b.e[1], a.e[2] * b.e[2]],
-    }
-});
-impl_op_ex!(*= |a: &mut Vec3, b: &Vec3| {
-    a.e[0] *= b.e[0];
-    a.e[1] *= b.e[1];
-    a.e[2] *= b.e[2];
-});
-impl_op_ex!(*= |a: &mut Vec3, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b; });
-impl_op_ex!(/ |a: &Vec3, b: f64| -> Vec3 { a * (1f64 / b) } );
-impl_op_ex!(/= |a: &mut Vec3, b: f64| { *a *= 1f64 / b });
 
-impl Sum for Vec3 {
-    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.reduce(|acc, i| acc + i).unwrap_or_else(Vec3::default)
+    pub fn vec_to(&self, to: &Point3) -> Vec3 {
+        Vec3::new(
+            to.e[0] - self.e[0],
+            to.e[1] - self.e[1],
+            to.e[2] - self.e[2],
+        )
     }
 }
 
-impl Index<usize> for Vec3 {
+// -- Common Operator implementations --
+
+// Indexing
+impl<Mixin> Index<usize> for Triple<Mixin> {
     type Output = f64;
 
     fn index(&self, i: usize) -> &f64 {
@@ -166,7 +192,75 @@ impl Index<usize> for Vec3 {
     }
 }
 
-pub type Point3 = Vec3;
+// Vector Operator implementations
+
+// Addition
+impl_op_ex!(+ |a: &Vec3, b: &Vec3| -> Vec3 { Vec3::new(a.e[0] + b.e[0], a.e[1] + b.e[1], a.e[2] + b.e[2]) });
+impl_op_ex!(+= |a: &mut Vec3, b: &Vec3| { a.e[0] += b.e[0]; a.e[1] += b.e[1]; a.e[2] += b.e[2]; });
+
+// Subtraction
+impl_op_ex!(-|a: &Vec3, b: &Vec3| -> Vec3 {
+    Vec3::new(a.e[0] - b.e[0], a.e[1] - b.e[1], a.e[2] - b.e[2])
+});
+impl_op_ex!(-= |a: &mut Vec3, b: &Vec3| { a.e[0] -= b.e[0]; a.e[1] -= b.e[1]; a.e[2] -= b.e[2]; });
+
+// Negation
+impl_op_ex!(-|a: &Vec3| -> Vec3 { Vec3::new(-a.e[0], -a.e[1], -a.e[2]) });
+
+// Multiplication
+impl_op_ex_commutative!(*|a: &Vec3, b: f64| -> Vec3 {
+    Vec3::new(a.e[0] * b, a.e[1] * b, a.e[2] * b)
+});
+impl_op_ex!(*|a: &Vec3, b: &Vec3| -> Vec3 {
+    Vec3::new(a.e[0] * b.e[0], a.e[1] * b.e[1], a.e[2] * b.e[2])
+});
+impl_op_ex!(*= |a: &mut Vec3, b: &Vec3| {
+    a.e[0] *= b.e[0];
+    a.e[1] *= b.e[1];
+    a.e[2] *= b.e[2];
+});
+impl_op_ex!(*= |a: &mut Vec3, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b; });
+
+// Division
+impl_op_ex!(/ |a: &Vec3, b: f64| -> Vec3 { a * (1f64 / b) } );
+impl_op_ex!(/= |a: &mut Vec3, b: f64| { *a *= 1f64 / b });
+
+// Summing
+impl Sum for Vec3 {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.reduce(|acc, i| acc + i).unwrap_or_else(Vec3::default)
+    }
+}
+
+// -- Point Operator implementations
+
+// Addition
+impl_op_ex!(+ |a: &Point3, b: &Vec3| -> Point3 { Point3::new(a.e[0] + b.e[0], a.e[1] + b.e[1], a.e[2] + b.e[2]) });
+impl_op_ex!(+= |a: &mut Point3, b: &Vec3| { a.e[0] += b.e[0]; a.e[1] += b.e[1]; a.e[2] += b.e[2]; });
+
+// Subtraction
+impl_op_ex!(-|a: &Point3, b: &Vec3| -> Point3 {
+    Point3::new(a.e[0] - b.e[0], a.e[1] - b.e[1], a.e[2] - b.e[2])
+});
+impl_op_ex!(-= |a: &mut Point3, b: &Vec3| { a.e[0] -= b.e[0]; a.e[1] -= b.e[1]; a.e[2] -= b.e[2]; });
+
+// Multiplication
+impl_op_ex_commutative!(*|a: &Point3, b: f64| -> Point3 {
+    Point3::new(a.e[0] * b, a.e[1] * b, a.e[2] * b)
+});
+impl_op_ex!(*|a: &Point3, b: &Point3| -> Point3 {
+    Point3::new(a.e[0] * b.e[0], a.e[1] * b.e[1], a.e[2] * b.e[2])
+});
+impl_op_ex!(*= |a: &mut Point3, b: &Point3| {
+    a.e[0] *= b.e[0];
+    a.e[1] *= b.e[1];
+    a.e[2] *= b.e[2];
+});
+impl_op_ex!(*= |a: &mut Point3, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b; });
+
+// Division
+impl_op_ex!(/ |a: &Point3, b: f64| -> Point3 { a * (1f64 / b) } );
+impl_op_ex!(/= |a: &mut Point3, b: f64| { *a *= 1f64 / b });
 
 #[cfg(test)]
 mod tests {

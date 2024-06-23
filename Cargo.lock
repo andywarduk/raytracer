@@ -237,6 +237,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "final"
+version = "0.1.0"
+dependencies = [
+ "rand",
+ "raytracer_lib",
+]
+
+[[package]]
 name = "flate2"
 version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -573,6 +581,14 @@ dependencies = [
 name = "part13"
 version = "0.1.0"
 dependencies = [
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part14"
+version = "0.1.0"
+dependencies = [
+ "rand",
  "raytracer_lib",
 ]
 

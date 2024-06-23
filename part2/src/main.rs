@@ -33,6 +33,8 @@ fn main() {
         ground_material,
     ));
 
+    let avoid: Point3 = Point3::new(4.0, 0.2, 0.0);
+
     for a in -10..=10 {
         for b in -10..=10 {
             let choose_mat = rng.gen_range(0.0..1.0);
@@ -45,7 +47,7 @@ fn main() {
 
             let mut center1 = center0.clone();
 
-            if (&center0 - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+            if avoid.vec_to(&center0).length() > 0.9 {
                 let sphere_material: Arc<dyn Material> = if choose_mat < 0.8 {
                     // diffuse
                     let albedo = Colour::new_random(&mut rng) * Colour::new_random(&mut rng);

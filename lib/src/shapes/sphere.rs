@@ -9,7 +9,7 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Sphere {
     /// Centre at time 0
     center0: Point3,
@@ -36,7 +36,7 @@ impl Sphere {
         radius: f64,
         material: Arc<dyn Material>,
     ) -> Self {
-        let movement = &center1 - &center0;
+        let movement = center0.vec_to(&center1);
         let moving = movement.length() > 0.0;
 
         let rvec = Vec3::new(radius, radius, radius);
@@ -67,10 +67,10 @@ impl Sphere {
         }
     }
 
-    fn get_uv(p: &Point3) -> (f64, f64) {
-        // p: a given point on the sphere of radius one, centered at the origin.
-        // u: returned value [0,1] of angle around the Y axis from X=-1.
-        // v: returned value [0,1] of angle from Y=-1 to Y=+1.
+    fn get_uv(p: &Vec3) -> (f64, f64) {
+        // p: a given vector from the centre of the sphere of length 1
+        // u: returned value [0,1] of angle around the Y axis from X=-1
+        // v: returned value [0,1] of angle from Y=-1 to Y=+1
         //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
         //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
         //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
@@ -88,7 +88,7 @@ impl Sphere {
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         let center = self.position_at_time(ray.time());
-        let oc = &center - ray.origin();
+        let oc = ray.origin().vec_to(&center);
         let a = ray.direction().length_squared();
         let h = ray.direction().dot(&oc);
         let c = oc.length_squared() - self.radius * self.radius;
@@ -113,7 +113,7 @@ impl Hittable for Sphere {
         }
 
         let p = ray.at(t);
-        let outward_normal = (&p - &center) / self.radius;
+        let outward_normal = center.vec_to(&p) / self.radius;
 
         let (u, v) = Self::get_uv(&outward_normal);
 

@@ -7,7 +7,7 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct Aabb {
     pub x: Range<f64>,
     pub y: Range<f64>,

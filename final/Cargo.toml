@@ -1,0 +1,8 @@
+[package]
+name = "final"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+raytracer_lib = { path = "../lib" }
+rand = "0.8.5"

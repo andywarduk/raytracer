@@ -14,5 +14,11 @@ members = [
     "part11",
     "part12",
     "part13",
+    "part14",
+    "final",
 ]
 resolver = "2"
+
+[profile.release]
+debug = true
+lto = true

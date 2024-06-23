@@ -2,6 +2,8 @@ use std::{cmp::Ordering, ops::Range};
 
 use crate::{hittable::aabb::Aabb, hittable::hit::Hit, hittable::hittable::Hittable, ray::Ray};
 
+use super::hittable::T_MIN;
+
 #[derive(Debug)]
 pub struct BvhNode {
     bbox: Aabb,
@@ -11,12 +13,23 @@ pub struct BvhNode {
 
 impl BvhNode {
     pub fn new(mut objects: Vec<Box<dyn Hittable>>) -> Self {
-        let bbox = objects.iter().fold(Aabb::default(), |bbox, object| {
-            Aabb::new_from_bbox(&bbox, object.bounding_box())
-        });
+        // Create bounding box for the object array
+        let bbox = objects
+            .iter()
+            .map(|o| o.bounding_box())
+            .fold(None, |bbox, next| {
+                if let Some(bbox) = bbox {
+                    Some(Aabb::new_from_bbox(&bbox, next))
+                } else {
+                    Some(next.clone())
+                }
+            })
+            .expect("No objects for BvhNode");
 
+        // Calculate longest axis
         let axis = bbox.longest_axis();
 
+        // Create comparator for the axis
         let comparator = match axis {
             0 => |a: &Box<dyn Hittable>, b: &Box<dyn Hittable>| Self::box_compare(&**a, &**b, 0),
             1 => |a: &Box<dyn Hittable>, b: &Box<dyn Hittable>| Self::box_compare(&**a, &**b, 1),
@@ -40,8 +53,24 @@ impl BvhNode {
             _ => {
                 objects.sort_by(comparator);
 
+                // TODO
+                // fn print_bbox_list(objects: &Vec<Box<dyn Hittable>>) {
+                //     objects
+                //         .iter()
+                //         .for_each(|o| print!("  {}\n", o.bounding_box()));
+                // }
+
+                // println!("sorted by {axis}:");
+                // print_bbox_list(&objects);
+
                 let mid = vec_len / 2;
                 let split = objects.split_off(mid);
+
+                // TODO
+                // println!("--left:");
+                // print_bbox_list(&objects);
+                // println!("-right:");
+                // print_bbox_list(&split);
 
                 (
                     Box::new(BvhNode::new(objects)) as Box<dyn Hittable>,
@@ -66,22 +95,34 @@ impl BvhNode {
 
 impl Hittable for BvhNode {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+        // Any hit at all?
         if !self.bbox.hit(ray, t_range.clone()) {
             return None;
         }
 
-        let left_hit = self.left.hit(ray, t_range.clone());
-
-        let right_hit = if let Some(right) = &self.right {
-            right.hit(ray, t_range)
-        } else {
-            None
-        };
-
-        match (left_hit, right_hit) {
-            (_, Some(hit)) => Some(hit),
-            (Some(hit), _) => Some(hit),
-            _ => None,
+        // Check for left hit
+        match self.left.hit(ray, t_range.clone()) {
+            None => {
+                // No left hit - check right
+                if let Some(right) = &self.right {
+                    right.hit(ray, t_range)
+                } else {
+                    // No right hit either
+                    None
+                }
+            }
+            Some(lhit) => {
+                // Got left hit - check right
+                if let Some(right) = &self.right {
+                    // Got right - check it
+                    match right.hit(ray, T_MIN..lhit.t) {
+                        None => Some(lhit),
+                        rhit => rhit,
+                    }
+                } else {
+                    Some(lhit)
+                }
+            }
         }
     }
 

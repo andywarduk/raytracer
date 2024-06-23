@@ -9,7 +9,7 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Quad {
     /// Anchor point at time 0
     p: Point3,
@@ -50,7 +50,7 @@ impl Quad {
         material: Arc<dyn Material>,
     ) -> Self {
         // Calculate movement
-        let p_movement = &p1 - &p0;
+        let p_movement = p0.vec_to(&p1);
         let u_movement = &u1 - &u0;
         let v_movement = &u1 - &u0;
 
@@ -137,7 +137,7 @@ impl Hittable for Quad {
         // Determine the hit point lies within the planar shape using its plane coordinates.
         let intersection = ray.at(t);
 
-        let planar_hitpt_vector = &intersection - &p;
+        let planar_hitpt_vector = p.vec_to(&intersection);
 
         let n = u.cross(&v);
         let w = &n / n.dot(&n);
