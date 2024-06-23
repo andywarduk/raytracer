@@ -83,8 +83,8 @@ impl BvhNode {
     }
 
     fn box_compare<'a>(a: &'a dyn Hittable, b: &'a dyn Hittable, axis: usize) -> Ordering {
-        let a_axis_interval = a.bounding_box().axis_interval(axis);
-        let b_axis_interval = b.bounding_box().axis_interval(axis);
+        let a_axis_interval = &a.bounding_box().ranges[axis];
+        let b_axis_interval = &b.bounding_box().ranges[axis];
 
         a_axis_interval
             .start
@@ -96,7 +96,7 @@ impl BvhNode {
 impl Hittable for BvhNode {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         // Any hit at all?
-        if !self.bbox.hit(ray, t_range.clone()) {
+        if !self.bbox.hit(ray, &t_range) {
             return None;
         }
 

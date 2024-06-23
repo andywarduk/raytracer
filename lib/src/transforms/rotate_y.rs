@@ -33,9 +33,9 @@ impl RotateY {
                 for k in 0..2 {
                     let fk = k as f64;
 
-                    let x = fi * bbox.x.end + (1.0 - fi) * bbox.x.start;
-                    let y = fj * bbox.y.end + (1.0 - fj) * bbox.y.start;
-                    let z = fk * bbox.z.end + (1.0 - fk) * bbox.z.start;
+                    let x = fi * bbox.ranges[0].end + (1.0 - fi) * bbox.ranges[0].start;
+                    let y = fj * bbox.ranges[1].end + (1.0 - fj) * bbox.ranges[1].start;
+                    let z = fk * bbox.ranges[2].end + (1.0 - fk) * bbox.ranges[2].start;
 
                     let newx = cos_theta * x + sin_theta * z;
                     let newz = -sin_theta * x + cos_theta * z;

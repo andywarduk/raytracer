@@ -9,14 +9,12 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Aabb {
-    pub x: Range<f64>,
-    pub y: Range<f64>,
-    pub z: Range<f64>,
+    pub ranges: [Range<f64>; 3],
 }
 
 impl Aabb {
     pub fn new_from_ranges(x: Range<f64>, y: Range<f64>, z: Range<f64>) -> Self {
-        let mut res = Self { x, y, z };
+        let mut res = Self { ranges: [x, y, z] };
 
         res.pad_to_minimums();
 
@@ -29,18 +27,20 @@ impl Aabb {
         } else {
             b.x()..a.x()
         };
+
         let y = if a.y() <= b.y() {
             a.y()..b.y()
         } else {
             b.y()..a.y()
         };
+
         let z = if a.z() <= b.z() {
             a.z()..b.z()
         } else {
             b.z()..a.z()
         };
 
-        let mut res = Self { x, y, z };
+        let mut res = Self { ranges: [x, y, z] };
 
         res.pad_to_minimums();
 
@@ -48,55 +48,35 @@ impl Aabb {
     }
 
     pub fn new_from_bbox(a: &Aabb, b: &Aabb) -> Self {
-        let x = (a.x.start.min(b.x.start))..(a.x.end.max(b.x.end));
-        let y = (a.y.start.min(b.y.start))..(a.y.end.max(b.y.end));
-        let z = (a.z.start.min(b.z.start))..(a.z.end.max(b.z.end));
-
-        let mut res = Self { x, y, z };
+        let mut res = Self { ranges: [
+            (a.ranges[0].start.min(b.ranges[0].start))..(a.ranges[0].end.max(b.ranges[0].end)),
+            (a.ranges[1].start.min(b.ranges[1].start))..(a.ranges[1].end.max(b.ranges[1].end)),
+            (a.ranges[2].start.min(b.ranges[2].start))..(a.ranges[2].end.max(b.ranges[2].end))
+        ]};
 
         res.pad_to_minimums();
 
         res
     }
 
-    pub fn axis_interval(&self, axis: usize) -> &Range<f64> {
-        match axis {
-            0 => &self.x,
-            1 => &self.y,
-            2 => &self.z,
-            _ => panic!("Invalid axis {axis}"),
-        }
-    }
+    pub fn hit(&self, ray: &Ray, t_range: &Range<f64>) -> bool {
+        let mut start = t_range.start;
+        let mut end = t_range.end;
 
-    pub fn hit(&self, ray: &Ray, t_range: Range<f64>) -> bool {
-        let mut t_range = t_range;
         let ray_orig = ray.origin();
         let ray_dir = ray.direction();
 
         for axis in 0..3 {
-            let ax = self.axis_interval(axis);
+            let ax = &self.ranges[axis];
             let adinv = 1.0 / ray_dir[axis];
 
             let t0 = (ax.start - ray_orig[axis]) * adinv;
             let t1 = (ax.end - ray_orig[axis]) * adinv;
 
-            if t0 < t1 {
-                if t0 > t_range.start {
-                    t_range.start = t0;
-                }
-                if t1 < t_range.end {
-                    t_range.end = t1;
-                }
-            } else {
-                if t1 > t_range.start {
-                    t_range.start = t1;
-                }
-                if t0 < t_range.end {
-                    t_range.end = t0;
-                }
-            }
+            start = start.max(t0.min(t1));
+            end = end.min(t0.max(t1));
 
-            if t_range.end <= t_range.start {
+            if end <= start {
                 return false;
             }
         }
@@ -105,52 +85,43 @@ impl Aabb {
     }
 
     pub fn longest_axis(&self) -> usize {
-        let xn = self.x.end - self.x.start;
-        let yn = self.y.end - self.y.start;
-        let zn = self.z.end - self.z.start;
+        let mut largest = 0.0;
+        let mut axis = 0;
 
-        if xn > yn {
-            if xn > zn {
-                0
-            } else {
-                2
+        for (i, r) in self.ranges.iter().enumerate() {
+            let len = r.end - r.start;
+
+            if len > largest {
+                largest = len;
+                axis = i;
             }
-        } else if yn > zn {
-            1
-        } else {
-            2
         }
+
+        axis
     }
 
     const DELTA: f64 = 0.0001;
 
     fn pad_to_minimums(&mut self) {
         // Adjust the AABB so that no side is narrower than some delta, padding if necessary.
+        for i in 0..2 {
+            if self.ranges[i].end - self.ranges[i].start < Self::DELTA {
+                let half = Self::DELTA / 2.0;
 
-        if self.x.end - self.x.start < Self::DELTA {
-            Self::expand_range(&mut self.x)
+                self.ranges[i].start -= half;
+                self.ranges[i].end += half;        
+            }
         }
-        if self.y.end - self.y.start < Self::DELTA {
-            Self::expand_range(&mut self.y)
-        }
-        if self.z.end - self.z.start < Self::DELTA {
-            Self::expand_range(&mut self.z)
-        }
-    }
-
-    fn expand_range(r: &mut Range<f64>) {
-        let half = Self::DELTA / 2.0;
-
-        r.start -= half;
-        r.end += half;
     }
 }
 
 // Operator implementations
 impl_op_ex_commutative!(+ |a: &Aabb, b: &Vec3| -> Aabb {
-    let x = (a.x.start + b.x())..(a.x.end + b.x());
-    let y = (a.y.start + b.y())..(a.y.end + b.y());
-    let z = (a.z.start + b.z())..(a.z.end + b.z());
+    let ranges = [
+        (a.ranges[0].start + b.e[0])..(a.ranges[0].end + b.e[0]),
+        (a.ranges[1].start + b.e[1])..(a.ranges[1].end + b.e[1]),
+        (a.ranges[2].start + b.e[2])..(a.ranges[2].end + b.e[2]),
+    ];
 
-    Aabb::new_from_ranges(x, y, z)
+    Aabb { ranges }
 });
