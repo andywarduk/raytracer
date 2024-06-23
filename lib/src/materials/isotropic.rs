@@ -4,7 +4,7 @@ use rand::rngs::ThreadRng;
 
 use crate::{
     colour::Colour,
-    hittable::hit::Hit,
+    hits::hit::Hit,
     ray::Ray,
     textures::{solid::Solid, texture::Texture},
     vec3::Vec3,

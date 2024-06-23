@@ -1,6 +1,6 @@
 use std::{mem, ops::Range};
 
-use crate::{hittable::aabb::Aabb, hittable::hit::Hit, hittable::hittable::Hittable, ray::Ray};
+use crate::{hits::aabb::Aabb, hits::hit::Hit, hits::hittable::Hittable, ray::Ray};
 
 #[derive(Debug, Default)]
 pub struct HittableList {

@@ -7,9 +7,9 @@ use rand::{rngs::ThreadRng, thread_rng, Rng};
 use rayon::prelude::*;
 
 use crate::{
-    ambience::ambience::Ambience,
+    ambient::ambience::Ambience,
     colour::Colour,
-    hittable::{
+    hits::{
         hittable::{Hittable, T_MIN},
         hittable_list::HittableList,
     },
@@ -123,7 +123,7 @@ impl Camera {
     /// Sets the render time span
     pub fn set_time_span(&mut self, time_span: f64) {
         // Values > 1.0 will mean bounding boxes for moving shapes are incorrect
-        assert!(time_span >= 0.0 && time_span <= 1.0);
+        assert!((0.0..=1.0).contains(&time_span));
 
         self.time_span = time_span;
     }
@@ -171,19 +171,19 @@ impl Camera {
         let mut imgbuf = image::ImageBuffer::new(self.image_width as u32, self.image_height as u32);
 
         // For each line...
-        for j in 0..lines.len() {
+        (0..lines.len()).for_each(|j| {
             let line = &lines[j];
 
             // For each column...
-            for i in 0..line.len() {
+            (0..line.len()).for_each(|i| {
                 // Convert to RGB with gamma correction
                 let (r, g, b) = (self.pixel_samples_scale * &line[i]).to_rgb_gamma();
 
                 // Add to image data buffer
                 let pixel = imgbuf.get_pixel_mut(i as u32, j as u32);
                 *pixel = image::Rgb([r, g, b]);
-            }
-        }
+            });
+        });
 
         // Save image
         imgbuf.save(output).expect("Error saving image");
@@ -289,7 +289,7 @@ impl Camera {
                 let (attenuation, emitted, next_ray) = hit.material.scatter(rng, ray, &hit);
 
                 // Get attenuation colour, or black if none
-                let mut attenuation = attenuation.unwrap_or_else(|| Colour::default());
+                let mut attenuation = attenuation.unwrap_or_else(Colour::default);
 
                 // Is there a next ray?
                 if let Some(ray) = next_ray {

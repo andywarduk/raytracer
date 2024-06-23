@@ -1,7 +1,7 @@
-pub mod ambience;
+pub mod ambient;
 pub mod camera;
 pub mod colour;
-pub mod hittable;
+pub mod hits;
 pub mod materials;
 pub mod perlin;
 pub mod ray;

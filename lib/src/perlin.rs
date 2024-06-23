@@ -14,22 +14,7 @@ pub struct PerlinNoise {
 
 impl PerlinNoise {
     pub fn new() -> Self {
-        let mut rng = thread_rng();
-
-        let randvec = (0..POINT_COUNT)
-            .map(|_| Vec3::new_random_clamped(&mut rng, -1.0, 1.0).unit_vector())
-            .collect();
-
-        let perm_x = Self::generate_perm(&mut rng);
-        let perm_y = Self::generate_perm(&mut rng);
-        let perm_z = Self::generate_perm(&mut rng);
-
-        Self {
-            randvec,
-            perm_x,
-            perm_y,
-            perm_z,
-        }
+        Self::default()
     }
 
     pub fn noise(&self, p: &Point3) -> f64 {
@@ -112,5 +97,26 @@ impl PerlinNoise {
         }
 
         accum
+    }
+}
+
+impl Default for PerlinNoise {
+    fn default() -> Self {
+        let mut rng = thread_rng();
+
+        let randvec = (0..POINT_COUNT)
+            .map(|_| Vec3::new_random_clamped(&mut rng, -1.0, 1.0).unit_vector())
+            .collect();
+
+        let perm_x = Self::generate_perm(&mut rng);
+        let perm_y = Self::generate_perm(&mut rng);
+        let perm_z = Self::generate_perm(&mut rng);
+
+        Self {
+            randvec,
+            perm_x,
+            perm_y,
+            perm_z,
+        }
     }
 }

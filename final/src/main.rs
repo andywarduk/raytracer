@@ -2,11 +2,11 @@ use std::path::Path;
 use std::sync::Arc;
 
 use rand::{thread_rng, Rng};
-use raytracer_lib::ambience::ambient_light::AmbientLight;
+use raytracer_lib::ambient::ambient_light::AmbientLight;
 use raytracer_lib::camera::Camera;
 use raytracer_lib::colour::Colour;
-use raytracer_lib::hittable::bvh::BvhNode;
-use raytracer_lib::hittable::hittable_list::HittableList;
+use raytracer_lib::hits::bvh::BvhNode;
+use raytracer_lib::hits::hittable_list::HittableList;
 use raytracer_lib::materials::dielectric::Dielectric;
 use raytracer_lib::materials::diffuse_light::DiffuseLight;
 use raytracer_lib::materials::lambertian::Lambertian;

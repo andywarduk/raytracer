@@ -4,7 +4,7 @@ use rand::{thread_rng, Rng};
 
 use crate::{
     colour::Colour,
-    hittable::{
+    hits::{
         aabb::Aabb,
         hit::Hit,
         hittable::{Hittable, T_MIN},
@@ -110,6 +110,6 @@ impl Hittable for ConstantMedium {
     }
 
     fn bounding_box(&self) -> &Aabb {
-        &self.boundary.bounding_box()
+        self.boundary.bounding_box()
     }
 }

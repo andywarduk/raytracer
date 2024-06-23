@@ -48,11 +48,13 @@ impl Aabb {
     }
 
     pub fn new_from_bbox(a: &Aabb, b: &Aabb) -> Self {
-        let mut res = Self { ranges: [
-            (a.ranges[0].start.min(b.ranges[0].start))..(a.ranges[0].end.max(b.ranges[0].end)),
-            (a.ranges[1].start.min(b.ranges[1].start))..(a.ranges[1].end.max(b.ranges[1].end)),
-            (a.ranges[2].start.min(b.ranges[2].start))..(a.ranges[2].end.max(b.ranges[2].end))
-        ]};
+        let mut res = Self {
+            ranges: [
+                (a.ranges[0].start.min(b.ranges[0].start))..(a.ranges[0].end.max(b.ranges[0].end)),
+                (a.ranges[1].start.min(b.ranges[1].start))..(a.ranges[1].end.max(b.ranges[1].end)),
+                (a.ranges[2].start.min(b.ranges[2].start))..(a.ranges[2].end.max(b.ranges[2].end)),
+            ],
+        };
 
         res.pad_to_minimums();
 
@@ -109,7 +111,7 @@ impl Aabb {
                 let half = Self::DELTA / 2.0;
 
                 self.ranges[i].start -= half;
-                self.ranges[i].end += half;        
+                self.ranges[i].end += half;
             }
         }
     }

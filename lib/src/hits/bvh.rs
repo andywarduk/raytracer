@@ -1,6 +1,6 @@
 use std::{cmp::Ordering, ops::Range};
 
-use crate::{hittable::aabb::Aabb, hittable::hit::Hit, hittable::hittable::Hittable, ray::Ray};
+use crate::{hits::aabb::Aabb, hits::hit::Hit, hits::hittable::Hittable, ray::Ray};
 
 use super::hittable::T_MIN;
 
@@ -29,14 +29,6 @@ impl BvhNode {
         // Calculate longest axis
         let axis = bbox.longest_axis();
 
-        // Create comparator for the axis
-        let comparator = match axis {
-            0 => |a: &Box<dyn Hittable>, b: &Box<dyn Hittable>| Self::box_compare(&**a, &**b, 0),
-            1 => |a: &Box<dyn Hittable>, b: &Box<dyn Hittable>| Self::box_compare(&**a, &**b, 1),
-            2 => |a: &Box<dyn Hittable>, b: &Box<dyn Hittable>| Self::box_compare(&**a, &**b, 2),
-            _ => panic!("Invalid axis"),
-        };
-
         let vec_len = objects.len();
 
         let (left, right) = match vec_len {
@@ -51,26 +43,14 @@ impl BvhNode {
                 (object0, Some(object1))
             }
             _ => {
-                objects.sort_by(comparator);
+                // Sort objects in to order by start point on the chosen axis
+                objects.sort_by(|a, b| Self::box_compare(&**a, &**b, axis));
 
-                // TODO
-                // fn print_bbox_list(objects: &Vec<Box<dyn Hittable>>) {
-                //     objects
-                //         .iter()
-                //         .for_each(|o| print!("  {}\n", o.bounding_box()));
-                // }
-
-                // println!("sorted by {axis}:");
-                // print_bbox_list(&objects);
-
+                // Select mid point
                 let mid = vec_len / 2;
-                let split = objects.split_off(mid);
 
-                // TODO
-                // println!("--left:");
-                // print_bbox_list(&objects);
-                // println!("-right:");
-                // print_bbox_list(&split);
+                // Split the vector
+                let split = objects.split_off(mid);
 
                 (
                     Box::new(BvhNode::new(objects)) as Box<dyn Hittable>,

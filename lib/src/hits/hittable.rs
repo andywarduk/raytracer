@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::ops::Range;
 
-use crate::hittable::aabb::Aabb;
+use crate::hits::aabb::Aabb;
 use crate::ray::Ray;
 
 use super::hit::Hit;

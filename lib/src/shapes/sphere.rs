@@ -1,9 +1,9 @@
 use std::{f64::consts::PI, ops::Range, sync::Arc};
 
 use crate::{
-    hittable::aabb::Aabb,
-    hittable::hit::Hit,
-    hittable::hittable::Hittable,
+    hits::aabb::Aabb,
+    hits::hit::Hit,
+    hits::hittable::Hittable,
     materials::material::Material,
     ray::Ray,
     vec3::{Point3, Vec3},

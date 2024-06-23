@@ -1,7 +1,7 @@
 use std::{ops::Range, sync::Arc};
 
 use crate::{
-    hittable::{aabb::Aabb, hit::Hit, hittable::Hittable},
+    hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
     ray::Ray,
     vec3::Vec3,
 };
