@@ -9,6 +9,7 @@ use raytracer_lib::materials::diffuse_light::DiffuseLight;
 use raytracer_lib::materials::lambertian::Lambertian;
 use raytracer_lib::shapes::boxcomp::BoxComp;
 use raytracer_lib::shapes::quad::Quad;
+use raytracer_lib::transforms::constant_medium::ConstantMedium;
 use raytracer_lib::transforms::rotate_y::RotateY;
 use raytracer_lib::transforms::translate::Translate;
 use raytracer_lib::vec3::{Point3, Vec3};
@@ -36,9 +37,9 @@ fn main() {
         red,
     ));
     world.add(Quad::new(
-        Point3::new(343.0, 554.0, 332.0),
-        Vec3::new(-130.0, 0.0, 0.0),
-        Vec3::new(0.0, 0.0, -105.0),
+        Point3::new(113.0, 554.0, 127.0),
+        Vec3::new(330.0, 0.0, 0.0),
+        Vec3::new(0.0, 0.0, 305.0),
         light,
     ));
     world.add(Quad::new(
@@ -67,11 +68,13 @@ fn main() {
     );
     let box1 = RotateY::new(15.0, Arc::new(box1));
     let box1 = Translate::new(Vec3::new(265.0, 0.0, 295.0), Arc::new(box1));
+    let box1 = ConstantMedium::new_with_colour(Arc::new(box1), 0.01, Colour::default());
     world.add(box1);
 
     let box2 = BoxComp::new(Point3::default(), Point3::new(165.0, 165.0, 165.0), white);
     let box2 = RotateY::new(-18.0, Arc::new(box2));
     let box2 = Translate::new(Vec3::new(130.0, 0.0, 65.0), Arc::new(box2));
+    let box2 = ConstantMedium::new_with_colour(Arc::new(box2), 0.01, Colour::new(1.0, 1.0, 1.0));
     world.add(box2);
 
     // Camera
@@ -89,6 +92,6 @@ fn main() {
     cam.render(
         &world,
         &AmbientLight::new(Colour::default()),
-        Path::new("part12.png"),
+        Path::new("part13.png"),
     );
 }
