@@ -1,4 +1,4 @@
-use std::{iter::Sum, ops::Index};
+use std::{fmt::Display, iter::Sum, ops::Index};
 
 use auto_ops::*;
 use rand::{rngs::ThreadRng, Rng};
@@ -173,6 +173,15 @@ impl Vec3 {
     }
 }
 
+impl Display for Vec3 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "(u: {}, v: {}, w: {})",
+            self.e[0], self.e[1], self.e[2]
+        ))
+    }
+}
+
 /// Methods for points
 impl Point3 {
     pub fn to_vec3(self) -> Vec3 {
@@ -185,6 +194,15 @@ impl Point3 {
             to.e[1] - self.e[1],
             to.e[2] - self.e[2],
         )
+    }
+}
+
+impl Display for Point3 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "(x: {}, y: {}, z: {})",
+            self.e[0], self.e[1], self.e[2]
+        ))
     }
 }
 
@@ -214,6 +232,15 @@ impl Colour {
         } else {
             0.0
         }
+    }
+}
+
+impl Display for Colour {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "(r: {}, g: {}, b: {})",
+            self.e[0], self.e[1], self.e[2]
+        ))
     }
 }
 

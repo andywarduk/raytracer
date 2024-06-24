@@ -130,9 +130,48 @@ impl Camera {
         self.recalculate();
     }
 
+    /// Gets maximum ray depth
+    pub fn set_max_depth(&mut self, max_depth: u64) {
+        self.max_depth = max_depth;
+    }
+
     /// Gets the image width
     pub fn dimensions(&self) -> (u64, u64) {
         (self.image_width, self.image_height)
+    }
+
+    /// Get view
+    pub fn view(&self) -> (Point3, Point3, Vec3) {
+        (
+            self.look_from.clone(),
+            self.look_at.clone(),
+            self.vup.clone(),
+        )
+    }
+
+    /// Get the vertical field of vision in degrees
+    pub fn vfov(&self) -> f64 {
+        self.vfov
+    }
+
+    /// Get camera focus parameters
+    pub fn focus(&self) -> (f64, f64) {
+        (self.defocus_angle, self.focus_dist)
+    }
+
+    /// Gets the render time span
+    pub fn time_span(&self) -> f64 {
+        self.time_span
+    }
+
+    /// Gets the samples per pixel
+    pub fn samples_per_pixel(&self) -> u64 {
+        self.samples_per_pixel
+    }
+
+    /// Gets maximum ray depth
+    pub fn max_depth(&self) -> u64 {
+        self.max_depth
     }
 
     /// Renders the scene
