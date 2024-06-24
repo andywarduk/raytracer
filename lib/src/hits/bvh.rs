@@ -1,6 +1,9 @@
 use std::{cmp::Ordering, ops::Range};
 
-use crate::{hits::aabb::Aabb, hits::hit::Hit, hits::hittable::Hittable, ray::Ray};
+use crate::{
+    hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
+    ray::Ray,
+};
 
 use super::hittable::{HittableRef, T_MIN};
 

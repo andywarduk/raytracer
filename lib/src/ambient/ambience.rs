@@ -1,4 +1,4 @@
-use crate::{colour::Colour, ray::Ray};
+use crate::{ray::Ray, triple::Colour};
 use std::fmt::Debug;
 
 pub trait Ambience: Debug + Sync + Send {

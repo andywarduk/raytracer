@@ -1,17 +1,14 @@
 use std::path::Path;
 
 use rand::{thread_rng, Rng};
-use raytracer_lib::ambient::gradient_light::GradientLight;
-use raytracer_lib::camera::Camera;
-use raytracer_lib::colour::Colour;
-use raytracer_lib::hits::bvh::BvhNode;
-use raytracer_lib::hits::hittable_list::HittableList;
-use raytracer_lib::materials::dielectric::Dielectric;
-use raytracer_lib::materials::lambertian::Lambertian;
-use raytracer_lib::materials::material::MatRef;
-use raytracer_lib::materials::metal::Metal;
-use raytracer_lib::shapes::sphere::Sphere;
-use raytracer_lib::vec3::{Point3, Vec3};
+use raytracer_lib::{
+    ambient::gradient_light::GradientLight,
+    camera::Camera,
+    hits::{bvh::BvhNode, hittable_list::HittableList},
+    materials::{dielectric::Dielectric, lambertian::Lambertian, material::MatRef, metal::Metal},
+    shapes::sphere::Sphere,
+    triple::{Colour, Point3, Vec3},
+};
 
 fn main() {
     let mut rng = thread_rng();
@@ -98,7 +95,7 @@ fn main() {
     cam.set_time_span(1.0);
 
     // Render
-    cam.render(
+    cam.render_to_png(
         &bvh_world,
         &GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
         Path::new("part1.png"),

@@ -1,8 +1,9 @@
-use std::fmt::Debug;
-use std::ops::{Deref, Range};
+use std::{
+    fmt::Debug,
+    ops::{Deref, Range},
+};
 
-use crate::hits::aabb::Aabb;
-use crate::ray::Ray;
+use crate::{hits::aabb::Aabb, ray::Ray};
 
 use super::hit::Hit;
 

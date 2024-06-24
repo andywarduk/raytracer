@@ -1,13 +1,14 @@
 use std::path::Path;
 
-use raytracer_lib::ambient::gradient_light::GradientLight;
-use raytracer_lib::camera::Camera;
-use raytracer_lib::colour::Colour;
-use raytracer_lib::hits::hittable_list::HittableList;
-use raytracer_lib::materials::lambertian::Lambertian;
-use raytracer_lib::shapes::sphere::Sphere;
-use raytracer_lib::textures::perlin::Perlin;
-use raytracer_lib::vec3::{Point3, Vec3};
+use raytracer_lib::{
+    ambient::gradient_light::GradientLight,
+    camera::Camera,
+    hits::hittable_list::HittableList,
+    materials::lambertian::Lambertian,
+    shapes::sphere::Sphere,
+    textures::perlin::Perlin,
+    triple::{Colour, Point3, Vec3},
+};
 
 fn main() {
     // Textures
@@ -32,7 +33,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(
+    cam.render_to_png(
         &world,
         &GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
         Path::new("part4.png"),

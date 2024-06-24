@@ -1,13 +1,13 @@
 use rand::rngs::ThreadRng;
 
 use crate::{
-    colour::Colour,
     hits::hit::Hit,
     ray::Ray,
     textures::{
         solid::Solid,
         texture::{TexRef, Texture},
     },
+    triple::Colour,
 };
 
 use super::material::{Material, Scattered};

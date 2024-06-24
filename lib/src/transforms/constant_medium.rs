@@ -3,7 +3,6 @@ use std::ops::Range;
 use rand::{thread_rng, Rng};
 
 use crate::{
-    colour::Colour,
     hits::{
         aabb::Aabb,
         hit::Hit,
@@ -12,7 +11,7 @@ use crate::{
     materials::{isotropic::Isotropic, material::MatRef},
     ray::Ray,
     textures::texture::Texture,
-    vec3::Vec3,
+    triple::{Colour, Vec3},
 };
 
 #[derive(Debug)]

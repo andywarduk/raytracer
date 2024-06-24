@@ -4,7 +4,7 @@ use auto_ops::impl_op_ex_commutative;
 
 use crate::{
     ray::Ray,
-    vec3::{Point3, Vec3},
+    triple::{Point3, Vec3},
 };
 
 #[derive(Debug, Clone)]

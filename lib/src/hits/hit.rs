@@ -1,7 +1,7 @@
 use crate::{
     materials::material::Material,
     ray::Ray,
-    vec3::{Point3, Vec3},
+    triple::{Point3, Vec3},
 };
 
 #[derive(Debug)]

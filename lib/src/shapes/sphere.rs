@@ -4,7 +4,7 @@ use crate::{
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
     materials::material::{MatRef, Material},
     ray::Ray,
-    vec3::{Point3, Vec3},
+    triple::{Point3, Vec3},
 };
 
 #[derive(Debug)]

@@ -8,13 +8,12 @@ use rayon::prelude::*;
 
 use crate::{
     ambient::ambience::Ambience,
-    colour::Colour,
     hits::{
         hittable::{Hittable, T_MIN},
         hittable_list::HittableList,
     },
     ray::Ray,
-    vec3::{Point3, Vec3},
+    triple::{Colour, Point3, Vec3},
 };
 
 #[derive(Debug, Default)]
@@ -129,7 +128,7 @@ impl Camera {
     }
 
     /// Renders the scene to a PNG
-    pub fn render(&self, world: &HittableList, ambience: &dyn Ambience, output: &Path) {
+    pub fn render(&self, world: &HittableList, ambience: &dyn Ambience) -> Vec<Vec<Colour>> {
         let left = AtomicU64::new(1);
 
         // For each scan line...
@@ -166,6 +165,13 @@ impl Camera {
 
         // Finished
         eprintln!("\nDone");
+
+        lines
+    }
+
+    /// Renders the scene to a PNG
+    pub fn render_to_png(&self, world: &HittableList, ambience: &dyn Ambience, output: &Path) {
+        let lines = self.render(world, ambience);
 
         // Create image buffer
         let mut imgbuf = image::ImageBuffer::new(self.image_width as u32, self.image_height as u32);

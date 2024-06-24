@@ -1,13 +1,14 @@
 use std::path::Path;
 
-use raytracer_lib::ambient::ambient_light::AmbientLight;
-use raytracer_lib::camera::Camera;
-use raytracer_lib::colour::Colour;
-use raytracer_lib::hits::hittable_list::HittableList;
-use raytracer_lib::materials::lambertian::Lambertian;
-use raytracer_lib::shapes::sphere::Sphere;
-use raytracer_lib::textures::image::Image;
-use raytracer_lib::vec3::{Point3, Vec3};
+use raytracer_lib::{
+    ambient::ambient_light::AmbientLight,
+    camera::Camera,
+    hits::hittable_list::HittableList,
+    materials::lambertian::Lambertian,
+    shapes::sphere::Sphere,
+    textures::image::Image,
+    triple::{Colour, Point3, Vec3},
+};
 
 fn main() {
     // Textures
@@ -36,7 +37,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, &ambiance, Path::new("part3-1.png"));
+    cam.render_to_png(&world, &ambiance, Path::new("part3-1.png"));
 
     // Render
     cam.set_view(
@@ -45,7 +46,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, &ambiance, Path::new("part3-2.png"));
+    cam.render_to_png(&world, &ambiance, Path::new("part3-2.png"));
 
     // Render
     cam.set_view(
@@ -54,7 +55,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, &ambiance, Path::new("part3-3.png"));
+    cam.render_to_png(&world, &ambiance, Path::new("part3-3.png"));
 
     // Render
     cam.set_view(
@@ -63,7 +64,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(&world, &ambiance, Path::new("part3-4.png"));
+    cam.render_to_png(&world, &ambiance, Path::new("part3-4.png"));
 
     // Render
     cam.set_view(
@@ -72,7 +73,7 @@ fn main() {
         Vec3::new(1.0, 0.0, 0.0),
     );
 
-    cam.render(&world, &ambiance, Path::new("part3-5.png"));
+    cam.render_to_png(&world, &ambiance, Path::new("part3-5.png"));
 
     // Render
     cam.set_view(
@@ -81,5 +82,5 @@ fn main() {
         Vec3::new(-1.0, 0.0, 0.0),
     );
 
-    cam.render(&world, &ambiance, Path::new("part3-6.png"));
+    cam.render_to_png(&world, &ambiance, Path::new("part3-6.png"));
 }

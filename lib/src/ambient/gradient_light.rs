@@ -1,4 +1,4 @@
-use crate::{colour::Colour, ray::Ray};
+use crate::{ray::Ray, triple::Colour};
 
 use super::ambience::Ambience;
 

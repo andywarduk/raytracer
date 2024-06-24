@@ -1,13 +1,10 @@
 use std::ops::Range;
 
 use crate::{
-    hits::aabb::Aabb,
-    hits::hit::Hit,
-    hits::hittable::Hittable,
-    hits::hittable_list::HittableList,
+    hits::{aabb::Aabb, hit::Hit, hittable::Hittable, hittable_list::HittableList},
     materials::material::Material,
     ray::Ray,
-    vec3::{Point3, Vec3},
+    triple::{Point3, Vec3},
 };
 
 use super::quad::Quad;

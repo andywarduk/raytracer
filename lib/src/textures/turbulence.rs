@@ -1,4 +1,7 @@
-use crate::{colour::Colour, perlin::PerlinNoise, vec3::Point3};
+use crate::{
+    perlin::PerlinNoise,
+    triple::{Colour, Point3},
+};
 
 use super::texture::Texture;
 

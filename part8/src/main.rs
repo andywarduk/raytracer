@@ -1,15 +1,14 @@
 use std::path::Path;
 
-use raytracer_lib::ambient::ambient_light::AmbientLight;
-use raytracer_lib::camera::Camera;
-use raytracer_lib::colour::Colour;
-use raytracer_lib::hits::hittable_list::HittableList;
-use raytracer_lib::materials::diffuse_light::DiffuseLight;
-use raytracer_lib::materials::lambertian::Lambertian;
-use raytracer_lib::shapes::quad::Quad;
-use raytracer_lib::shapes::sphere::Sphere;
-use raytracer_lib::textures::marble::Marble;
-use raytracer_lib::vec3::{Point3, Vec3};
+use raytracer_lib::{
+    ambient::ambient_light::AmbientLight,
+    camera::Camera,
+    hits::hittable_list::HittableList,
+    materials::{diffuse_light::DiffuseLight, lambertian::Lambertian},
+    shapes::{quad::Quad, sphere::Sphere},
+    textures::marble::Marble,
+    triple::{Colour, Point3, Vec3},
+};
 
 fn main() {
     // Materials
@@ -41,7 +40,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render(
+    cam.render_to_png(
         &world,
         &AmbientLight::new(Colour::default()),
         Path::new("part8.png"),

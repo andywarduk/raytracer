@@ -1,6 +1,6 @@
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 
-use crate::vec3::{Point3, Vec3};
+use crate::triple::{Point3, Vec3};
 
 const POINT_COUNT: usize = 256;
 

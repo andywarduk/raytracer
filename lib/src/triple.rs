@@ -21,11 +21,18 @@ pub struct VecMixin;
 #[derive(Default, Debug, PartialEq, Clone)]
 pub struct PointMixin;
 
+/// Colour mixin
+#[derive(Default, Debug, PartialEq, Clone)]
+pub struct ColourMixin;
+
 /// Vector type
 pub type Vec3 = Triple<VecMixin>;
 
 /// Point tyoe
 pub type Point3 = Triple<PointMixin>;
+
+/// Colour type
+pub type Colour = Triple<ColourMixin>;
 
 /// Common methods
 impl<Mixin> Triple<Mixin> {
@@ -181,6 +188,35 @@ impl Point3 {
     }
 }
 
+/// Methods for colours
+impl Colour {
+    pub fn to_rgb(&self) -> (u8, u8, u8) {
+        // Translate the [0,1] component values to the byte range [0,255].
+        let rbyte = (256.0 * self.x()).clamp(0.0, 255.0) as u8;
+        let gbyte = (256.0 * self.y()).clamp(0.0, 255.0) as u8;
+        let bbyte = (256.0 * self.z()).clamp(0.0, 255.0) as u8;
+
+        (rbyte, gbyte, bbyte)
+    }
+
+    pub fn to_rgb_gamma(&self) -> (u8, u8, u8) {
+        // Translate the [0,1] component values to the byte range [0,255].
+        let rbyte = (256.0 * Self::linear_to_gamma(self.x())).clamp(0.0, 255.0) as u8;
+        let gbyte = (256.0 * Self::linear_to_gamma(self.y())).clamp(0.0, 255.0) as u8;
+        let bbyte = (256.0 * Self::linear_to_gamma(self.z())).clamp(0.0, 255.0) as u8;
+
+        (rbyte, gbyte, bbyte)
+    }
+
+    fn linear_to_gamma(linear_component: f64) -> f64 {
+        if linear_component > 0.0 {
+            linear_component.sqrt()
+        } else {
+            0.0
+        }
+    }
+}
+
 // -- Common Operator implementations --
 
 // Indexing
@@ -225,13 +261,6 @@ impl_op_ex!(*= |a: &mut Vec3, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b; }
 impl_op_ex!(/ |a: &Vec3, b: f64| -> Vec3 { a * (1f64 / b) } );
 impl_op_ex!(/= |a: &mut Vec3, b: f64| { *a *= 1f64 / b });
 
-// Summing
-impl Sum for Vec3 {
-    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.reduce(|acc, i| acc + i).unwrap_or_else(Vec3::default)
-    }
-}
-
 // -- Point Operator implementations
 
 // Addition
@@ -261,6 +290,47 @@ impl_op_ex!(*= |a: &mut Point3, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b;
 // Division
 impl_op_ex!(/ |a: &Point3, b: f64| -> Point3 { a * (1f64 / b) } );
 impl_op_ex!(/= |a: &mut Point3, b: f64| { *a *= 1f64 / b });
+
+// -- Colour Operator implementations
+
+// Addition
+impl_op_ex!(+ |a: &Colour, b: &Colour| -> Colour { Colour::new(a.e[0] + b.e[0], a.e[1] + b.e[1], a.e[2] + b.e[2]) });
+impl_op_ex!(+= |a: &mut Colour, b: &Colour| { a.e[0] += b.e[0]; a.e[1] += b.e[1]; a.e[2] += b.e[2]; });
+
+impl_op_ex_commutative!(+ |a: &Colour, b: &Vec3| -> Colour { Colour::new(a.e[0] + b.e[0], a.e[1] + b.e[1], a.e[2] + b.e[2]) });
+impl_op_ex!(+= |a: &mut Colour, b: &Vec3| { a.e[0] += b.e[0]; a.e[1] += b.e[1]; a.e[2] += b.e[2]; });
+
+// Subtraction
+impl_op_ex!(-|a: &Colour, b: &Vec3| -> Colour {
+    Colour::new(a.e[0] - b.e[0], a.e[1] - b.e[1], a.e[2] - b.e[2])
+});
+impl_op_ex!(-= |a: &mut Colour, b: &Vec3| { a.e[0] -= b.e[0]; a.e[1] -= b.e[1]; a.e[2] -= b.e[2]; });
+
+// Multiplication
+impl_op_ex_commutative!(*|a: &Colour, b: f64| -> Colour {
+    Colour::new(a.e[0] * b, a.e[1] * b, a.e[2] * b)
+});
+impl_op_ex!(*|a: &Colour, b: &Colour| -> Colour {
+    Colour::new(a.e[0] * b.e[0], a.e[1] * b.e[1], a.e[2] * b.e[2])
+});
+impl_op_ex!(*= |a: &mut Colour, b: &Colour| {
+    a.e[0] *= b.e[0];
+    a.e[1] *= b.e[1];
+    a.e[2] *= b.e[2];
+});
+impl_op_ex!(*= |a: &mut Colour, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b; });
+
+// Division
+impl_op_ex!(/ |a: &Colour, b: f64| -> Colour { a * (1f64 / b) } );
+impl_op_ex!(/= |a: &mut Colour, b: f64| { *a *= 1f64 / b });
+
+// Summing
+impl Sum for Colour {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.reduce(|acc, i| acc + i)
+            .unwrap_or_else(Colour::default)
+    }
+}
 
 #[cfg(test)]
 mod tests {

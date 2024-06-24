@@ -1,6 +1,10 @@
 use rand::rngs::ThreadRng;
 
-use crate::{colour::Colour, hits::hit::Hit, ray::Ray, vec3::Vec3};
+use crate::{
+    hits::hit::Hit,
+    ray::Ray,
+    triple::{Colour, Vec3},
+};
 
 use super::material::{Material, Scattered};
 

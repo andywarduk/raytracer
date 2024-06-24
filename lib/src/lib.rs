@@ -1,6 +1,5 @@
 pub mod ambient;
 pub mod camera;
-pub mod colour;
 pub mod hits;
 pub mod materials;
 pub mod perlin;
@@ -8,4 +7,4 @@ pub mod ray;
 pub mod shapes;
 pub mod textures;
 pub mod transforms;
-pub mod vec3;
+pub mod triple;

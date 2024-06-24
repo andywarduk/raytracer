@@ -1,4 +1,4 @@
-use crate::{colour::Colour, vec3::Point3};
+use crate::triple::{Colour, Point3};
 
 use super::texture::Texture;
 

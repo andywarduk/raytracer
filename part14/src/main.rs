@@ -1,24 +1,18 @@
 use std::path::Path;
 
 use rand::{thread_rng, Rng};
-use raytracer_lib::ambient::ambient_light::AmbientLight;
-use raytracer_lib::camera::Camera;
-use raytracer_lib::colour::Colour;
-use raytracer_lib::hits::bvh::BvhNode;
-use raytracer_lib::hits::hittable_list::HittableList;
-use raytracer_lib::materials::dielectric::Dielectric;
-use raytracer_lib::materials::diffuse_light::DiffuseLight;
-use raytracer_lib::materials::lambertian::Lambertian;
-use raytracer_lib::materials::metal::Metal;
-use raytracer_lib::shapes::boxcomp::BoxComp;
-use raytracer_lib::shapes::quad::Quad;
-use raytracer_lib::shapes::sphere::Sphere;
-use raytracer_lib::textures::image::Image;
-use raytracer_lib::textures::marble::Marble;
-use raytracer_lib::transforms::constant_medium::ConstantMedium;
-use raytracer_lib::transforms::rotate_y::RotateY;
-use raytracer_lib::transforms::translate::Translate;
-use raytracer_lib::vec3::{Point3, Vec3};
+use raytracer_lib::{
+    ambient::ambient_light::AmbientLight,
+    camera::Camera,
+    hits::{bvh::BvhNode, hittable_list::HittableList},
+    materials::{
+        dielectric::Dielectric, diffuse_light::DiffuseLight, lambertian::Lambertian, metal::Metal,
+    },
+    shapes::{boxcomp::BoxComp, quad::Quad, sphere::Sphere},
+    textures::{image::Image, marble::Marble},
+    transforms::{constant_medium::ConstantMedium, rotate_y::RotateY, translate::Translate},
+    triple::{Colour, Point3, Vec3},
+};
 
 fn main() {
     let mut rng = thread_rng();
@@ -176,7 +170,7 @@ fn main() {
 
     cam.set_time_span(1.0);
 
-    cam.render(
+    cam.render_to_png(
         &bvh_world,
         &AmbientLight::new(Colour::default()),
         Path::new("part14.png"),

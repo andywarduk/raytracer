@@ -7,7 +7,7 @@ use crate::{
         hittable::{Hittable, HittableRef},
     },
     ray::Ray,
-    vec3::Vec3,
+    triple::Vec3,
 };
 
 #[derive(Debug)]
