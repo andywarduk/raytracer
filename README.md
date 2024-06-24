@@ -1,3 +1,8 @@
-Ray Tracing: The Next Week in Rust
+# Ray Tracing
 
-From [_Ray Tracing: The Next Week_](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
+Ray tracing in Rust using the following guides:
+
+[_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+[_Ray Tracing: The Next Week_](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
+
+By Peter Shirley, Trevor David Black, Steve Hollasch

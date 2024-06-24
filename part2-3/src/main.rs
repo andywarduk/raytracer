@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    render(&cam, Path::new("part3-1.png"))?;
+    render(&cam, Path::new("part2-3-1.png"))?;
 
     // Render
     cam.set_view(
@@ -51,7 +51,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    render(&cam, Path::new("part3-2.png"))?;
+    render(&cam, Path::new("part2-3-2.png"))?;
 
     // Render
     cam.set_view(
@@ -60,7 +60,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    render(&cam, Path::new("part3-2.png"))?;
+    render(&cam, Path::new("part2-3-2.png"))?;
 
     // Render
     cam.set_view(
@@ -69,7 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    render(&cam, Path::new("part3-3.png"))?;
+    render(&cam, Path::new("part2-3-3.png"))?;
 
     // Render
     cam.set_view(
@@ -78,7 +78,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Vec3::new(1.0, 0.0, 0.0),
     );
 
-    render(&cam, Path::new("part3-4.png"))?;
+    render(&cam, Path::new("part2-3-4.png"))?;
 
     // Render
     cam.set_view(
@@ -87,7 +87,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Vec3::new(-1.0, 0.0, 0.0),
     );
 
-    render(&cam, Path::new("part3-5.png"))?;
+    render(&cam, Path::new("part2-3-5.png"))?;
 
     Ok(())
 }
