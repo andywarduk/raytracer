@@ -20,8 +20,6 @@ impl Image {
             Self::find_file(file).expect("Unable to find file")
         };
 
-        eprintln!("Loading image {}", file_path.display());
-
         let img = ImageReader::open(file_path).expect("Unable to open image");
         let dynimg = img.decode().expect("Unable to decode image");
         let width = dynimg.width();

@@ -1,9 +1,11 @@
-use std::path::Path;
+use std::{error::Error, path::Path};
+
+use binlib::{bin_main, Renderer};
 
 use rand::{thread_rng, Rng};
 use raytracer_lib::{
     ambient::ambient_light::AmbientLight,
-    camera::Camera,
+    camera::{CamProgressCb, Camera},
     hits::{bvh::BvhNode, hittable_list::HittableList},
     materials::{
         dielectric::Dielectric, diffuse_light::DiffuseLight, lambertian::Lambertian, metal::Metal,
@@ -14,7 +16,40 @@ use raytracer_lib::{
     triple::{Colour, Point3, Vec3},
 };
 
-fn main() {
+struct State<'a> {
+    // World
+    world: HittableList<'a>,
+
+    // Ambience
+    ambience: AmbientLight,
+}
+
+impl<'a> Renderer for State<'a> {
+    fn default_camera(&self) -> Camera {
+        // Camera
+        let mut cam = Camera::new(400, 1.0, 250, 20);
+
+        cam.set_vfov(40.0);
+
+        // Render
+        cam.set_view(
+            Point3::new(478.0, 278.0, -600.0),
+            Point3::new(278.0, 278.0, 0.0),
+            Vec3::new(0.0, 1.0, 0.0),
+        );
+
+        cam.set_time_span(1.0);
+
+        cam
+    }
+
+    fn render(&self, cam: &Camera, progresscb: CamProgressCb) -> Vec<Vec<Colour>> {
+        // Render
+        cam.render(&self.world, &self.ambience, progresscb)
+    }
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = thread_rng();
 
     // -- Textures --
@@ -156,23 +191,9 @@ fn main() {
     let mut bvh_world = HittableList::new();
     bvh_world.add(BvhNode::new(world.into_objects()));
 
-    // -- Camera --
-    let mut cam = Camera::new(400, 1.0, 250, 20);
-
-    cam.set_vfov(40.0);
-
-    // Render
-    cam.set_view(
-        Point3::new(478.0, 278.0, -600.0),
-        Point3::new(278.0, 278.0, 0.0),
-        Vec3::new(0.0, 1.0, 0.0),
-    );
-
-    cam.set_time_span(1.0);
-
-    cam.render_to_png(
-        &bvh_world,
-        &AmbientLight::new(Colour::default()),
-        Path::new("part14.png"),
-    );
+    // Call common bin main
+    bin_main(State {
+        world: bvh_world,
+        ambience: AmbientLight::new(Colour::default()),
+    })
 }

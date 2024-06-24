@@ -1,5 +1,6 @@
-use std::path::Path;
+use std::{error::Error, path::Path};
 
+use binlib::save_image;
 use raytracer_lib::{
     ambient::ambient_light::AmbientLight,
     camera::Camera,
@@ -10,7 +11,7 @@ use raytracer_lib::{
     triple::{Colour, Point3, Vec3},
 };
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     // Textures
     let earth_texture = Image::new_from_file(Path::new("earthmap.jpg"));
     let earth_surface = Lambertian::new_with_texture(&earth_texture);
@@ -30,6 +31,10 @@ fn main() {
 
     cam.set_vfov(20.0);
 
+    let render = |cam: &Camera, output: &Path| -> Result<(), Box<dyn Error>> {
+        save_image(cam.render(&world, &ambiance, None), output)
+    };
+
     // Render
     cam.set_view(
         Point3::new(0.0, 0.0, 12.0),
@@ -37,7 +42,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render_to_png(&world, &ambiance, Path::new("part3-1.png"));
+    render(&cam, Path::new("part3-1.png"))?;
 
     // Render
     cam.set_view(
@@ -46,7 +51,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render_to_png(&world, &ambiance, Path::new("part3-2.png"));
+    render(&cam, Path::new("part3-2.png"))?;
 
     // Render
     cam.set_view(
@@ -55,7 +60,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render_to_png(&world, &ambiance, Path::new("part3-3.png"));
+    render(&cam, Path::new("part3-2.png"))?;
 
     // Render
     cam.set_view(
@@ -64,7 +69,7 @@ fn main() {
         Vec3::new(0.0, 1.0, 0.0),
     );
 
-    cam.render_to_png(&world, &ambiance, Path::new("part3-4.png"));
+    render(&cam, Path::new("part3-3.png"))?;
 
     // Render
     cam.set_view(
@@ -73,7 +78,7 @@ fn main() {
         Vec3::new(1.0, 0.0, 0.0),
     );
 
-    cam.render_to_png(&world, &ambiance, Path::new("part3-5.png"));
+    render(&cam, Path::new("part3-4.png"))?;
 
     // Render
     cam.set_view(
@@ -82,5 +87,7 @@ fn main() {
         Vec3::new(-1.0, 0.0, 0.0),
     );
 
-    cam.render_to_png(&world, &ambiance, Path::new("part3-6.png"));
+    render(&cam, Path::new("part3-5.png"))?;
+
+    Ok(())
 }

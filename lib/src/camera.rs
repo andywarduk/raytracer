@@ -1,7 +1,4 @@
-use std::{
-    path::Path,
-    sync::atomic::{AtomicU64, Ordering},
-};
+use std::sync::atomic::{AtomicU64, Ordering};
 
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 use rayon::prelude::*;
@@ -15,6 +12,8 @@ use crate::{
     ray::Ray,
     triple::{Colour, Point3, Vec3},
 };
+
+pub type CamProgressCb = Option<fn(l: u64, h: u64)>;
 
 #[derive(Debug, Default)]
 pub struct Camera {
@@ -71,8 +70,6 @@ impl Camera {
         // Calculate the image height
         let image_height = (image_width as f64 / aspect_ratio) as u64;
 
-        let pixel_samples_scale = 1.0 / samples_per_pixel as f64;
-
         // Build result
         let mut result = Self {
             vup: Vec3::new(0.0, 1.0, 0.0),
@@ -84,7 +81,6 @@ impl Camera {
             image_width,
             image_height,
             samples_per_pixel,
-            pixel_samples_scale,
             max_depth,
 
             ..Default::default()
@@ -127,20 +123,35 @@ impl Camera {
         self.time_span = time_span;
     }
 
-    /// Renders the scene to a PNG
-    pub fn render(&self, world: &HittableList, ambience: &dyn Ambience) -> Vec<Vec<Colour>> {
+    /// Sets the samples per pixel
+    pub fn set_samples_per_pixel(&mut self, samples_per_pixel: u64) {
+        self.samples_per_pixel = samples_per_pixel;
+
+        self.recalculate();
+    }
+
+    /// Gets the image width
+    pub fn dimensions(&self) -> (u64, u64) {
+        (self.image_width, self.image_height)
+    }
+
+    /// Renders the scene
+    pub fn render(
+        &self,
+        world: &HittableList,
+        ambience: &dyn Ambience,
+        progresscb: CamProgressCb,
+    ) -> Vec<Vec<Colour>> {
         let left = AtomicU64::new(1);
 
         // For each scan line...
         let lines = (0..self.image_height)
             .into_par_iter()
             .map(|j| {
-                // Print progress
-                eprint!(
-                    "\r{} / {}  ",
-                    left.fetch_add(1, Ordering::Relaxed),
-                    self.image_height
-                );
+                // Report progress
+                if let Some(progresscb) = progresscb {
+                    progresscb(left.fetch_add(1, Ordering::Relaxed), self.image_height);
+                }
 
                 // Get random number generator
                 let mut rng = thread_rng();
@@ -157,46 +168,20 @@ impl Camera {
                                 // Get the ray's colour
                                 Self::ray_colour(&mut rng, &ray, world, ambience, self.max_depth)
                             })
-                            .sum()
+                            .sum::<Colour>()
+                            * self.pixel_samples_scale
                     })
                     .collect::<Vec<Colour>>()
             })
             .collect::<Vec<_>>();
 
-        // Finished
-        eprintln!("\nDone");
-
         lines
-    }
-
-    /// Renders the scene to a PNG
-    pub fn render_to_png(&self, world: &HittableList, ambience: &dyn Ambience, output: &Path) {
-        let lines = self.render(world, ambience);
-
-        // Create image buffer
-        let mut imgbuf = image::ImageBuffer::new(self.image_width as u32, self.image_height as u32);
-
-        // For each line...
-        (0..lines.len()).for_each(|j| {
-            let line = &lines[j];
-
-            // For each column...
-            (0..line.len()).for_each(|i| {
-                // Convert to RGB with gamma correction
-                let (r, g, b) = (self.pixel_samples_scale * &line[i]).to_rgb_gamma();
-
-                // Add to image data buffer
-                let pixel = imgbuf.get_pixel_mut(i as u32, j as u32);
-                *pixel = image::Rgb([r, g, b]);
-            });
-        });
-
-        // Save image
-        imgbuf.save(output).expect("Error saving image");
     }
 
     /// Recalculate camera parameters
     fn recalculate(&mut self) {
+        self.pixel_samples_scale = 1.0 / self.samples_per_pixel as f64;
+
         // Calculate viewport dimensions
         let theta = self.vfov.to_radians();
         let h = (theta / 2.0).tan();
