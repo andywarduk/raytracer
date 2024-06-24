@@ -388,6 +388,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "final1"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "rand",
+ "raytracer_lib",
+]
+
+[[package]]
 name = "flate2"
 version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -900,7 +909,87 @@ dependencies = [
 ]
 
 [[package]]
-name = "part1"
+name = "part1-1"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-10"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-2"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-3"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-4"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-5"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-6"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-7"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-8"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part1-9"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part2-1"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -909,7 +998,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part10"
+name = "part2-10"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -917,7 +1006,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part11"
+name = "part2-11"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -925,7 +1014,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part12"
+name = "part2-12"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -933,7 +1022,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part13"
+name = "part2-13"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -941,16 +1030,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part14"
-version = "0.1.0"
-dependencies = [
- "binlib",
- "rand",
- "raytracer_lib",
-]
-
-[[package]]
-name = "part2"
+name = "part2-14"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -959,7 +1039,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "part3"
+name = "part2-2"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "rand",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "part2-3"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -967,7 +1056,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part4"
+name = "part2-4"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -975,7 +1064,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part5"
+name = "part2-5"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -983,7 +1072,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part6"
+name = "part2-6"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -991,7 +1080,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part7"
+name = "part2-7"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -999,7 +1088,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part8"
+name = "part2-8"
 version = "0.1.0"
 dependencies = [
  "binlib",
@@ -1007,7 +1096,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "part9"
+name = "part2-9"
 version = "0.1.0"
 dependencies = [
  "binlib",

@@ -145,7 +145,7 @@ impl Camera {
         let left = AtomicU64::new(1);
 
         // For each scan line...
-        let lines = (0..self.image_height)
+        (0..self.image_height)
             .into_par_iter()
             .map(|j| {
                 // Report progress
@@ -173,9 +173,7 @@ impl Camera {
                     })
                     .collect::<Vec<Colour>>()
             })
-            .collect::<Vec<_>>();
-
-        lines
+            .collect::<Vec<_>>()
     }
 
     /// Recalculate camera parameters

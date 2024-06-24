@@ -57,7 +57,7 @@ fn render_to_image(cam: Camera, state: impl Renderer, file: &Path) -> Result<(),
 
     eprintln!("\nDone!");
 
-    save_image(image, &file)?;
+    save_image(image, file)?;
 
     Ok(())
 }
