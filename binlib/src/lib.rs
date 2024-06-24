@@ -25,11 +25,11 @@ struct Args {
     output: Option<PathBuf>,
 
     /// Image width
-    #[clap(short = 'w', long = "width")]
+    #[clap(short = 'x', long = "width")]
     width: Option<u16>,
 
     /// Image height
-    #[clap(short = 'h', long = "height")]
+    #[clap(short = 'y', long = "height")]
     height: Option<u16>,
 }
 
