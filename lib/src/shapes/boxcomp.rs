@@ -1,4 +1,4 @@
-use std::{ops::Range, sync::Arc};
+use std::ops::Range;
 
 use crate::{
     hits::aabb::Aabb,
@@ -13,13 +13,13 @@ use crate::{
 use super::quad::Quad;
 
 #[derive(Debug)]
-pub struct BoxComp {
-    sides: HittableList,
+pub struct BoxComp<'a> {
+    sides: HittableList<'a>,
 }
 
-impl BoxComp {
+impl<'a> BoxComp<'a> {
     /// Returns the 3D box (six sides) that contains the two opposite vertices a & b.
-    pub fn new(a: Point3, b: Point3, material: Arc<dyn Material>) -> Self {
+    pub fn new(a: Point3, b: Point3, material: &'a dyn Material) -> Self {
         let mut sides = HittableList::new();
 
         // Construct the two opposite vertices with the minimum and maximum coordinates.
@@ -34,31 +34,31 @@ impl BoxComp {
             Point3::new(min.x(), min.y(), max.z()),
             dx.clone(),
             dy.clone(),
-            material.clone(),
+            material,
         )); // front
         sides.add(Quad::new(
             Point3::new(max.x(), min.y(), max.z()),
             -(&dz),
             dy.clone(),
-            material.clone(),
+            material,
         )); // right
         sides.add(Quad::new(
             Point3::new(max.x(), min.y(), min.z()),
             -(&dx),
             dy.clone(),
-            material.clone(),
+            material,
         )); // back
         sides.add(Quad::new(
             Point3::new(min.x(), min.y(), min.z()),
             dz.clone(),
             dy,
-            material.clone(),
+            material,
         )); // left
         sides.add(Quad::new(
             Point3::new(min.x(), max.y(), max.z()),
             dx.clone(),
             -(&dz),
-            material.clone(),
+            material,
         )); // top
         sides.add(Quad::new(
             Point3::new(min.x(), min.y(), min.z()),
@@ -71,7 +71,7 @@ impl BoxComp {
     }
 }
 
-impl Hittable for BoxComp {
+impl<'a> Hittable<'a> for BoxComp<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         self.sides.hit(ray, t_range)
     }

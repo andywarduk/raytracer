@@ -1,5 +1,4 @@
 use std::path::Path;
-use std::sync::Arc;
 
 use raytracer_lib::ambient::ambient_light::AmbientLight;
 use raytracer_lib::camera::Camera;
@@ -14,27 +13,20 @@ use raytracer_lib::vec3::{Point3, Vec3};
 
 fn main() {
     // Materials
-    let pertext = Arc::new(Marble::new(4.0, 7, 2));
-    let difflight = Arc::new(DiffuseLight::new_with_colour(Colour::new(4.0, 4.0, 4.0)));
+    let pertext = Marble::new(4.0, 7, 2);
+    let difflight = DiffuseLight::new_with_colour(Colour::new(4.0, 4.0, 4.0));
+    let marble = Lambertian::new_with_texture(&pertext);
 
     // Objects
     let mut world = HittableList::new();
 
-    world.add(Sphere::new(
-        Point3::new(0.0, -1000.0, 0.0),
-        1000.0,
-        Arc::new(Lambertian::new_with_texture(pertext.clone())),
-    ));
-    world.add(Sphere::new(
-        Point3::new(0.0, 2.0, 0.0),
-        2.0,
-        Arc::new(Lambertian::new_with_texture(pertext)),
-    ));
+    world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, &marble));
+    world.add(Sphere::new(Point3::new(0.0, 2.0, 0.0), 2.0, &marble));
     world.add(Quad::new(
         Point3::new(3.0, 1.0, -2.0),
         Vec3::new(2.0, 0.0, 0.0),
         Vec3::new(0.0, 2.0, 0.0),
-        difflight,
+        &difflight,
     ));
 
     // Camera

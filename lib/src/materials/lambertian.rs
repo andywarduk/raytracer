@@ -1,33 +1,38 @@
-use std::sync::Arc;
-
 use rand::rngs::ThreadRng;
 
 use crate::{
     colour::Colour,
     hits::hit::Hit,
     ray::Ray,
-    textures::{solid::Solid, texture::Texture},
+    textures::{
+        solid::Solid,
+        texture::{TexRef, Texture},
+    },
     vec3::Vec3,
 };
 
 use super::material::{Material, Scattered};
 
 #[derive(Debug)]
-pub struct Lambertian {
-    texture: Arc<dyn Texture>,
+pub struct Lambertian<'a> {
+    texture: TexRef<'a>,
 }
 
-impl Lambertian {
+impl<'a> Lambertian<'a> {
     pub fn new_with_colour(albedo: Colour) -> Self {
-        Self::new_with_texture(Arc::new(Solid::new(albedo)))
+        Self::new_with_texref(TexRef::boxed(Solid::new(albedo)))
     }
 
-    pub fn new_with_texture(texture: Arc<dyn Texture>) -> Self {
+    pub fn new_with_texture(texture: &'a dyn Texture) -> Self {
+        Self::new_with_texref(TexRef::Borrow(texture))
+    }
+
+    pub fn new_with_texref(texture: TexRef<'a>) -> Self {
         Self { texture }
     }
 }
 
-impl Material for Lambertian {
+impl<'a> Material for Lambertian<'a> {
     fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
         let mut scatter_direction = &hit.normal + Vec3::new_random_unit_vector(rng);
 

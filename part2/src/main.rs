@@ -1,5 +1,4 @@
 use std::path::Path;
-use std::sync::Arc;
 
 use rand::{thread_rng, Rng};
 use raytracer_lib::ambient::gradient_light::GradientLight;
@@ -9,7 +8,7 @@ use raytracer_lib::hits::bvh::BvhNode;
 use raytracer_lib::hits::hittable_list::HittableList;
 use raytracer_lib::materials::dielectric::Dielectric;
 use raytracer_lib::materials::lambertian::Lambertian;
-use raytracer_lib::materials::material::Material;
+use raytracer_lib::materials::material::MatRef;
 use raytracer_lib::materials::metal::Metal;
 use raytracer_lib::shapes::sphere::Sphere;
 use raytracer_lib::textures::checker::Checker;
@@ -18,19 +17,25 @@ use raytracer_lib::vec3::{Point3, Vec3};
 fn main() {
     let mut rng = thread_rng();
 
-    let mut world = HittableList::new();
+    // -- Materials --
 
-    let checker = Arc::new(Checker::new_with_colours(
-        0.32,
-        Colour::new(0.2, 0.3, 0.1),
-        Colour::new(0.9, 0.9, 0.9),
-    ));
-    let ground_material = Arc::new(Lambertian::new_with_texture(checker));
+    let checker =
+        Checker::new_with_colours(0.32, Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9));
+
+    let ground_material = Lambertian::new_with_texture(&checker);
+
+    let material1 = Dielectric::new(1.5);
+    let material2 = Lambertian::new_with_colour(Colour::new(0.4, 0.2, 0.1));
+    let material3 = Metal::new(Colour::new(0.7, 0.6, 0.5), 0.0);
+
+    // -- Objects --
+
+    let mut world = HittableList::new();
 
     world.add(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
-        ground_material,
+        &ground_material,
     ));
 
     let avoid: Point3 = Point3::new(4.0, 0.2, 0.0);
@@ -48,34 +53,34 @@ fn main() {
             let mut center1 = center0.clone();
 
             if avoid.vec_to(&center0).length() > 0.9 {
-                let sphere_material: Arc<dyn Material> = if choose_mat < 0.8 {
+                let sphere_material: MatRef = if choose_mat < 0.8 {
                     // diffuse
-                    let albedo = Colour::new_random(&mut rng) * Colour::new_random(&mut rng);
                     center1 += Vec3::new(0.0, rng.gen_range(0.0..0.5), 0.0);
-                    Arc::new(Lambertian::new_with_colour(albedo))
+                    let albedo = Colour::new_random(&mut rng) * Colour::new_random(&mut rng);
+                    MatRef::boxed(Lambertian::new_with_colour(albedo))
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Colour::new_random_clamped(&mut rng, 0.5, 1.0);
                     let fuzz = rng.gen_range(0.0..0.5);
-                    Arc::new(Metal::new(albedo, fuzz))
+                    MatRef::boxed(Metal::new(albedo, fuzz))
                 } else {
                     // glass
-                    Arc::new(Dielectric::new(1.5))
+                    MatRef::boxed(Dielectric::new(1.5))
                 };
 
-                world.add(Sphere::new_moving(center0, center1, 0.2, sphere_material));
+                world.add(Sphere::new_moving_with_matref(
+                    center0,
+                    center1,
+                    0.2,
+                    sphere_material,
+                ));
             }
         }
     }
 
-    let material2 = Arc::new(Lambertian::new_with_colour(Colour::new(0.4, 0.2, 0.1)));
-    world.add(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, material2));
-
-    let material1 = Arc::new(Dielectric::new(1.5));
-    world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, material1));
-
-    let material3 = Arc::new(Metal::new(Colour::new(0.7, 0.6, 0.5), 0.0));
-    world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, material3));
+    world.add(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, &material2));
+    world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, &material1));
+    world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, &material3));
 
     // Create BVH world view
     let mut bvh_world = HittableList::new();

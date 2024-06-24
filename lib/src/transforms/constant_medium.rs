@@ -1,4 +1,4 @@
-use std::{ops::Range, sync::Arc};
+use std::ops::Range;
 
 use rand::{thread_rng, Rng};
 
@@ -7,46 +7,46 @@ use crate::{
     hits::{
         aabb::Aabb,
         hit::Hit,
-        hittable::{Hittable, T_MIN},
+        hittable::{Hittable, HittableRef, T_MIN},
     },
-    materials::{isotropic::Isotropic, material::Material},
+    materials::{isotropic::Isotropic, material::MatRef},
     ray::Ray,
     textures::texture::Texture,
     vec3::Vec3,
 };
 
 #[derive(Debug)]
-pub struct ConstantMedium {
-    boundary: Arc<dyn Hittable>,
+pub struct ConstantMedium<'a> {
+    boundary: HittableRef<'a>,
     neg_inv_density: f64,
-    phase_funtion: Arc<dyn Material>,
+    phase_funtion: MatRef<'a>,
 }
 
-impl ConstantMedium {
-    pub fn new_with_colour(boundary: Arc<dyn Hittable>, density: f64, colour: Colour) -> Self {
+impl<'a> ConstantMedium<'a> {
+    pub fn new_with_colour(boundary: impl Hittable<'a> + 'a, density: f64, colour: Colour) -> Self {
         Self::new_with_phase_function(
-            boundary,
+            HittableRef::boxed(boundary),
             density,
-            Arc::new(Isotropic::new_with_colour(colour)),
+            MatRef::boxed(Isotropic::new_with_colour(colour)),
         )
     }
 
     pub fn new_with_texture(
-        boundary: Arc<dyn Hittable>,
+        boundary: impl Hittable<'a> + 'a,
         density: f64,
-        texture: Arc<dyn Texture>,
+        texture: &'a dyn Texture,
     ) -> Self {
         Self::new_with_phase_function(
-            boundary,
+            HittableRef::boxed(boundary),
             density,
-            Arc::new(Isotropic::new_with_texture(texture)),
+            MatRef::boxed(Isotropic::new_with_texture(texture)),
         )
     }
 
-    pub fn new_with_phase_function(
-        boundary: Arc<dyn Hittable>,
+    fn new_with_phase_function(
+        boundary: HittableRef<'a>,
         density: f64,
-        phase_funtion: Arc<dyn Material>,
+        phase_funtion: MatRef<'a>,
     ) -> Self {
         Self {
             boundary,
@@ -56,7 +56,7 @@ impl ConstantMedium {
     }
 }
 
-impl Hittable for ConstantMedium {
+impl<'a> Hittable<'a> for ConstantMedium<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         // Does this ray enter the boundary?
         let mut hit1 = match self.boundary.hit(ray, f64::MIN..f64::MAX) {
@@ -105,7 +105,7 @@ impl Hittable for ConstantMedium {
             0.0,
             ray,
             &Vec3::new(1.0, 0.0, 0.0),
-            self.phase_funtion.clone(),
+            self.phase_funtion.get_ref(),
         ))
     }
 

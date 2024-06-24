@@ -1,34 +1,39 @@
-use std::sync::Arc;
-
 use crate::{colour::Colour, vec3::Point3};
 
-use super::{solid::Solid, texture::Texture};
+use super::{
+    solid::Solid,
+    texture::{TexRef, Texture},
+};
 
 #[derive(Debug)]
-pub struct Checker {
+pub struct Checker<'a> {
     inv_scale: f64,
-    even: Arc<dyn Texture>,
-    odd: Arc<dyn Texture>,
+    even: TexRef<'a>,
+    odd: TexRef<'a>,
 }
 
-impl Checker {
-    pub fn new_with_textures(scale: f64, even: Arc<dyn Texture>, odd: Arc<dyn Texture>) -> Self {
+impl<'a> Checker<'a> {
+    pub fn new_with_textures(scale: f64, even: &'a dyn Texture, odd: &'a dyn Texture) -> Self {
+        Self::new_with_texref(scale, TexRef::Borrow(even), TexRef::Borrow(odd))
+    }
+
+    pub fn new_with_colours(scale: f64, even: Colour, odd: Colour) -> Self {
+        let even = TexRef::boxed(Solid::new(even));
+        let odd = TexRef::boxed(Solid::new(odd));
+
+        Self::new_with_texref(scale, even, odd)
+    }
+
+    pub fn new_with_texref(scale: f64, even: TexRef<'a>, odd: TexRef<'a>) -> Self {
         Self {
             inv_scale: 1.0 / scale,
             even,
             odd,
         }
     }
-
-    pub fn new_with_colours(scale: f64, even: Colour, odd: Colour) -> Self {
-        let even = Arc::new(Solid::new(even));
-        let odd = Arc::new(Solid::new(odd));
-
-        Self::new_with_textures(scale, even, odd)
-    }
 }
 
-impl Texture for Checker {
+impl<'a> Texture for Checker<'a> {
     fn value(&self, u: f64, v: f64, p: &Point3) -> Colour {
         let x = (self.inv_scale * p.x()).floor() as i64;
         let y = (self.inv_scale * p.y()).floor() as i64;

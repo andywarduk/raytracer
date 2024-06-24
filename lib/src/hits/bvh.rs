@@ -2,17 +2,17 @@ use std::{cmp::Ordering, ops::Range};
 
 use crate::{hits::aabb::Aabb, hits::hit::Hit, hits::hittable::Hittable, ray::Ray};
 
-use super::hittable::T_MIN;
+use super::hittable::{HittableRef, T_MIN};
 
 #[derive(Debug)]
-pub struct BvhNode {
+pub struct BvhNode<'a> {
     bbox: Aabb,
-    left: Box<dyn Hittable>,
-    right: Option<Box<dyn Hittable>>,
+    left: HittableRef<'a>,
+    right: Option<HittableRef<'a>>,
 }
 
-impl BvhNode {
-    pub fn new(mut objects: Vec<Box<dyn Hittable>>) -> Self {
+impl<'a> BvhNode<'a> {
+    pub fn new(mut objects: Vec<HittableRef<'a>>) -> Self {
         // Create bounding box for the object array
         let bbox = objects
             .iter()
@@ -53,8 +53,8 @@ impl BvhNode {
                 let split = objects.split_off(mid);
 
                 (
-                    Box::new(BvhNode::new(objects)) as Box<dyn Hittable>,
-                    Some(Box::new(BvhNode::new(split)) as Box<dyn Hittable>),
+                    HittableRef::boxed(BvhNode::new(objects)),
+                    Some(HittableRef::boxed(BvhNode::new(split))),
                 )
             }
         };
@@ -62,7 +62,7 @@ impl BvhNode {
         Self { bbox, left, right }
     }
 
-    fn box_compare<'a>(a: &'a dyn Hittable, b: &'a dyn Hittable, axis: usize) -> Ordering {
+    fn box_compare(a: &dyn Hittable<'a>, b: &dyn Hittable<'a>, axis: usize) -> Ordering {
         let a_axis_interval = &a.bounding_box().ranges[axis];
         let b_axis_interval = &b.bounding_box().ranges[axis];
 
@@ -73,7 +73,7 @@ impl BvhNode {
     }
 }
 
-impl Hittable for BvhNode {
+impl<'a> Hittable<'a> for BvhNode<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         // Any hit at all?
         if !self.bbox.hit(ray, &t_range) {

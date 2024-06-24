@@ -1,5 +1,4 @@
 use std::path::Path;
-use std::sync::Arc;
 
 use raytracer_lib::ambient::gradient_light::GradientLight;
 use raytracer_lib::camera::Camera;
@@ -12,21 +11,14 @@ use raytracer_lib::vec3::{Point3, Vec3};
 
 fn main() {
     // Textures
-    let pertext = Arc::new(Marble::new(4.0, 7, 2));
+    let pertext = Marble::new(4.0, 7, 2);
+    let marble = Lambertian::new_with_texture(&pertext);
 
     // Objects
     let mut world = HittableList::new();
 
-    world.add(Sphere::new(
-        Point3::new(0.0, -1000.0, 0.0),
-        1000.0,
-        Arc::new(Lambertian::new_with_texture(pertext.clone())),
-    ));
-    world.add(Sphere::new(
-        Point3::new(0.0, 2.0, 0.0),
-        2.0,
-        Arc::new(Lambertian::new_with_texture(pertext.clone())),
-    ));
+    world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, &marble));
+    world.add(Sphere::new(Point3::new(0.0, 2.0, 0.0), 2.0, &marble));
 
     // Camera
     let mut cam = Camera::new(400, 16.0 / 9.0, 100, 50);

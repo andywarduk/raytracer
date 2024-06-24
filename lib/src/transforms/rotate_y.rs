@@ -1,21 +1,25 @@
-use std::{ops::Range, sync::Arc};
+use std::ops::Range;
 
 use crate::{
-    hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
+    hits::{
+        aabb::Aabb,
+        hit::Hit,
+        hittable::{Hittable, HittableRef},
+    },
     ray::Ray,
     vec3::{Point3, Vec3},
 };
 
 #[derive(Debug)]
-pub struct RotateY {
+pub struct RotateY<'a> {
     cos_theta: f64,
     sin_theta: f64,
-    object: Arc<dyn Hittable>,
+    object: HittableRef<'a>,
     bbox: Aabb,
 }
 
-impl RotateY {
-    pub fn new(angle: f64, object: Arc<dyn Hittable>) -> Self {
+impl<'a> RotateY<'a> {
+    pub fn new(angle: f64, object: impl Hittable<'a> + 'a) -> Self {
         let radians = angle.to_radians();
         let sin_theta = radians.sin();
         let cos_theta = radians.cos();
@@ -55,13 +59,13 @@ impl RotateY {
         Self {
             cos_theta,
             sin_theta,
-            object,
+            object: HittableRef::boxed(object),
             bbox,
         }
     }
 }
 
-impl Hittable for RotateY {
+impl<'a> Hittable<'a> for RotateY<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         // Change the ray from world space to object space
         let mut origin = ray.origin().clone();

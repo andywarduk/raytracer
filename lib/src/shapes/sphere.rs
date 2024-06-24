@@ -1,16 +1,14 @@
-use std::{f64::consts::PI, ops::Range, sync::Arc};
+use std::{f64::consts::PI, ops::Range};
 
 use crate::{
-    hits::aabb::Aabb,
-    hits::hit::Hit,
-    hits::hittable::Hittable,
-    materials::material::Material,
+    hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
+    materials::material::{MatRef, Material},
     ray::Ray,
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug, Clone)]
-pub struct Sphere {
+#[derive(Debug)]
+pub struct Sphere<'a> {
     /// Centre at time 0
     center0: Point3,
     /// Is moving?
@@ -20,21 +18,34 @@ pub struct Sphere {
     /// Radius
     radius: f64,
     /// Material to use
-    material: Arc<dyn Material>,
+    material: MatRef<'a>,
     /// Bounding box
     bbox: Aabb,
 }
 
-impl Sphere {
-    pub fn new(center: Point3, radius: f64, material: Arc<dyn Material>) -> Self {
+impl<'a> Sphere<'a> {
+    pub fn new(center: Point3, radius: f64, material: &'a dyn Material) -> Self {
         Self::new_moving(center.clone(), center, radius, material)
+    }
+
+    pub fn new_with_matref(center: Point3, radius: f64, matref: MatRef<'a>) -> Self {
+        Self::new_moving_with_matref(center.clone(), center, radius, matref)
     }
 
     pub fn new_moving(
         center0: Point3,
         center1: Point3,
         radius: f64,
-        material: Arc<dyn Material>,
+        material: &'a dyn Material,
+    ) -> Self {
+        Self::new_moving_with_matref(center0, center1, radius, MatRef::Borrow(material))
+    }
+
+    pub fn new_moving_with_matref(
+        center0: Point3,
+        center1: Point3,
+        radius: f64,
+        material: MatRef<'a>,
     ) -> Self {
         let movement = center0.vec_to(&center1);
         let moving = movement.length() > 0.0;
@@ -85,7 +96,7 @@ impl Sphere {
     }
 }
 
-impl Hittable for Sphere {
+impl<'a> Hittable<'a> for Sphere<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         let center = self.position_at_time(ray.time());
         let oc = ray.origin().vec_to(&center);
@@ -124,7 +135,7 @@ impl Hittable for Sphere {
             v,
             ray,
             &outward_normal,
-            self.material.clone(),
+            self.material.get_ref(),
         ))
     }
 

@@ -1,31 +1,35 @@
-use std::{ops::Range, sync::Arc};
+use std::ops::Range;
 
 use crate::{
-    hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
+    hits::{
+        aabb::Aabb,
+        hit::Hit,
+        hittable::{Hittable, HittableRef},
+    },
     ray::Ray,
     vec3::Vec3,
 };
 
 #[derive(Debug)]
-pub struct Translate {
+pub struct Translate<'a> {
     offset: Vec3,
-    object: Arc<dyn Hittable>,
+    object: HittableRef<'a>,
     bbox: Aabb,
 }
 
-impl Translate {
-    pub fn new(offset: Vec3, object: Arc<dyn Hittable>) -> Self {
+impl<'a> Translate<'a> {
+    pub fn new(offset: Vec3, object: impl Hittable<'a> + 'a) -> Self {
         let bbox = object.bounding_box() + &offset;
 
         Self {
             offset,
-            object,
+            object: HittableRef::boxed(object),
             bbox,
         }
     }
 }
 
-impl Hittable for Translate {
+impl<'a> Hittable<'a> for Translate<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         // Move the ray backwards by the offset
         let offset_ray = Ray::new(

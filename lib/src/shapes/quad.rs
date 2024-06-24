@@ -1,16 +1,14 @@
-use std::{ops::Range, sync::Arc};
+use std::ops::Range;
 
 use crate::{
-    hits::aabb::Aabb,
-    hits::hit::Hit,
-    hits::hittable::Hittable,
-    materials::material::Material,
+    hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
+    materials::material::{MatRef, Material},
     ray::Ray,
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug, Clone)]
-pub struct Quad {
+#[derive(Debug)]
+pub struct Quad<'a> {
     /// Anchor point at time 0
     p: Point3,
     /// Side 1 vector
@@ -30,13 +28,13 @@ pub struct Quad {
     /// normal movement per time unit
     normal_movement: Vec3,
     /// Material to use
-    material: Arc<dyn Material>,
+    material: MatRef<'a>,
     /// Bounding box
     bbox: Aabb,
 }
 
-impl Quad {
-    pub fn new(p: Point3, u: Vec3, v: Vec3, material: Arc<dyn Material>) -> Self {
+impl<'a> Quad<'a> {
+    pub fn new(p: Point3, u: Vec3, v: Vec3, material: &'a dyn Material) -> Self {
         Self::new_moving(p.clone(), p, u.clone(), u, v.clone(), v, material)
     }
 
@@ -47,7 +45,7 @@ impl Quad {
         u1: Vec3,
         v0: Vec3,
         v1: Vec3,
-        material: Arc<dyn Material>,
+        material: &'a dyn Material,
     ) -> Self {
         // Calculate movement
         let p_movement = p0.vec_to(&p1);
@@ -83,7 +81,7 @@ impl Quad {
             u_movement,
             v_movement,
             normal_movement: n_movement,
-            material,
+            material: MatRef::Borrow(material),
             bbox,
         }
     }
@@ -114,7 +112,7 @@ impl Quad {
     }
 }
 
-impl Hittable for Quad {
+impl<'a> Hittable<'a> for Quad<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         let (p, u, v, normal) = self.position_at_time(ray.time());
 
@@ -162,7 +160,7 @@ impl Hittable for Quad {
             beta,
             ray,
             &normal,
-            self.material.clone(),
+            self.material.get_ref(),
         ))
     }
 
