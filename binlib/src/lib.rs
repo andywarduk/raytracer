@@ -24,16 +24,28 @@ struct Args {
     #[clap(short = 'o', long = "output")]
     output: Option<PathBuf>,
 
-    /// Verbose output
-    #[clap(short = 'v', long = "verbose")]
-    verbose: bool,
+    /// Image width
+    #[clap(short = 'w', long = "width")]
+    width: Option<u16>,
+
+    /// Image height
+    #[clap(short = 'h', long = "height")]
+    height: Option<u16>,
 }
 
 pub fn bin_main(state: impl Renderer) -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 
     // Get default camera
-    let cam = state.default_camera();
+    let mut cam = state.default_camera();
+
+    // Set image dimensions if overridden
+    match (args.width, args.height) {
+        (Some(w), None) => cam.set_width(w as u64),
+        (None, Some(h)) => cam.set_height(h as u64),
+        (Some(w), Some(h)) => cam.set_dimensions(w as u64, h as u64),
+        _ => (),
+    }
 
     match args.output {
         Some(file) => {
@@ -211,10 +223,10 @@ fn process_keys(cam: &mut Camera, keys: &mut Vec<u32>) -> bool {
             Some('C') => adjust_focus(cam, -1.0, 0.0, &mut clear),
             Some('v') => adjust_focus(cam, 0.1, 0.0, &mut clear),
             Some('V') => adjust_focus(cam, 1.0, 0.0, &mut clear),
-            Some('b') => adjust_focus(cam, 0.0, -0.1, &mut clear),
-            Some('B') => adjust_focus(cam, 0.0, -1.0, &mut clear),
-            Some('n') => adjust_focus(cam, 0.0, 0.1, &mut clear),
-            Some('N') => adjust_focus(cam, 0.0, 1.0, &mut clear),
+            Some('b') => adjust_focus(cam, 0.0, -1.0, &mut clear),
+            Some('B') => adjust_focus(cam, 0.0, -10.0, &mut clear),
+            Some('n') => adjust_focus(cam, 0.0, 1.0, &mut clear),
+            Some('N') => adjust_focus(cam, 0.0, 10.0, &mut clear),
             // Depth
             Some('[') => adjust_depth(cam, -1, &mut clear),
             Some('{') => adjust_depth(cam, -5, &mut clear),
@@ -489,8 +501,8 @@ fn process_keys(cam: &mut Camera, keys: &mut Vec<u32>) -> bool {
                 println!(" Vertical FOV:");
                 println!("   z/Z x/X => Decrease / increase vertical field of vision angle");
                 println!(" Focus:");
-                println!("   c/C x/X => Decrease / increase defocus angle");
-                println!("   v/V b/B => Decrease / increase focus distance");
+                println!("   c/C v/V => Decrease / increase defocus angle");
+                println!("   b/B n/N => Decrease / increase focus distance");
                 println!(" Depth:");
                 println!("   [/{{ ]/}} => Decrease / increase ray depth (number of bounces)");
             }

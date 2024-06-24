@@ -21,6 +21,8 @@ pub struct Camera {
     image_width: u64,
     /// Image height
     image_height: u64,
+    /// Image aspect ratio
+    aspect_ratio: f64,
     /// Point camera is looking from
     look_from: Point3,
     /// Point camera is looking at
@@ -80,6 +82,7 @@ impl Camera {
 
             image_width,
             image_height,
+            aspect_ratio,
             samples_per_pixel,
             max_depth,
 
@@ -89,6 +92,36 @@ impl Camera {
         result.recalculate();
 
         result
+    }
+
+    /// Sets the image size
+    pub fn set_dimensions(&mut self, width: u64, height: u64) {
+        self.image_width = width;
+        self.image_height = height;
+
+        self.aspect_ratio = width as f64 / height as f64;
+
+        self.recalculate();
+    }
+
+    /// Sets the image width and recalculates the height from the aspect ratio
+    pub fn set_width(&mut self, width: u64) {
+        self.image_width = width;
+
+        // Calculate the image height
+        self.image_height = (self.image_width as f64 / self.aspect_ratio) as u64;
+
+        self.recalculate();
+    }
+
+    /// Sets the image height and recalculates the width from the aspect ratio
+    pub fn set_height(&mut self, height: u64) {
+        self.image_height = height;
+
+        // Calculate the image width
+        self.image_width = (self.image_height as f64 * self.aspect_ratio) as u64;
+
+        self.recalculate();
     }
 
     /// Sets the camera's view parameters
