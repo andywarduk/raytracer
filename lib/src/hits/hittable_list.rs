@@ -39,6 +39,10 @@ impl<'a> HittableList<'a> {
         self.objects.push(HittableRef::boxed(hittable));
     }
 
+    pub fn length(&self) -> usize {
+        self.objects.len()
+    }
+
     pub fn into_objects(mut self) -> Vec<HittableRef<'a>> {
         let vec = mem::take(&mut self.objects);
         self.bbox = None;

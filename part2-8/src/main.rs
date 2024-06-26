@@ -1,47 +1,16 @@
 use std::error::Error;
 
-use binlib::{bin_main, Renderer};
+use binlib::bin_main;
 
 use raytracer_lib::{
     ambient::ambient_light::AmbientLight,
-    camera::{CamProgressCb, Camera},
+    camera::Camera,
     hits::hittable_list::HittableList,
     materials::{diffuse_light::DiffuseLight, lambertian::Lambertian},
     shapes::{quad::Quad, sphere::Sphere},
     textures::marble::Marble,
     triple::{Colour, Point3, Vec3},
 };
-
-struct State<'a> {
-    // World
-    world: HittableList<'a>,
-
-    // Ambience
-    ambience: AmbientLight,
-}
-
-impl<'a> Renderer for State<'a> {
-    fn default_camera(&self) -> Camera {
-        // Camera
-        let mut cam = Camera::new(400, 16.0 / 9.0, 100, 50);
-
-        cam.set_vfov(20.0);
-
-        // Render
-        cam.set_view(
-            Point3::new(26.0, 3.0, 6.0),
-            Point3::new(0.0, 2.0, 0.0),
-            Vec3::new(0.0, 1.0, 0.0),
-        );
-
-        cam
-    }
-
-    fn render(&self, cam: &Camera, progresscb: CamProgressCb) -> Vec<Vec<Colour>> {
-        // Render
-        cam.render(&self.world, &self.ambience, progresscb)
-    }
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Materials
@@ -61,9 +30,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         &difflight,
     ));
 
+    // Camera
+    let mut cam = Camera::new(400, 16.0 / 9.0, 100, 50);
+
+    cam.set_vfov(20.0);
+
+    // Render
+    cam.set_view(
+        Point3::new(26.0, 3.0, 6.0),
+        Point3::new(0.0, 2.0, 0.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
+
     // Call common bin main
-    bin_main(State {
-        world,
-        ambience: AmbientLight::new(Colour::default()),
-    })
+    bin_main(cam, world, AmbientLight::new(Colour::default()))
 }

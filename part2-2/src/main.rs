@@ -1,50 +1,17 @@
 use std::error::Error;
 
-use binlib::{bin_main, Renderer};
+use binlib::bin_main;
 
 use rand::{thread_rng, Rng};
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
-    camera::{CamProgressCb, Camera},
+    camera::Camera,
     hits::{bvh::BvhNode, hittable_list::HittableList},
     materials::{dielectric::Dielectric, lambertian::Lambertian, material::MatRef, metal::Metal},
     shapes::sphere::Sphere,
     textures::checker::Checker,
     triple::{Colour, Point3, Vec3},
 };
-
-struct State<'a> {
-    // World
-    world: HittableList<'a>,
-
-    // Ambience
-    ambience: GradientLight,
-}
-
-impl<'a> Renderer for State<'a> {
-    fn default_camera(&self) -> Camera {
-        let mut cam = Camera::new(400, 16.0 / 9.0, 200, 50);
-
-        cam.set_view(
-            Point3::new(13.0, 2.0, 3.0),
-            Point3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 1.0, 0.0),
-        );
-
-        cam.set_vfov(20.0);
-
-        cam.set_focus(0.6, 10.0);
-
-        cam.set_time_span(1.0);
-
-        cam
-    }
-
-    fn render(&self, cam: &Camera, progresscb: CamProgressCb) -> Vec<Vec<Colour>> {
-        // Render
-        cam.render(&self.world, &self.ambience, progresscb)
-    }
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = thread_rng();
@@ -118,9 +85,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut bvh_world = HittableList::new();
     bvh_world.add(BvhNode::new(world.into_objects()));
 
+    let mut cam = Camera::new(400, 16.0 / 9.0, 200, 50);
+
+    cam.set_view(
+        Point3::new(13.0, 2.0, 3.0),
+        Point3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
+
+    cam.set_vfov(20.0);
+
+    cam.set_focus(0.6, 10.0);
+
+    cam.set_time_span(1.0);
+
     // Call common bin main
-    bin_main(State {
-        world: bvh_world,
-        ambience: GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
-    })
+    bin_main(
+        cam,
+        bvh_world,
+        GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
+    )
 }

@@ -1,9 +1,9 @@
 use std::error::Error;
 
-use binlib::{bin_main, Renderer};
+use binlib::bin_main;
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
-    camera::{CamProgressCb, Camera},
+    camera::Camera,
     hits::hittable_list::HittableList,
     materials::{lambertian::Lambertian, material::MatRef, metal::Metal},
     shapes::sphere::Sphere,
@@ -12,38 +12,6 @@ use raytracer_lib::{
 
 const COUNT: u64 = 8;
 const RADIUS: f64 = 0.3;
-
-struct State<'a> {
-    // World
-    world: HittableList<'a>,
-
-    // Ambience
-    ambience: GradientLight,
-}
-
-impl<'a> Renderer for State<'a> {
-    fn default_camera(&self) -> Camera {
-        // Camera
-        let mut cam = Camera::new(1200, 1.0, 500, 50);
-
-        cam.set_view(
-            Point3::new(COUNT as f64 * 1.4, COUNT as f64 * 1.5, COUNT as f64 * 1.6),
-            Point3::new(COUNT as f64 / 2.0, COUNT as f64 * 0.55, COUNT as f64 / 2.0),
-            Vec3::new(0.0, 1.0, 0.0),
-        );
-
-        cam.set_vfov(30.0);
-
-        cam.set_focus(0.6, 10.0);
-
-        cam
-    }
-
-    fn render(&self, cam: &Camera, progresscb: CamProgressCb) -> Vec<Vec<Colour>> {
-        // Render
-        cam.render(&self.world, &self.ambience, progresscb)
-    }
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Materials
@@ -73,9 +41,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    // Camera
+    let mut cam = Camera::new(1200, 1.0, 500, 50);
+
+    cam.set_view(
+        Point3::new(COUNT as f64 * 1.4, COUNT as f64 * 1.5, COUNT as f64 * 1.6),
+        Point3::new(COUNT as f64 / 2.0, COUNT as f64 * 0.55, COUNT as f64 / 2.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
+
+    cam.set_vfov(30.0);
+
+    cam.set_focus(0.6, 10.0);
+
     // Call common bin main
-    bin_main(State {
+    bin_main(
+        cam,
         world,
-        ambience: GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
-    })
+        GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
+    )
 }

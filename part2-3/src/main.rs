@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     cam.set_vfov(20.0);
 
     let render = |cam: &Camera, output: &Path| -> Result<(), Box<dyn Error>> {
-        save_image(cam.render(&world, &ambiance, None), output)
+        save_image(cam.render(&world, &ambiance, None), output, true)
     };
 
     // Render

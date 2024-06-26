@@ -29,6 +29,7 @@ members = [
     "part2-14",
     "final2",
     "exp1",
+    "exp2",
 ]
 resolver = "2"
 

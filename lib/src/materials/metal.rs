@@ -26,7 +26,10 @@ impl Metal {
 impl Material for Metal {
     fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
         let mut reflected = ray.direction().reflect(&hit.normal);
-        reflected = reflected.unit_vector() + (self.fuzz * Vec3::new_random_unit_vector(rng));
+
+        if self.fuzz != 0.0 {
+            reflected = reflected.unit_vector() + (self.fuzz * Vec3::new_random_unit_vector(rng));
+        }
 
         let scattered = Ray::new(hit.p.clone(), reflected, ray.time());
 

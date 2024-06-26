@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{fmt::Display, ops::Range};
 
 use auto_ops::impl_op_ex_commutative;
 
@@ -127,3 +127,21 @@ impl_op_ex_commutative!(+ |a: &Aabb, b: &Vec3| -> Aabb {
 
     Aabb { ranges }
 });
+
+impl Display for Aabb {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let x0 = self.ranges[0].start;
+        let x1 = self.ranges[0].end;
+        let y0 = self.ranges[1].start;
+        let y1 = self.ranges[1].end;
+        let z0 = self.ranges[2].start;
+        let z1 = self.ranges[2].end;
+
+        f.write_fmt(format_args!(
+            "({x0}, {y0}, {z0}) to ({x1}, {y1}, {z1}), size {} x {} x {}",
+            (x1 - x0).abs(),
+            (y1 - y0).abs(),
+            (z1 - z0).abs()
+        ))
+    }
+}

@@ -1,47 +1,15 @@
 use std::error::Error;
 
-use binlib::{bin_main, Renderer};
+use binlib::bin_main;
 use rand::{thread_rng, Rng};
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
-    camera::{CamProgressCb, Camera},
+    camera::Camera,
     hits::hittable_list::HittableList,
     materials::{dielectric::Dielectric, lambertian::Lambertian, material::MatRef, metal::Metal},
     shapes::sphere::Sphere,
     triple::{Colour, Point3, Vec3},
 };
-
-struct State<'a> {
-    // World
-    world: HittableList<'a>,
-
-    // Ambience
-    ambience: GradientLight,
-}
-
-impl<'a> Renderer for State<'a> {
-    fn default_camera(&self) -> Camera {
-        // Camera
-        let mut cam = Camera::new(1200, 16.0 / 9.0, 500, 50);
-
-        cam.set_view(
-            Point3::new(13.0, 2.0, 3.0),
-            Point3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 1.0, 0.0),
-        );
-
-        cam.set_vfov(20.0);
-
-        cam.set_focus(0.6, 10.0);
-
-        cam
-    }
-
-    fn render(&self, cam: &Camera, progresscb: CamProgressCb) -> Vec<Vec<Colour>> {
-        // Render
-        cam.render(&self.world, &self.ambience, progresscb)
-    }
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut rng = thread_rng();
@@ -99,9 +67,23 @@ fn main() -> Result<(), Box<dyn Error>> {
     world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, &material1));
     world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, &material3));
 
+    // Camera
+    let mut cam = Camera::new(1200, 16.0 / 9.0, 500, 50);
+
+    cam.set_view(
+        Point3::new(13.0, 2.0, 3.0),
+        Point3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
+
+    cam.set_vfov(20.0);
+
+    cam.set_focus(0.6, 10.0);
+
     // Call common bin main
-    bin_main(State {
+    bin_main(
+        cam,
         world,
-        ambience: GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
-    })
+        GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
+    )
 }

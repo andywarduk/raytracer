@@ -7,27 +7,41 @@ use super::material::{Material, Scattered};
 #[derive(Debug)]
 pub struct Dielectric {
     refraction_index: f64,
+    inv_refraction_index: f64,
+    r0_sq: f64,
+    inv_r0_sq: f64,
 }
 
 impl Dielectric {
     pub fn new(refraction_index: f64) -> Self {
-        Self { refraction_index }
+        let inv_refraction_index = 1.0 / refraction_index;
+
+        let r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
+        let r0_sq = r0 * r0;
+
+        let inv_r0 = (1.0 - inv_refraction_index) / (1.0 + inv_refraction_index);
+        let inv_r0_sq = inv_r0 * inv_r0;
+
+        Self {
+            refraction_index,
+            inv_refraction_index,
+            r0_sq,
+            inv_r0_sq,
+        }
     }
 
-    fn reflectance(cosine: f64, refraction_index: f64) -> f64 {
+    fn reflectance(&self, cosine: f64, r0_sq: f64) -> f64 {
         // Use Schlick's approximation for reflectance.
-        let mut r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
-        r0 = r0 * r0;
-        r0 + ((1.0 - r0) * (1.0 - cosine).powf(5.0))
+        r0_sq + ((1.0 - r0_sq) * (1.0 - cosine).powf(5.0))
     }
 }
 
 impl Material for Dielectric {
     fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
-        let ri = if hit.front_face {
-            1.0 / self.refraction_index
+        let (ri, r0_sq) = if hit.front_face {
+            (self.inv_refraction_index, self.inv_r0_sq)
         } else {
-            self.refraction_index
+            (self.refraction_index, self.r0_sq)
         };
 
         let unit_direction = ray.direction().unit_vector();
@@ -38,7 +52,7 @@ impl Material for Dielectric {
         let cannot_refract = ri * sin_theta > 1.0;
 
         let direction =
-            if cannot_refract || Self::reflectance(cos_theta, ri) > rng.gen_range(0.0..1.0) {
+            if cannot_refract || self.reflectance(cos_theta, r0_sq) > rng.gen_range(0.0..1.0) {
                 unit_direction.reflect(&hit.normal)
             } else {
                 unit_direction.refract(&hit.normal, ri)
