@@ -4,7 +4,7 @@ use binlib::bin_main;
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
     camera::Camera,
-    hits::hittable_list::HittableList,
+    hits::{bvh::BvhNode, hittable_list::HittableList},
     materials::{lambertian::Lambertian, material::MatRef, metal::Metal},
     shapes::sphere::Sphere,
     triple::{Colour, Point3, Vec3},
@@ -41,6 +41,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    // Convert to bvh
+    let mut bvh_world = HittableList::new();
+    bvh_world.add(BvhNode::new(world.into_objects()));
+
     // Camera
     let mut cam = Camera::new(1200, 1.0, 500, 50);
 
@@ -57,7 +61,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Call common bin main
     bin_main(
         cam,
-        world,
+        bvh_world,
         GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
     )
 }
