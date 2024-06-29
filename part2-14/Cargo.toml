@@ -1,9 +1,0 @@
-[package]
-name = "part2-14"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-raytracer_lib = { path = "../lib" }
-binlib = { path = "../binlib" }
-rand = "0.8.5"

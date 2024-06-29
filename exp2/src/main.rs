@@ -25,10 +25,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Left quad
     world.add(Quad::new_moving(
         Point3::new(-3.0, -2.0, 5.0),
-        Point3::new(-1.0, -2.0, 5.0),
-        Vec3::new(0.0, 0.0, -4.0),
         Vec3::new(0.0, 0.0, -4.0),
         Vec3::new(0.0, 4.0, 0.0),
+        Point3::new(-1.0, -2.0, 5.0),
+        Vec3::new(0.0, 0.0, -4.0),
         Vec3::new(0.0, 4.0, 0.0),
         &left_red,
     ));
@@ -36,10 +36,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Back quad
     world.add(Quad::new_moving(
         Point3::new(-2.0, -2.0, 0.0),
-        Point3::new(-2.0, -2.0, -2.0),
-        Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(0.0, 4.0, 0.0),
+        Point3::new(-2.0, -2.0, -2.0),
+        Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(0.0, 4.0, 0.0),
         &back_green,
     ));
@@ -47,10 +47,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Right quad
     world.add(Quad::new_moving(
         Point3::new(3.0, -2.0, 1.0),
-        Point3::new(1.0, -2.0, 1.0),
-        Vec3::new(0.0, 0.0, 4.0),
         Vec3::new(0.0, 0.0, 4.0),
         Vec3::new(0.0, 4.0, 0.0),
+        Point3::new(1.0, -2.0, 1.0),
+        Vec3::new(0.0, 0.0, 4.0),
         Vec3::new(0.0, 4.0, 0.0),
         &right_blue,
     ));
@@ -58,10 +58,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Top quad
     world.add(Quad::new_moving(
         Point3::new(-2.0, 3.0, 1.0),
-        Point3::new(-2.0, 1.0, 1.0),
-        Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 4.0),
+        Point3::new(-2.0, 1.0, 1.0),
+        Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, 4.0),
         &upper_orange,
     ));
@@ -69,16 +69,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Bottom quad
     world.add(Quad::new_moving(
         Point3::new(-2.0, -3.0, 5.0),
-        Point3::new(-2.0, -1.0, 5.0),
-        Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, -4.0),
+        Point3::new(-2.0, -1.0, 5.0),
+        Vec3::new(4.0, 0.0, 0.0),
         Vec3::new(0.0, 0.0, -4.0),
         &lower_teal,
     ));
 
     // Camera
-    let mut cam = Camera::new(400, 1.0, 100, 50);
+    let mut cam = Camera::new(400, 1.0, 500, 50);
 
     cam.set_vfov(80.0);
 

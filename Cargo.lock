@@ -365,6 +365,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "exp3"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "exp4"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "exp5"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
+name = "exp6"
+version = "0.1.0"
+dependencies = [
+ "binlib",
+ "raytracer_lib",
+]
+
+[[package]]
 name = "exr"
 version = "1.72.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

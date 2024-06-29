@@ -1,4 +1,4 @@
-use minifb::{InputCallback, Key, Window, WindowOptions};
+use minifb::{InputCallback, Key, ScaleMode, Window, WindowOptions};
 use std::{
     cell::RefCell,
     error::Error,
@@ -6,10 +6,11 @@ use std::{
     rc::Rc,
 };
 
-use clap::{ArgAction, Parser};
+use clap::Parser;
 use raytracer_lib::{
     ambient::ambience::Ambience,
     camera::Camera,
+    gamma::Gamma,
     hits::{hittable::Hittable, hittable_list::HittableList},
     triple::{Colour, Vec3},
 };
@@ -30,17 +31,13 @@ struct Args {
     height: Option<u16>,
 
     /// No gamma correction
-    #[clap(
-        short = 'g',
-        long = "nogamma",
-        default_value_t = true,
-        action(ArgAction::SetFalse)
-    )]
-    gamma: bool,
+    #[clap(short = 'g', long = "gamma", default_value_t = 0.0)]
+    gamma: f64,
 }
 
 struct State<'a> {
     args: Args,
+    gamma: Gamma,
     cam: Camera,
     world: HittableList<'a>,
     ambience: Box<dyn Ambience>,
@@ -65,9 +62,13 @@ pub fn bin_main(
     // Output to image?
     let image = args.output.is_some();
 
+    // Gamma correction
+    let gamma = Gamma::new(args.gamma);
+
     // Build state
     let state = State {
         args,
+        gamma,
         cam,
         world,
         ambience: Box::new(ambience),
@@ -104,7 +105,7 @@ fn render_to_image(state: State) -> Result<(), Box<dyn Error>> {
     eprintln!("\nDone!");
 
     // Save the image
-    save_image(image, &output, state.args.gamma)?;
+    save_image(image, &output, &state.gamma)?;
 
     Ok(())
 }
@@ -113,7 +114,7 @@ fn render_to_image(state: State) -> Result<(), Box<dyn Error>> {
 pub fn save_image(
     image: Vec<Vec<Colour>>,
     output: &Path,
-    gamma: bool,
+    gamma: &Gamma,
 ) -> Result<(), Box<dyn Error>> {
     let h = image.len();
     let w = image[0].len();
@@ -127,13 +128,8 @@ pub fn save_image(
 
         // For each column...
         (0..line.len()).for_each(|i| {
-            let (r, g, b) = if gamma {
-                // Convert to RGB with gamma correction
-                line[i].to_rgb_gamma()
-            } else {
-                // Convert to RGB with no gamma correction
-                line[i].to_rgb()
-            };
+            // Convert to RGB
+            let (r, g, b) = line[i].to_rgb(gamma);
 
             // Add to image data buffer
             let pixel = imgbuf.get_pixel_mut(i as u32, j as u32);
@@ -214,6 +210,7 @@ fn render_to_window(mut state: State) -> Result<(), Box<dyn Error>> {
         h as usize,
         WindowOptions {
             resize: true,
+            scale_mode: ScaleMode::Stretch,
             ..WindowOptions::default()
         },
     )?;
@@ -237,11 +234,7 @@ fn render_to_window(mut state: State) -> Result<(), Box<dyn Error>> {
 
             for l in frame.iter() {
                 for c in l {
-                    let (r, g, b) = if state.args.gamma {
-                        c.to_rgb_gamma()
-                    } else {
-                        c.to_rgb()
-                    };
+                    let (r, g, b) = c.to_rgb(&state.gamma);
 
                     output_buffer[outelem] = ((r as u32) << 16) + ((g as u32) << 8) + b as u32;
                     outelem += 1;
