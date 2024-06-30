@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use binlib::bin_main;
+use binlib::{bin_main, MainParms};
 use rand::{thread_rng, Rng};
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
@@ -95,9 +95,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     cam.set_time_span(1.0);
 
     // Call common bin main
-    bin_main(
+    bin_main(MainParms::new_ambience(
         cam,
         bvh_world,
         GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
-    )
+    ))
 }

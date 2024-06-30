@@ -4,9 +4,8 @@
 
 use std::error::Error;
 
-use binlib::bin_main;
+use binlib::{bin_main, MainParms};
 use raytracer_lib::{
-    ambient::ambient_light::AmbientLight,
     camera::Camera,
     hits::hittable_list::HittableList,
     materials::{diffuse_light::DiffuseLight, material::Material, metal::Metal},
@@ -52,9 +51,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         Sphere::new(Point3::new(0.0, 0.0, 0.0), 0.8, &light),
     ));
 
-    // Ambient light
-    let ambience = AmbientLight::new(Colour::default());
-
     // Camera
     let mut cam = Camera::new(800, 1.0, 25, 250);
 
@@ -67,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     cam.set_vfov(143.0);
 
     // Call common bin main
-    bin_main(cam, world, ambience)
+    bin_main(MainParms::new(cam, world))
 }
 
 #[allow(clippy::too_many_arguments)]

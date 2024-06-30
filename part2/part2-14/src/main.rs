@@ -1,10 +1,9 @@
 use std::{error::Error, path::Path};
 
-use binlib::bin_main;
+use binlib::{bin_main, MainParms};
 
 use rand::{thread_rng, Rng};
 use raytracer_lib::{
-    ambient::ambient_light::AmbientLight,
     camera::Camera,
     hits::{bvh::BvhNode, hittable_list::HittableList},
     materials::{
@@ -173,5 +172,5 @@ fn main() -> Result<(), Box<dyn Error>> {
     cam.set_time_span(1.0);
 
     // Call common bin main
-    bin_main(cam, bvh_world, AmbientLight::new(Colour::default()))
+    bin_main(MainParms::new(cam, bvh_world))
 }

@@ -8,7 +8,7 @@ use std::{
 
 use clap::Parser;
 use raytracer_lib::{
-    ambient::ambience::Ambience,
+    ambient::{ambience::Ambience, ambient_light::AmbientLight},
     camera::Camera,
     gamma::Gamma,
     hits::{hittable::Hittable, hittable_list::HittableList},
@@ -43,13 +43,46 @@ struct State<'a> {
     ambience: Box<dyn Ambience>,
 }
 
-pub fn bin_main(
-    mut cam: Camera,
-    world: HittableList,
-    ambience: impl Ambience + 'static,
-) -> Result<(), Box<dyn Error>> {
+pub struct MainParms<'a> {
+    cam: Camera,
+    world: HittableList<'a>,
+    ambience: Option<Box<dyn Ambience>>,
+}
+
+impl<'a> MainParms<'a> {
+    pub fn new(cam: Camera, world: HittableList<'a>) -> Self {
+        Self {
+            cam,
+            world,
+            ambience: None,
+        }
+    }
+
+    pub fn new_ambience(
+        cam: Camera,
+        world: HittableList<'a>,
+        ambience: impl Ambience + 'static,
+    ) -> Self {
+        Self {
+            cam,
+            world,
+            ambience: Some(Box::new(ambience)),
+        }
+    }
+}
+
+pub fn bin_main(parms: MainParms) -> Result<(), Box<dyn Error>> {
     // Parse command line arguments
     let args = Args::parse();
+
+    // Unpack parms
+    let mut cam = parms.cam;
+    let world = parms.world;
+
+    let ambience = match parms.ambience {
+        None => Box::new(AmbientLight::new(Colour::default())),
+        Some(ambience) => ambience,
+    };
 
     // Set image dimensions if overridden
     match (args.width, args.height) {
@@ -71,7 +104,7 @@ pub fn bin_main(
         gamma,
         cam,
         world,
-        ambience: Box::new(ambience),
+        ambience,
     };
 
     if image {

@@ -3,7 +3,7 @@
 
 use std::error::Error;
 
-use binlib::bin_main;
+use binlib::{bin_main, MainParms};
 use raytracer_lib::{
     ambient::ray_light::RayLight,
     camera::Camera,
@@ -68,5 +68,5 @@ fn main() -> Result<(), Box<dyn Error>> {
     cam.set_vfov(45.0);
 
     // Call common bin main
-    bin_main(cam, world, ambience)
+    bin_main(MainParms::new_ambience(cam, world, ambience))
 }

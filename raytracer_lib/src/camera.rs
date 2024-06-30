@@ -220,16 +220,11 @@ impl Camera {
         (0..self.image_height)
             .into_par_iter()
             .map(|j| {
-                // Report progress
-                if let Some(progresscb) = progresscb {
-                    progresscb(left.fetch_add(1, Ordering::Relaxed), self.image_height);
-                }
-
                 // Get random number generator
                 let mut rng = thread_rng();
 
                 // For each column...
-                (0..self.image_width)
+                let line = (0..self.image_width)
                     .map(|i| {
                         // Calculate pixel colour
                         (0..self.samples_per_pixel)
@@ -243,7 +238,14 @@ impl Camera {
                             .sum::<Colour>()
                             * self.pixel_samples_scale
                     })
-                    .collect::<Vec<Colour>>()
+                    .collect::<Vec<_>>();
+
+                // Report progress
+                if let Some(progresscb) = progresscb {
+                    progresscb(left.fetch_add(1, Ordering::Relaxed), self.image_height);
+                }
+
+                line
             })
             .collect::<Vec<_>>()
     }

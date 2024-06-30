@@ -1,9 +1,8 @@
 use std::error::Error;
 
-use binlib::bin_main;
+use binlib::{bin_main, MainParms};
 
 use raytracer_lib::{
-    ambient::ambient_light::AmbientLight,
     camera::Camera,
     hits::hittable_list::HittableList,
     materials::{diffuse_light::DiffuseLight, lambertian::Lambertian},
@@ -43,5 +42,5 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // Call common bin main
-    bin_main(cam, world, AmbientLight::new(Colour::default()))
+    bin_main(MainParms::new(cam, world))
 }
