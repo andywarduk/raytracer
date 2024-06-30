@@ -5,7 +5,10 @@ use crate::{
     ray::Ray,
 };
 
-use super::hittable::{HittableRef, T_MIN};
+use super::{
+    hittable::{HittableRef, T_MIN},
+    hittable_list::HittableList,
+};
 
 #[derive(Debug)]
 pub struct BvhNode<'a> {
@@ -15,7 +18,13 @@ pub struct BvhNode<'a> {
 }
 
 impl<'a> BvhNode<'a> {
-    pub fn new(mut objects: Vec<HittableRef<'a>>) -> Self {
+    pub fn new(hittable_list: HittableList<'a>) -> Self {
+        let objects = hittable_list.into_objects();
+
+        Self::new_from_vec(objects)
+    }
+
+    fn new_from_vec(mut objects: Vec<HittableRef<'a>>) -> Self {
         // Create bounding box for the object array
         let bbox = objects
             .iter()
@@ -56,8 +65,8 @@ impl<'a> BvhNode<'a> {
                 let split = objects.split_off(mid);
 
                 (
-                    HittableRef::boxed(BvhNode::new(objects)),
-                    Some(HittableRef::boxed(BvhNode::new(split))),
+                    HittableRef::boxed(BvhNode::new_from_vec(objects)),
+                    Some(HittableRef::boxed(BvhNode::new_from_vec(split))),
                 )
             }
         };

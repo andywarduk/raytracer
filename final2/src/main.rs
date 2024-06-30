@@ -61,7 +61,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let floor_boxes = BvhNode::new(floor_boxes.into_objects());
+    let floor_boxes = BvhNode::new(floor_boxes);
 
     // Light
     let light = Quad::new(
@@ -114,7 +114,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ));
     }
 
-    let white_spheres = BvhNode::new(white_spheres.into_objects());
+    let white_spheres = BvhNode::new(white_spheres);
     let white_spheres = RotateY::new(15.0, white_spheres);
     let white_spheres = Translate::new(Vec3::new(-100.0, 270.0, 395.0), white_spheres);
 
@@ -155,7 +155,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Convert to bvh
     let mut bvh_world = HittableList::new();
-    bvh_world.add(BvhNode::new(world.into_objects()));
+    bvh_world.add(BvhNode::new(world));
 
     // Camera
     let mut cam = Camera::new(800, 1.0, 10_000, 40);

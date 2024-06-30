@@ -4,7 +4,7 @@ use binlib::{bin_main, MainParms};
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
     camera::Camera,
-    hits::{bvh::BvhNode, hittable_list::HittableList},
+    hits::{bvh::BvhNode, hittable::Hittable, hittable_list::HittableList},
     materials::{lambertian::Lambertian, material::MatRef, metal::Metal},
     shapes::sphere::Sphere,
     triple::{Colour, Point3, Vec3},
@@ -17,15 +17,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Materials
     let ground_material = Lambertian::new_with_colour(Colour::new(0.5, 0.5, 0.5));
 
-    // World
-    let mut world = HittableList::new();
-
-    // Ground
-    world.add(Sphere::new(
-        Point3::new(0.0, -1000.0, 0.0),
-        1000.0 - RADIUS,
-        &ground_material,
-    ));
+    // Spheres
+    let mut spheres = HittableList::new();
 
     // Metal spheres
     for x in 0..COUNT {
@@ -36,14 +29,25 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                 let material = MatRef::boxed(Metal::new(colour, 0.0));
 
-                world.add(Sphere::new_with_matref(centre, RADIUS, material));
+                spheres.add(Sphere::new_with_matref(centre, RADIUS, material));
             }
         }
     }
 
-    // Convert to bvh
-    let mut bvh_world = HittableList::new();
-    bvh_world.add(BvhNode::new(world.into_objects()));
+    let spheres_bbox = spheres.bounding_box().clone();
+
+    // Create world
+    let mut world = HittableList::new();
+
+    // Convert spheres to bvh
+    world.add(BvhNode::new(spheres));
+
+    // Ground
+    world.add(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0 - RADIUS,
+        &ground_material,
+    ));
 
     // Camera
     let mut cam = Camera::new(1200, 1.0, 500, 50);
@@ -58,10 +62,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     cam.set_focus(0.6, 10.0);
 
-    // Call common bin main
-    bin_main(MainParms::new_ambience(
+    // Set up parameters
+    let mut parms = MainParms::new_ambience(
         cam,
-        bvh_world,
+        world,
         GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
-    ))
+    );
+
+    // Set main bounding box to the spheres
+    parms.set_main_bbox(spheres_bbox);
+
+    // Call common bin main
+    bin_main(parms)
 }

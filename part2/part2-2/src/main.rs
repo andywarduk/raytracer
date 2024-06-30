@@ -83,7 +83,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Create BVH world view
     let mut bvh_world = HittableList::new();
-    bvh_world.add(BvhNode::new(world.into_objects()));
+    bvh_world.add(BvhNode::new(world));
 
     let mut cam = Camera::new(400, 16.0 / 9.0, 200, 50);
 
