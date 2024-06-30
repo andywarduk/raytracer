@@ -1,8 +1,0 @@
-[package]
-name = "exp5"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-raytracer_lib = { path = "../raytracer_lib" }
-binlib = { path = "../binlib" }
