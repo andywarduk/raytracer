@@ -335,7 +335,7 @@ impl Camera {
         ambience: &dyn Ambience,
         max_depth: u64,
     ) -> Colour {
-        let cur_depth = ray.get_depth();
+        let cur_depth = ray.depth();
 
         if cur_depth >= max_depth {
             // Reached maximum ray bounces - return black

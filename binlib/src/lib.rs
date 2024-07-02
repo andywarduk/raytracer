@@ -31,6 +31,7 @@ struct Args {
     gamma: f64,
 }
 
+/// Main binary entry point
 pub fn bin_main(mut parms: MainParms) -> Result<(), Box<dyn Error>> {
     // Parse command line arguments
     let args = Args::parse();

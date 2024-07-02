@@ -20,6 +20,9 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
         move_delta_small: 10.0,
     };
 
+    // Main bounding box
+    let mut main_bbox = None;
+
     // Any objects in the world?
     if state.world.length() > 0 {
         // Get bounding box for the world
@@ -28,6 +31,18 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
         println!("World bounding box:");
         println!("  {bbox}");
 
+        main_bbox = Some(bbox.clone());
+    }
+
+    // Main bounding box supplied?
+    if let Some(bbox) = &state.main_bbox {
+        println!("Main feature bounding box:");
+        println!("  {bbox}");
+
+        main_bbox = Some(bbox.clone());
+    }
+
+    if let Some(bbox) = main_bbox {
         // Find longest axis in the bounding box
         let axis = bbox.longest_axis();
 

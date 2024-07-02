@@ -2,19 +2,29 @@ use std::fmt::Display;
 
 use crate::triple::{Point3, Vec3};
 
+/// A light ray
 #[derive(Debug, Default)]
 pub struct Ray {
+    /// The ray origin
     orig: Point3,
+    /// The ray direction
     dir: Vec3,
+    /// The inverse ray direction (used in intersection calculation)
+    inv_dir: Vec3,
+    /// The ray time
     time: f64,
+    /// The ray depth
     depth: u64,
 }
 
 impl Ray {
     pub fn new(orig: Point3, dir: Vec3, time: f64) -> Self {
+        let inv_dir = 1.0 / &dir;
+        
         Self {
             orig,
             dir,
+            inv_dir,
             time,
             depth: 0,
         }
@@ -28,6 +38,10 @@ impl Ray {
         &self.dir
     }
 
+    pub fn inv_direction(&self) -> &Vec3 {
+        &self.inv_dir
+    }
+
     pub fn time(&self) -> f64 {
         self.time
     }
@@ -36,7 +50,7 @@ impl Ray {
         &self.orig + (&self.dir * t)
     }
 
-    pub fn get_depth(&self) -> u64 {
+    pub fn depth(&self) -> u64 {
         self.depth
     }
 

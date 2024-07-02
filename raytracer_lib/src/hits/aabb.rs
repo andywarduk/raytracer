@@ -66,14 +66,15 @@ impl Aabb {
         let mut end = t_range.end;
 
         let ray_orig = ray.origin();
-        let ray_dir = ray.direction();
+        let ray_inv_dir = ray.inv_direction();
 
         for axis in 0..3 {
             let ax = &self.ranges[axis];
-            let adinv = 1.0 / ray_dir[axis];
+            let orig = ray_orig[axis];
+            let adinv = ray_inv_dir[axis];
 
-            let t0 = (ax.start - ray_orig[axis]) * adinv;
-            let t1 = (ax.end - ray_orig[axis]) * adinv;
+            let t0 = (ax.start - orig) * adinv;
+            let t1 = (ax.end - orig) * adinv;
 
             start = start.max(t0.min(t1));
             end = end.min(t0.max(t1));

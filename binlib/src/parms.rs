@@ -6,11 +6,17 @@ use raytracer_lib::{
     triple::Colour,
 };
 
+/// Main entry point parameters
 pub struct MainParms<'a> {
+    /// The camera to use
     pub cam: Camera,
+    /// The object list to render
     pub world: HittableList<'a>,
+    /// The ambient light to use
     pub ambience: Box<dyn Ambience>,
+    /// Gamma correction to use
     pub gamma: Gamma,
+    /// The bounding box of the main scene feature
     pub main_bbox: Option<Aabb>,
 }
 
@@ -33,22 +39,22 @@ impl<'a> MainParms<'a> {
         let view_vec = look_from.vec_to(&look_at);
 
         // Print the details
-        println!("          Image dimensions : {w} x {h}");
-        println!("                 Look from : {look_from}");
-        println!("                   Look to : {look_at}");
+        println!("  Image dimensions         : {w} x {h}");
+        println!("  Look from                : {look_from}");
+        println!("  Look to                  : {look_at}");
         println!(
-            "            -> Look vector : {view_vec}, distance {}",
+            "  -> Look vector           : {view_vec}, distance {}",
             view_vec.length()
         );
-        println!("                        Up : {vup}");
+        println!("  Up                       : {vup}");
         println!("  Vertical field of vision : {vfov}°");
-        println!("             Defocus angle : {defocus_angle}°");
-        println!("            Focus distance : {focus_dist}");
-        println!("                 Time span : {time_span}");
-        println!("            Maxiumum depth : {max_depth}");
+        println!("  Defocus angle            : {defocus_angle}°");
+        println!("  Focus distance           : {focus_dist}");
+        println!("  Time span                : {time_span}");
+        println!("  Maxiumum depth           : {max_depth}");
 
         if show_samples {
-            println!("         Samples per pixel : {samples_per_pixel}");
+            println!("  Samples per pixel        : {samples_per_pixel}");
         }
     }
 }

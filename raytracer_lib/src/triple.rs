@@ -69,22 +69,25 @@ impl<Mixin> Triple<Mixin> {
     }
 
     /// Returns the x value
+    #[inline]
     pub fn x(&self) -> f64 {
         self.e[0]
     }
 
     /// Returns the y value
+    #[inline]
     pub fn y(&self) -> f64 {
         self.e[1]
     }
 
     /// Returns the z value
+    #[inline]
     pub fn z(&self) -> f64 {
         self.e[2]
     }
 
-    // Displays the triple
-    pub fn display(
+    /// Displays the triple
+    fn display(
         &self,
         d1: &str,
         d2: &str,
@@ -294,6 +297,7 @@ impl_op_ex!(*= |a: &mut Vec3, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b; }
 
 // Division
 impl_op_ex!(/ |a: &Vec3, b: f64| -> Vec3 { a * (1f64 / b) } );
+impl_op_ex!(/ |a: f64, b: &Vec3| -> Vec3 { (1f64 / a) * b } );
 impl_op_ex!(/= |a: &mut Vec3, b: f64| { *a *= 1f64 / b });
 
 // -- Point Operator implementations
@@ -324,6 +328,7 @@ impl_op_ex!(*= |a: &mut Point3, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b;
 
 // Division
 impl_op_ex!(/ |a: &Point3, b: f64| -> Point3 { a * (1f64 / b) } );
+impl_op_ex!(/ |a: f64, b: &Point3| -> Point3 { (1f64 / a) * b } );
 impl_op_ex!(/= |a: &mut Point3, b: f64| { *a *= 1f64 / b });
 
 // -- Colour Operator implementations
@@ -357,6 +362,7 @@ impl_op_ex!(*= |a: &mut Colour, b: f64| { a.e[0] *= b; a.e[1] *= b; a.e[2] *= b;
 
 // Division
 impl_op_ex!(/ |a: &Colour, b: f64| -> Colour { a * (1f64 / b) } );
+impl_op_ex!(/ |a: f64, b: &Colour| -> Colour { (1f64 / a) * b } );
 impl_op_ex!(/= |a: &mut Colour, b: f64| { *a *= 1f64 / b });
 
 // Summing

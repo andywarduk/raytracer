@@ -26,7 +26,7 @@ pub(super) fn render_to_image(state: MainParms, output: &Path) -> Result<(), Box
     Ok(())
 }
 
-/// Renders the scene to an image (callable from outside)
+/// Saves an image vector to a file
 pub fn save_image(
     image: Vec<Vec<Colour>>,
     output: &Path,

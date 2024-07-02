@@ -26,7 +26,7 @@ impl<'a> InvisibleFor<'a> {
 
 impl<'a> Hittable<'a> for InvisibleFor<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
-        if ray.get_depth() < self.bounces {
+        if ray.depth() < self.bounces {
             None
         } else {
             self.object.hit(ray, t_range)
