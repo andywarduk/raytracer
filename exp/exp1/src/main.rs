@@ -4,6 +4,7 @@ use binlib::{bin_main, MainParms};
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
     camera::Camera,
+    float::*,
     hits::{bvh::BvhNode, hittable::Hittable, hittable_list::HittableList},
     materials::{lambertian::Lambertian, material::MatRef, metal::Metal},
     shapes::sphere::Sphere,
@@ -11,7 +12,7 @@ use raytracer_lib::{
 };
 
 const COUNT: u64 = 8;
-const RADIUS: f64 = 0.3;
+const RADIUS: FltPrim = 0.3;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Materials
@@ -24,8 +25,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     for x in 0..COUNT {
         for y in 0..COUNT {
             for z in 0..COUNT {
-                let centre = Point3::new(x as f64, y as f64, z as f64);
-                let colour = Colour::new(centre.x(), centre.y(), centre.z()) / COUNT as f64;
+                let centre = Point3::new(x as FltPrim, y as FltPrim, z as FltPrim);
+                let colour =
+                    Colour::new_flt(centre.x(), centre.y(), centre.z()) / flt(COUNT as FltPrim);
 
                 let material = MatRef::boxed(Metal::new(colour, 0.0));
 
@@ -53,8 +55,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut cam = Camera::new(1200, 1.0, 500, 50);
 
     cam.set_view(
-        Point3::new(COUNT as f64 * 1.4, COUNT as f64 * 1.5, COUNT as f64 * 1.6),
-        Point3::new(COUNT as f64 / 2.0, COUNT as f64 * 0.55, COUNT as f64 / 2.0),
+        Point3::new(
+            COUNT as FltPrim * 1.4,
+            COUNT as FltPrim * 1.5,
+            COUNT as FltPrim * 1.6,
+        ),
+        Point3::new(
+            COUNT as FltPrim / 2.0,
+            COUNT as FltPrim * 0.55,
+            COUNT as FltPrim / 2.0,
+        ),
         Vec3::new(0.0, 1.0, 0.0),
     );
 
@@ -66,7 +76,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut parms = MainParms::new_ambience(
         cam,
         world,
-        GradientLight::new(Colour::new(1.0, 1.0, 1.0), Colour::new(0.5, 0.7, 1.0)),
+        GradientLight::new(Colour::new_white(), Colour::new(0.5, 0.7, 1.0)),
     );
 
     // Set main bounding box to the spheres

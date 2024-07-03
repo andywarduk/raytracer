@@ -1,6 +1,7 @@
 use std::ops::Range;
 
 use crate::{
+    float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
     materials::material::{MatRef, Material},
     ray::Ray,
@@ -93,7 +94,7 @@ impl<'a> Quad<'a> {
         Aabb::new_from_bbox(&bbox_diag1, &bbox_diag2)
     }
 
-    fn position_at_time(&self, time: f64) -> (Point3, Vec3, Vec3, Vec3) {
+    fn position_at_time(&self, time: Flt) -> (Point3, Vec3, Vec3, Vec3) {
         if self.moving {
             (
                 &self.p + (time * &self.p_movement),
@@ -113,7 +114,7 @@ impl<'a> Quad<'a> {
 }
 
 impl<'a> Hittable<'a> for Quad<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         let (p, u, v, normal) = self.position_at_time(ray.time());
 
         let dot = normal.dot(&p);
@@ -142,13 +143,13 @@ impl<'a> Hittable<'a> for Quad<'a> {
 
         let alpha = w.dot(&planar_hitpt_vector.cross(&v));
 
-        if !(0.0..1.0).contains(&alpha) {
+        if !(flt(0.0)..flt(1.0)).contains(&alpha) {
             return None;
         }
 
         let beta = w.dot(&u.cross(&planar_hitpt_vector));
 
-        if !(0.0..1.0).contains(&beta) {
+        if !(flt(0.0)..flt(1.0)).contains(&beta) {
             return None;
         }
 

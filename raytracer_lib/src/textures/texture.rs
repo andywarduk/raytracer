@@ -1,8 +1,11 @@
-use crate::triple::{Colour, Point3};
+use crate::{
+    float::*,
+    triple::{Colour, Point3},
+};
 use std::{fmt::Debug, ops::Deref};
 
 pub trait Texture: Debug + Sync + Send {
-    fn value(&self, u: f64, v: f64, p: &Point3) -> Colour;
+    fn value(&self, u: Flt, v: Flt, p: &Point3) -> Colour;
 }
 
 #[derive(Debug)]

@@ -1,6 +1,7 @@
 use std::ops::Range;
 
 use crate::{
+    float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable, hittable_list::HittableList},
     materials::material::Material,
     ray::Ray,
@@ -20,45 +21,45 @@ impl<'a> BoxComp<'a> {
         let mut sides = HittableList::new();
 
         // Construct the two opposite vertices with the minimum and maximum coordinates.
-        let min = Point3::new(a.x().min(b.x()), a.y().min(b.y()), a.z().min(b.z()));
-        let max = Point3::new(a.x().max(b.x()), a.y().max(b.y()), a.z().max(b.z()));
+        let min = Point3::new_flt(a.x().min(b.x()), a.y().min(b.y()), a.z().min(b.z()));
+        let max = Point3::new_flt(a.x().max(b.x()), a.y().max(b.y()), a.z().max(b.z()));
 
-        let dx = Vec3::new(max.x() - min.x(), 0.0, 0.0);
-        let dy = Vec3::new(0.0, max.y() - min.y(), 0.0);
-        let dz = Vec3::new(0.0, 0.0, max.z() - min.z());
+        let dx = Vec3::new_flt(max.x() - min.x(), flt(0.0), flt(0.0));
+        let dy = Vec3::new_flt(flt(0.0), max.y() - min.y(), flt(0.0));
+        let dz = Vec3::new_flt(flt(0.0), flt(0.0), max.z() - min.z());
 
         sides.add(Quad::new(
-            Point3::new(min.x(), min.y(), max.z()),
+            Point3::new_flt(min.x(), min.y(), max.z()),
             dx.clone(),
             dy.clone(),
             material,
         )); // front
         sides.add(Quad::new(
-            Point3::new(max.x(), min.y(), max.z()),
+            Point3::new_flt(max.x(), min.y(), max.z()),
             -(&dz),
             dy.clone(),
             material,
         )); // right
         sides.add(Quad::new(
-            Point3::new(max.x(), min.y(), min.z()),
+            Point3::new_flt(max.x(), min.y(), min.z()),
             -(&dx),
             dy.clone(),
             material,
         )); // back
         sides.add(Quad::new(
-            Point3::new(min.x(), min.y(), min.z()),
+            Point3::new_flt(min.x(), min.y(), min.z()),
             dz.clone(),
             dy,
             material,
         )); // left
         sides.add(Quad::new(
-            Point3::new(min.x(), max.y(), max.z()),
+            Point3::new_flt(min.x(), max.y(), max.z()),
             dx.clone(),
             -(&dz),
             material,
         )); // top
         sides.add(Quad::new(
-            Point3::new(min.x(), min.y(), min.z()),
+            Point3::new_flt(min.x(), min.y(), min.z()),
             dx,
             dz,
             material,
@@ -69,7 +70,7 @@ impl<'a> BoxComp<'a> {
 }
 
 impl<'a> Hittable<'a> for BoxComp<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         self.sides.hit(ray, t_range)
     }
 

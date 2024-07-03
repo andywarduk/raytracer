@@ -1,4 +1,5 @@
 use image::render_to_image;
+use raytracer_lib::float::*;
 use std::{error::Error, path::PathBuf};
 use window::render_to_window;
 
@@ -28,7 +29,7 @@ struct Args {
 
     /// No gamma correction
     #[clap(short = 'g', long = "gamma", default_value_t = 0.0)]
-    gamma: f64,
+    gamma: FltPrim,
 }
 
 /// Main binary entry point

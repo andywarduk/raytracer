@@ -7,6 +7,7 @@ use std::error::Error;
 use binlib::{bin_main, MainParms};
 use raytracer_lib::{
     camera::Camera,
+    float::*,
     hits::hittable_list::HittableList,
     materials::{diffuse_light::DiffuseLight, material::Material, metal::Metal},
     shapes::{quad::Quad, sphere::Sphere},
@@ -14,9 +15,9 @@ use raytracer_lib::{
     triple::{Colour, Point3, Vec3},
 };
 
-const C1: f64 = 0.99;
-const C2: f64 = 0.97;
-const C3: f64 = 0.83;
+const C1: FltPrim = 0.99;
+const C2: FltPrim = 0.97;
+const C3: FltPrim = 0.83;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Materials
@@ -31,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // World
     let mut world = HittableList::new();
 
-    const MD: f64 = 10.0;
+    const MD: FltPrim = 10.0;
 
     // Box of mirrors
     world.add(mirror_box(
@@ -80,45 +81,45 @@ fn mirror_box<'a>(
     let mut sides = HittableList::new();
 
     // Construct the two opposite vertices with the minimum and maximum coordinates.
-    let min = Point3::new(a.x().min(b.x()), a.y().min(b.y()), a.z().min(b.z()));
-    let max = Point3::new(a.x().max(b.x()), a.y().max(b.y()), a.z().max(b.z()));
+    let min = Point3::new_flt(a.x().min(b.x()), a.y().min(b.y()), a.z().min(b.z()));
+    let max = Point3::new_flt(a.x().max(b.x()), a.y().max(b.y()), a.z().max(b.z()));
 
-    let dx = Vec3::new(max.x() - min.x(), 0.0, 0.0);
-    let dy = Vec3::new(0.0, max.y() - min.y(), 0.0);
-    let dz = Vec3::new(0.0, 0.0, max.z() - min.z());
+    let dx = Vec3::new_flt(max.x() - min.x(), flt(0.0), flt(0.0));
+    let dy = Vec3::new_flt(flt(0.0), max.y() - min.y(), flt(0.0));
+    let dz = Vec3::new_flt(flt(0.0), flt(0.0), max.z() - min.z());
 
     sides.add(Quad::new(
-        Point3::new(min.x(), min.y(), max.z()),
+        Point3::new_flt(min.x(), min.y(), max.z()),
         dx.clone(),
         dy.clone(),
         m1,
     )); // front
     sides.add(Quad::new(
-        Point3::new(max.x(), min.y(), max.z()),
+        Point3::new_flt(max.x(), min.y(), max.z()),
         -(&dz),
         dy.clone(),
         m2,
     )); // right
     sides.add(Quad::new(
-        Point3::new(max.x(), min.y(), min.z()),
+        Point3::new_flt(max.x(), min.y(), min.z()),
         -(&dx),
         dy.clone(),
         m3,
     )); // back
     sides.add(Quad::new(
-        Point3::new(min.x(), min.y(), min.z()),
+        Point3::new_flt(min.x(), min.y(), min.z()),
         dz.clone(),
         dy,
         m4,
     )); // left
     sides.add(Quad::new(
-        Point3::new(min.x(), max.y(), max.z()),
+        Point3::new_flt(min.x(), max.y(), max.z()),
         dx.clone(),
         -(&dz),
         m5,
     )); // top
     sides.add(Quad::new(
-        Point3::new(min.x(), min.y(), min.z()),
+        Point3::new_flt(min.x(), min.y(), min.z()),
         dx,
         dz,
         m6,

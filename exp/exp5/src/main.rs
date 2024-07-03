@@ -7,6 +7,7 @@ use std::error::Error;
 use binlib::{bin_main, MainParms};
 use raytracer_lib::{
     camera::Camera,
+    float::*,
     hits::hittable_list::HittableList,
     materials::{diffuse_light::DiffuseLight, metal::Metal},
     shapes::{boxcomp::BoxComp, sphere::Sphere},
@@ -22,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // World
     let mut world = HittableList::new();
 
-    const MD: f64 = 10.0;
+    const MD: FltPrim = 10.0;
 
     // Box of mirrors
     world.add(BoxComp::new(

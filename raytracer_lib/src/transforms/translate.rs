@@ -1,6 +1,7 @@
 use std::ops::Range;
 
 use crate::{
+    float::*,
     hits::{
         aabb::Aabb,
         hit::Hit,
@@ -30,7 +31,7 @@ impl<'a> Translate<'a> {
 }
 
 impl<'a> Hittable<'a> for Translate<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         // Move the ray backwards by the offset
         let offset_ray = Ray::new(
             ray.origin() - &self.offset,

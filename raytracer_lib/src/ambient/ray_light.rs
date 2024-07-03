@@ -1,4 +1,4 @@
-use crate::{ray::Ray, triple::Colour};
+use crate::{float::*, ray::Ray, triple::Colour};
 
 use super::ambience::Ambience;
 
@@ -17,10 +17,10 @@ impl Ambience for RayLight {
         let unit_direction = ray.direction().unit_vector();
 
         // Convert to colour
-        let col = Colour::new(unit_direction.x(), unit_direction.y(), unit_direction.z());
+        let col = Colour::new_flt(unit_direction.x(), unit_direction.y(), unit_direction.z());
 
         // Map -1..1 to 0..1
-        (col + Colour::new(1.0, 1.0, 1.0)) / 2.0
+        (col + Colour::new_white()) / flt(2.0)
     }
 }
 

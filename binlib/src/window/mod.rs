@@ -1,6 +1,6 @@
 use keys::{print_help, process_keys, setup_keys};
 use minifb::{Key, ScaleMode, Window, WindowOptions};
-use raytracer_lib::{hits::hittable::Hittable, triple::Colour};
+use raytracer_lib::{float::*, hits::hittable::Hittable, triple::Colour};
 use std::error::Error;
 
 use crate::MainParms;
@@ -9,15 +9,15 @@ mod adjust;
 mod keys;
 
 struct WinState {
-    move_delta_big: f64,
-    move_delta_small: f64,
+    move_delta_big: Flt,
+    move_delta_small: Flt,
 }
 
 pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error>> {
     // Set up window state
     let mut winstate = WinState {
-        move_delta_big: 100.0,
-        move_delta_small: 10.0,
+        move_delta_big: flt(100.0),
+        move_delta_small: flt(10.0),
     };
 
     // Main bounding box
@@ -48,7 +48,7 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
 
         // Set up movement parameters - 1/50th of longest axis for small, 1/5 for big
         winstate.move_delta_small =
-            ((bbox.ranges[axis].end - bbox.ranges[axis].start) / 50.0).max(0.1);
+            ((bbox.ranges[axis].end - bbox.ranges[axis].start) / 50.0).max(flt(0.1));
         winstate.move_delta_big = winstate.move_delta_small * 10.0;
     }
 
@@ -140,10 +140,10 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
             for (fl, nl) in frame.iter_mut().zip(next_frame.into_iter()) {
                 for (fc, nc) in fl.iter_mut().zip(nl.into_iter()) {
                     // Rolling average
-                    let cnt: f64 = frame_no as f64;
+                    let cnt: Flt = flt(frame_no as FltPrim);
                     *fc *= cnt;
                     *fc += nc;
-                    *fc /= cnt + 1.0;
+                    *fc /= cnt + flt(1.0);
                 }
             }
 

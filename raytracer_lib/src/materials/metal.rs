@@ -1,6 +1,7 @@
 use rand::rngs::ThreadRng;
 
 use crate::{
+    float::*,
     hits::hit::Hit,
     ray::Ray,
     triple::{Colour, Vec3},
@@ -11,14 +12,14 @@ use super::material::{Material, Scattered};
 #[derive(Debug)]
 pub struct Metal {
     albedo: Colour,
-    fuzz: f64,
+    fuzz: Flt,
 }
 
 impl Metal {
-    pub fn new(albedo: Colour, fuzz: f64) -> Self {
+    pub fn new(albedo: Colour, fuzz: FltPrim) -> Self {
         Self {
             albedo,
-            fuzz: fuzz.clamp(0.0, 1.0),
+            fuzz: flt(fuzz.clamp(0.0, 1.0)),
         }
     }
 }

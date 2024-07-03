@@ -5,6 +5,7 @@ use rand::{thread_rng, Rng};
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
     camera::Camera,
+    float::*,
     hits::hittable_list::HittableList,
     materials::{dielectric::Dielectric, lambertian::Lambertian, material::MatRef, metal::Metal},
     shapes::sphere::Sphere,
@@ -38,9 +39,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             let choose_mat = rng.gen_range(0.0..1.0);
 
             let center = Point3::new(
-                a as f64 + rng.gen_range(-0.4..0.4),
+                a as FltPrim + rng.gen_range(-0.4..0.4),
                 0.2,
-                b as f64 + rng.gen_range(-0.4..0.4),
+                b as FltPrim + rng.gen_range(-0.4..0.4),
             );
 
             if avoid.vec_to(&center).length() > 0.9 {

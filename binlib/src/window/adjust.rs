@@ -1,6 +1,6 @@
-use raytracer_lib::{camera::Camera, triple::Vec3};
+use raytracer_lib::{camera::Camera, float::*, triple::Vec3};
 
-pub(crate) fn adjust_vfov(cam: &mut Camera, degrees: f64, clear: &mut bool) {
+pub(crate) fn adjust_vfov(cam: &mut Camera, degrees: FltPrim, clear: &mut bool) {
     let vfov = cam.vfov();
     let new_vfov = (vfov + degrees).clamp(0.0, 180.0);
 
@@ -10,7 +10,7 @@ pub(crate) fn adjust_vfov(cam: &mut Camera, degrees: f64, clear: &mut bool) {
     }
 }
 
-pub(crate) fn adjust_focus(cam: &mut Camera, degrees: f64, dist: f64, clear: &mut bool) {
+pub(crate) fn adjust_focus(cam: &mut Camera, degrees: FltPrim, dist: FltPrim, clear: &mut bool) {
     let (defocus_angle, focus_distance) = cam.focus();
 
     let new_defocus_angle = (defocus_angle + degrees).clamp(0.0, 180.0);

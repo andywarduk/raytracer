@@ -5,6 +5,7 @@ use binlib::{bin_main, MainParms};
 use rand::{thread_rng, Rng};
 use raytracer_lib::{
     camera::Camera,
+    float::*,
     hits::{bvh::BvhNode, hittable_list::HittableList},
     materials::{
         dielectric::Dielectric, diffuse_light::DiffuseLight, lambertian::Lambertian, metal::Metal,
@@ -45,9 +46,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         for j in 0..BOXES_PER_SIDE {
             let w = 100.0;
 
-            let x0 = -1000.0 + ((i as f64) * w);
+            let x0 = -1000.0 + ((i as FltPrim) * w);
             let y0 = 0.0;
-            let z0 = -1000.0 + ((j as f64) * w);
+            let z0 = -1000.0 + ((j as FltPrim) * w);
 
             let x1 = x0 + w;
             let y1 = rng.gen_range(1.0..101.0);

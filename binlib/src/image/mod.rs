@@ -21,7 +21,7 @@ pub(super) fn render_to_image(state: MainParms, output: &Path) -> Result<(), Box
     eprintln!("\nDone!");
 
     // Save the image
-    save_image(image, &output, &state.gamma)?;
+    save_image(image, output, &state.gamma)?;
 
     Ok(())
 }

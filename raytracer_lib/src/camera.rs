@@ -5,6 +5,7 @@ use rayon::prelude::*;
 
 use crate::{
     ambient::ambience::Ambience,
+    float::*,
     hits::{
         hittable::{Hittable, T_MIN},
         hittable_list::HittableList,
@@ -22,7 +23,7 @@ pub struct Camera {
     /// Image height
     image_height: u64,
     /// Image aspect ratio
-    aspect_ratio: f64,
+    aspect_ratio: Flt,
     /// Point camera is looking from
     look_from: Point3,
     /// Point camera is looking at
@@ -36,7 +37,7 @@ pub struct Camera {
     /// Camera frame basis vector w
     w: Vec3,
     /// Vertical view angle (field of view)
-    vfov: f64,
+    vfov: Flt,
     /// Location of pixel (0,0,0)
     pixel00_loc: Point3,
     /// Offset to pixel to the right
@@ -46,39 +47,42 @@ pub struct Camera {
     /// Count of random samples for each pixel
     samples_per_pixel: u64,
     /// Color scale factor for a sum of pixel samples
-    pixel_samples_scale: f64,
+    pixel_samples_scale: Flt,
     /// Maximum number of ray bounces into scene
     max_depth: u64,
     /// Variation angle of rays through each pixel
-    defocus_angle: f64,
+    defocus_angle: Flt,
     /// Distance from camera look from point to plane of perfect focus
-    focus_dist: f64,
+    focus_dist: Flt,
     /// Defocus disk horizontal radius
     defocus_disk_u: Vec3,
     /// Defocus disk vertical radius
     defocus_disk_v: Vec3,
     /// Time span
-    time_span: f64,
+    time_span: Flt,
 }
 
 impl Camera {
     /// Creates a new camera
     pub fn new(
         image_width: u64,
-        aspect_ratio: f64,
+        aspect_ratio: FltPrim,
         samples_per_pixel: u64,
         max_depth: u64,
     ) -> Self {
+        let aspect_ratio = flt(aspect_ratio);
+
         // Calculate the image height
-        let image_height = (image_width as f64 / aspect_ratio) as u64;
+        let image_height =
+            (FltPrim::from(flt(image_width as FltPrim) / aspect_ratio) as u64).max(1);
 
         // Build result
         let mut result = Self {
             vup: Vec3::new(0.0, 1.0, 0.0),
-            vfov: 90.0,
+            vfov: flt(90.0),
             look_at: Point3::new(0.0, 0.0, -1.0),
-            defocus_angle: 0.0,
-            focus_dist: 10.0,
+            defocus_angle: flt(0.0),
+            focus_dist: flt(10.0),
 
             image_width,
             image_height,
@@ -99,7 +103,7 @@ impl Camera {
         self.image_width = width;
         self.image_height = height;
 
-        self.aspect_ratio = width as f64 / height as f64;
+        self.aspect_ratio = flt(width as FltPrim) / flt(height as FltPrim);
 
         self.recalculate();
     }
@@ -109,7 +113,8 @@ impl Camera {
         self.image_width = width;
 
         // Calculate the image height
-        self.image_height = (self.image_width as f64 / self.aspect_ratio) as u64;
+        self.image_height =
+            FltPrim::from(flt(self.image_width as FltPrim) / self.aspect_ratio) as u64;
 
         self.recalculate();
     }
@@ -119,7 +124,8 @@ impl Camera {
         self.image_height = height;
 
         // Calculate the image width
-        self.image_width = (self.image_height as f64 * self.aspect_ratio) as u64;
+        self.image_width =
+            FltPrim::from(flt(self.image_height as FltPrim) * self.aspect_ratio) as u64;
 
         self.recalculate();
     }
@@ -134,26 +140,26 @@ impl Camera {
     }
 
     /// Set the vertical field of vision in degrees
-    pub fn set_vfov(&mut self, vfov: f64) {
-        self.vfov = vfov;
+    pub fn set_vfov(&mut self, vfov: FltPrim) {
+        self.vfov = flt(vfov);
 
         self.recalculate();
     }
 
     /// Set camera focus parameters
-    pub fn set_focus(&mut self, defocus_angle: f64, focus_dist: f64) {
-        self.defocus_angle = defocus_angle;
-        self.focus_dist = focus_dist;
+    pub fn set_focus(&mut self, defocus_angle: FltPrim, focus_dist: FltPrim) {
+        self.defocus_angle = flt(defocus_angle);
+        self.focus_dist = flt(focus_dist);
 
         self.recalculate();
     }
 
     /// Sets the render time span
-    pub fn set_time_span(&mut self, time_span: f64) {
+    pub fn set_time_span(&mut self, time_span: FltPrim) {
         // Values > 1.0 will mean bounding boxes for moving shapes are incorrect
         assert!((0.0..=1.0).contains(&time_span));
 
-        self.time_span = time_span;
+        self.time_span = flt(time_span);
     }
 
     /// Sets the samples per pixel
@@ -183,18 +189,18 @@ impl Camera {
     }
 
     /// Get the vertical field of vision in degrees
-    pub fn vfov(&self) -> f64 {
-        self.vfov
+    pub fn vfov(&self) -> FltPrim {
+        flt_prim(self.vfov)
     }
 
     /// Get camera focus parameters
-    pub fn focus(&self) -> (f64, f64) {
-        (self.defocus_angle, self.focus_dist)
+    pub fn focus(&self) -> (FltPrim, FltPrim) {
+        (flt_prim(self.defocus_angle), flt_prim(self.focus_dist))
     }
 
     /// Gets the render time span
-    pub fn time_span(&self) -> f64 {
-        self.time_span
+    pub fn time_span(&self) -> FltPrim {
+        flt_prim(self.time_span)
     }
 
     /// Gets the samples per pixel
@@ -252,14 +258,16 @@ impl Camera {
 
     /// Recalculate camera parameters
     fn recalculate(&mut self) {
-        self.pixel_samples_scale = 1.0 / self.samples_per_pixel as f64;
+        let f_image_width = flt(self.image_width as FltPrim);
+        let f_image_height = flt(self.image_height as FltPrim);
+
+        self.pixel_samples_scale = flt(1.0) / flt(self.samples_per_pixel as FltPrim);
 
         // Calculate viewport dimensions
         let theta = self.vfov.to_radians();
         let h = (theta / 2.0).tan();
-        let viewport_height = 2.0 * h * self.focus_dist;
-        let viewport_width: f64 =
-            viewport_height * (self.image_width as f64 / self.image_height as f64);
+        let viewport_height = flt(2.0) * h * self.focus_dist;
+        let viewport_width = viewport_height * (f_image_width / f_image_height);
 
         // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
         self.w = self.look_at.vec_to(&self.look_from).unit_vector();
@@ -271,13 +279,16 @@ impl Camera {
         let viewport_v = viewport_height * -&self.v;
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel
-        self.pixel_delta_u = &viewport_u / self.image_width as f64;
-        self.pixel_delta_v = &viewport_v / self.image_height as f64;
+        self.pixel_delta_u = &viewport_u / f_image_width;
+        self.pixel_delta_v = &viewport_v / f_image_height;
 
         // Calculate the location of the upper left pixel
-        let viewport_upper_left =
-            &self.look_from - (self.focus_dist * &self.w) - viewport_u / 2.0 - viewport_v / 2.0;
-        self.pixel00_loc = viewport_upper_left + 0.5 * (&self.pixel_delta_u + &self.pixel_delta_v);
+        let viewport_upper_left = &self.look_from
+            - (self.focus_dist * &self.w)
+            - viewport_u / flt(2.0)
+            - viewport_v / flt(2.0);
+        self.pixel00_loc =
+            viewport_upper_left + flt(0.5) * (&self.pixel_delta_u + &self.pixel_delta_v);
 
         // Calculate the camera defocus disk basis vectors
         let defocus_radius = self.focus_dist * (self.defocus_angle / 2.0).to_radians().tan();
@@ -293,8 +304,8 @@ impl Camera {
 
         // Calculate the point in the viewport to sample
         let pixel_sample = &self.pixel00_loc
-            + ((i as f64 + offset.x()) * &self.pixel_delta_u)
-            + ((j as f64 + offset.y()) * &self.pixel_delta_v);
+            + ((flt(i as FltPrim) + offset.x()) * &self.pixel_delta_u)
+            + ((flt(j as FltPrim) + offset.y()) * &self.pixel_delta_v);
 
         // Ray origin
         let ray_origin = if self.defocus_angle <= 0.0 {
@@ -307,11 +318,11 @@ impl Camera {
         let ray_direction = ray_origin.vec_to(&pixel_sample);
 
         // Ray time
-        let time = if self.time_span > 0.0 {
-            rng.gen_range(0.0..self.time_span)
+        let time = flt(if self.time_span > 0.0 {
+            rng.gen_range(0.0..(self.time_span.into()))
         } else {
             0.0
-        };
+        });
 
         Ray::new(ray_origin, ray_direction, time)
     }
@@ -342,7 +353,7 @@ impl Camera {
             return Colour::default();
         }
 
-        match world.hit(ray, T_MIN..f64::MAX) {
+        match world.hit(ray, flt(T_MIN)..flt_max()) {
             None => {
                 // Ray hit nothing - return background colour
                 ambience.value(ray)

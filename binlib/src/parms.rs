@@ -1,6 +1,7 @@
 use raytracer_lib::{
     ambient::{ambience::Ambience, ambient_light::AmbientLight},
     camera::Camera,
+    float::*,
     gamma::Gamma,
     hits::{aabb::Aabb, hittable_list::HittableList},
     triple::Colour,
@@ -84,7 +85,7 @@ impl<'a> MainParms<'a> {
         }
     }
 
-    pub fn set_gamma(&mut self, factor: f64) {
+    pub fn set_gamma(&mut self, factor: FltPrim) {
         self.gamma = Gamma::new(factor)
     }
 

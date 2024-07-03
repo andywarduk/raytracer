@@ -1,6 +1,7 @@
 use std::ops::Range;
 
 use crate::{
+    float::*,
     hits::{
         aabb::Aabb,
         hit::Hit,
@@ -25,7 +26,7 @@ impl<'a> InvisibleFor<'a> {
 }
 
 impl<'a> Hittable<'a> for InvisibleFor<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         if ray.depth() < self.bounces {
             None
         } else {

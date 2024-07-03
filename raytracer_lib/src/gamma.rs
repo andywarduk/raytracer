@@ -1,14 +1,16 @@
+use crate::float::*;
+
 pub enum Gamma {
     None,
-    Power(f64),
+    Power(Flt),
 }
 
 impl Gamma {
-    pub fn new(factor: f64) -> Self {
+    pub fn new(factor: FltPrim) -> Self {
         if factor == 0.0 {
             Self::None
         } else {
-            Self::Power(1.0 / factor)
+            Self::Power(flt(1.0 / factor))
         }
     }
 }

@@ -1,7 +1,10 @@
 use image::io::Reader as ImageReader;
 use std::path::{Path, PathBuf};
 
-use crate::triple::{Colour, Point3};
+use crate::{
+    float::*,
+    triple::{Colour, Point3},
+};
 
 use super::texture::Texture;
 
@@ -49,25 +52,25 @@ impl Image {
     }
 }
 
-const COLOUR_SCALE: f64 = 1.0 / 255.0;
+const COLOUR_SCALE: FltPrim = 1.0 / 255.0;
 
 impl Texture for Image {
-    fn value(&self, u: f64, v: f64, _p: &Point3) -> Colour {
+    fn value(&self, u: Flt, v: Flt, _p: &Point3) -> Colour {
         // Clamp input texture coordinates to [0,1] x [1,0]
-        let uc = u.clamp(0.0, 1.0);
-        let vc = (1.0 - v).clamp(0.0, 1.0);
+        let uc = clamp(u, flt(0.0), flt(1.0));
+        let vc = clamp(flt(1.0) - v, flt(0.0), flt(1.0));
 
-        let x = (uc * (self.width - 1) as f64) as usize;
-        let y = (vc * (self.height - 1) as f64) as usize;
+        let x = (FltPrim::from(uc) * (self.width - 1) as FltPrim) as usize;
+        let y = (FltPrim::from(vc) * (self.height - 1) as FltPrim) as usize;
 
         let idx = (y * (self.width as usize * 3)) + (x * 3);
 
         let (r, g, b) = (self.map[idx], self.map[idx + 1], self.map[idx + 2]);
 
         Colour::new(
-            r as f64 * COLOUR_SCALE,
-            g as f64 * COLOUR_SCALE,
-            b as f64 * COLOUR_SCALE,
+            r as FltPrim * COLOUR_SCALE,
+            g as FltPrim * COLOUR_SCALE,
+            b as FltPrim * COLOUR_SCALE,
         )
     }
 }

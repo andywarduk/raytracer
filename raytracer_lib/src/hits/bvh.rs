@@ -1,14 +1,12 @@
 use std::{cmp::Ordering, ops::Range};
 
 use crate::{
+    float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
     ray::Ray,
 };
 
-use super::{
-    hittable::{HittableRef, T_MIN},
-    hittable_list::HittableList,
-};
+use super::{hittable::HittableRef, hittable_list::HittableList};
 
 #[derive(Debug)]
 pub struct BvhNode<'a> {
@@ -81,12 +79,12 @@ impl<'a> BvhNode<'a> {
         a_axis_interval
             .start
             .partial_cmp(&b_axis_interval.start)
-            .expect("Invalid f64 in sort")
+            .expect("Invalid float in sort")
     }
 }
 
 impl<'a> Hittable<'a> for BvhNode<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         // Any hit at all?
         if !self.bbox.hit(ray, &t_range) {
             return None;
@@ -107,7 +105,7 @@ impl<'a> Hittable<'a> for BvhNode<'a> {
                 // Got left hit - check right
                 if let Some(right) = &self.right {
                     // Got right - check it
-                    match right.hit(ray, T_MIN..lhit.t) {
+                    match right.hit(ray, t_range.start..lhit.t) {
                         None => Some(lhit),
                         rhit => rhit,
                     }

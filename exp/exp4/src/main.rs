@@ -7,6 +7,7 @@ use binlib::{bin_main, MainParms};
 use raytracer_lib::{
     ambient::ray_light::RayLight,
     camera::Camera,
+    float::*,
     hits::hittable_list::HittableList,
     materials::{
         dielectric::Dielectric, diffuse::Diffuse, diffuse_light::DiffuseLight,
@@ -34,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // World
     let mut world = HittableList::new();
 
-    const LD: f64 = 4.0;
+    const LD: FltPrim = 4.0;
 
     // Square light
     world.add(Quad::new(

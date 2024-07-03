@@ -3,17 +3,18 @@ use std::{fmt::Display, ops::Range};
 use auto_ops::impl_op_ex_commutative;
 
 use crate::{
+    float::*,
     ray::Ray,
     triple::{Point3, Vec3},
 };
 
 #[derive(Debug, Clone)]
 pub struct Aabb {
-    pub ranges: [Range<f64>; 3],
+    pub ranges: [Range<Flt>; 3],
 }
 
 impl Aabb {
-    pub fn new_from_ranges(x: Range<f64>, y: Range<f64>, z: Range<f64>) -> Self {
+    pub fn new_from_ranges(x: Range<Flt>, y: Range<Flt>, z: Range<Flt>) -> Self {
         let mut res = Self { ranges: [x, y, z] };
 
         res.pad_to_minimums();
@@ -61,7 +62,7 @@ impl Aabb {
         res
     }
 
-    pub fn hit(&self, ray: &Ray, t_range: &Range<f64>) -> bool {
+    pub fn hit(&self, ray: &Ray, t_range: &Range<Flt>) -> bool {
         let mut start = t_range.start;
         let mut end = t_range.end;
 
@@ -88,7 +89,7 @@ impl Aabb {
     }
 
     pub fn longest_axis(&self) -> usize {
-        let mut largest = 0.0;
+        let mut largest = flt(0.0);
         let mut axis = 0;
 
         for (i, r) in self.ranges.iter().enumerate() {
@@ -103,7 +104,7 @@ impl Aabb {
         axis
     }
 
-    const DELTA: f64 = 0.0001;
+    const DELTA: FltPrim = 0.0001;
 
     fn pad_to_minimums(&mut self) {
         // Adjust the AABB so that no side is narrower than some delta, padding if necessary.

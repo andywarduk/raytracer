@@ -1,6 +1,9 @@
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 
-use crate::triple::{Point3, Vec3};
+use crate::{
+    float::*,
+    triple::{Point3, Vec3},
+};
 
 const POINT_COUNT: usize = 256;
 
@@ -17,18 +20,18 @@ impl PerlinNoise {
         Self::default()
     }
 
-    pub fn noise(&self, p: &Point3) -> f64 {
+    pub fn noise(&self, p: &Point3) -> Flt {
         let u = p.x() - (p.x().floor());
         let v = p.y() - (p.y().floor());
         let w = p.z() - (p.z().floor());
 
-        let u = u * u * (3.0 - 2.0 * u);
-        let v = v * v * (3.0 - 2.0 * v);
-        let w = w * w * (3.0 - 2.0 * w);
+        let u = u * u * (flt(3.0) - flt(2.0) * u);
+        let v = v * v * (flt(3.0) - flt(2.0) * v);
+        let w = w * w * (flt(3.0) - flt(2.0) * w);
 
-        let i = p.x().floor() as i64;
-        let j = p.y().floor() as i64;
-        let k = p.z().floor() as i64;
+        let i = FltPrim::from(p.x().floor()) as i64;
+        let j = FltPrim::from(p.y().floor()) as i64;
+        let k = FltPrim::from(p.z().floor()) as i64;
 
         let mut c = vec![vec![vec![Vec3::default(); 2]; 2]; 2];
 
@@ -46,10 +49,15 @@ impl PerlinNoise {
         Self::perlin_interp(c, u, v, w)
     }
 
-    pub fn turbulence(&self, p: &Point3, depth: usize) -> f64 {
-        let (accum, _, _) = (0..depth).fold((0.0, p.clone(), 1.0), |(accum, p, weight), _| {
-            (accum + (weight * self.noise(&p)), p * 2.0, weight * 0.5)
-        });
+    pub fn turbulence(&self, p: &Point3, depth: usize) -> Flt {
+        let (accum, _, _) =
+            (0..depth).fold((flt(0.0), p.clone(), flt(1.0)), |(accum, p, weight), _| {
+                (
+                    accum + (weight * self.noise(&p)),
+                    p * flt(2.0),
+                    weight * flt(0.5),
+                )
+            });
 
         accum.abs()
     }
@@ -69,28 +77,28 @@ impl PerlinNoise {
         })
     }
 
-    fn perlin_interp(c: Vec<Vec<Vec<Vec3>>>, u: f64, v: f64, w: f64) -> f64 {
+    fn perlin_interp(c: Vec<Vec<Vec<Vec3>>>, u: Flt, v: Flt, w: Flt) -> Flt {
         // Hermitian smoothing
-        let uu = u * u * (3.0 - 2.0 * u);
-        let vv = v * v * (3.0 - 2.0 * v);
-        let ww = w * w * (3.0 - 2.0 * w);
+        let uu = u * u * (flt(3.0) - flt(2.0) * u);
+        let vv = v * v * (flt(3.0) - flt(2.0) * v);
+        let ww = w * w * (flt(3.0) - flt(2.0) * w);
 
-        let mut accum = 0.0;
+        let mut accum = flt(0.0);
 
         for (i, ci) in c.iter().enumerate() {
-            let fi = i as f64;
+            let fi = flt(i as FltPrim);
 
             for (j, cj) in ci.iter().enumerate() {
-                let fj = j as f64;
+                let fj = flt(j as FltPrim);
 
                 for (k, ck) in cj.iter().enumerate() {
-                    let fk = k as f64;
+                    let fk = flt(k as FltPrim);
 
-                    let weight_v = Vec3::new(u - fi, v - fj, w - fk);
+                    let weight_v = Vec3::new_flt(u - fi, v - fj, w - fk);
 
-                    accum += (fi * uu + (1.0 - fi) * (1.0 - uu))
-                        * (fj * vv + (1.0 - fj) * (1.0 - vv))
-                        * (fk * ww + (1.0 - fk) * (1.0 - ww))
+                    accum += (fi * uu + (flt(1.0) - fi) * (flt(1.0) - uu))
+                        * (fj * vv + (flt(1.0) - fj) * (flt(1.0) - vv))
+                        * (fk * ww + (flt(1.0) - fk) * (flt(1.0) - ww))
                         * ck.dot(&weight_v);
                 }
             }

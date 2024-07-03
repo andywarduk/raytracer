@@ -1,6 +1,7 @@
 use std::{mem, ops::Range};
 
 use crate::{
+    float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
     ray::Ray,
 };
@@ -51,7 +52,7 @@ impl<'a> HittableList<'a> {
 }
 
 impl<'a> Hittable<'a> for HittableList<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
+    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         let mut closest = t_range.end;
         let mut closest_hit = None;
 

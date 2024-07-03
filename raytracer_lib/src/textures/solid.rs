@@ -1,4 +1,7 @@
-use crate::triple::{Colour, Point3};
+use crate::{
+    float::*,
+    triple::{Colour, Point3},
+};
 
 use super::texture::Texture;
 
@@ -14,7 +17,7 @@ impl Solid {
 }
 
 impl Texture for Solid {
-    fn value(&self, _u: f64, _v: f64, _p: &Point3) -> Colour {
+    fn value(&self, _u: Flt, _v: Flt, _p: &Point3) -> Colour {
         self.albedo.clone()
     }
 }

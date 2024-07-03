@@ -1,4 +1,4 @@
-use crate::{ray::Ray, triple::Colour};
+use crate::{float::*, ray::Ray, triple::Colour};
 
 use super::ambience::Ambience;
 
@@ -19,9 +19,9 @@ impl Ambience for GradientLight {
         let unit_direction = ray.direction().unit_vector();
 
         // Convert y component from (-1..1) to (0..1)
-        let a = 0.5 * (unit_direction.y() + 1.0);
+        let a = flt(0.5) * (unit_direction.y() + 1.0);
 
         // Blend white with light blue
-        (1.0 - a) * &self.colour1 + a * &self.colour2
+        (flt(1.0) - a) * &self.colour1 + a * &self.colour2
     }
 }

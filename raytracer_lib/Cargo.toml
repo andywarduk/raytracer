@@ -6,5 +6,6 @@ edition = "2021"
 [dependencies]
 auto_ops = "0.3.0"
 image = "0.25.1"
+noisy_float = "0.2.0"
 rand = "0.8.5"
 rayon = "1.10.0"

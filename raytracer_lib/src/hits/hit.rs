@@ -1,4 +1,5 @@
 use crate::{
+    float::*,
     materials::material::Material,
     ray::Ray,
     triple::{Point3, Vec3},
@@ -8,9 +9,9 @@ use crate::{
 pub struct Hit<'a> {
     pub p: Point3,
     pub normal: Vec3,
-    pub t: f64,
-    pub u: f64,
-    pub v: f64,
+    pub t: Flt,
+    pub u: Flt,
+    pub v: Flt,
     pub front_face: bool,
     pub material: &'a dyn Material,
 }
@@ -18,9 +19,9 @@ pub struct Hit<'a> {
 impl<'a> Hit<'a> {
     pub fn new(
         p: Point3,
-        t: f64,
-        u: f64,
-        v: f64,
+        t: Flt,
+        u: Flt,
+        v: Flt,
         ray: &Ray,
         outward_normal: &Vec3,
         material: &'a dyn Material,

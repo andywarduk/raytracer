@@ -1,5 +1,6 @@
 pub mod ambient;
 pub mod camera;
+pub mod float;
 pub mod gamma;
 pub mod hits;
 pub mod materials;

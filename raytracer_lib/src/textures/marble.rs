@@ -1,4 +1,5 @@
 use crate::{
+    float::*,
     perlin::PerlinNoise,
     triple::{Colour, Point3},
 };
@@ -7,16 +8,16 @@ use super::texture::Texture;
 
 #[derive(Debug)]
 pub struct Marble {
-    scale: f64,
+    scale: Flt,
     depth: usize,
     axis: usize,
     perlin: PerlinNoise,
 }
 
 impl Marble {
-    pub fn new(scale: f64, depth: usize, axis: usize) -> Self {
+    pub fn new(scale: FltPrim, depth: usize, axis: usize) -> Self {
         Self {
-            scale,
+            scale: flt(scale),
             depth,
             axis,
             perlin: PerlinNoise::new(),
@@ -25,10 +26,10 @@ impl Marble {
 }
 
 impl Texture for Marble {
-    fn value(&self, _u: f64, _v: f64, p: &Point3) -> Colour {
-        Colour::new(0.5, 0.5, 0.5)
-            * (1.0
-                + (self.scale * p.e[self.axis] + 10.0 * self.perlin.turbulence(p, self.depth))
+    fn value(&self, _u: Flt, _v: Flt, p: &Point3) -> Colour {
+        Colour::new_grey(0.5)
+            * (flt(1.0)
+                + (self.scale * p.e[self.axis] + flt(10.0) * self.perlin.turbulence(p, self.depth))
                     .sin())
     }
 }

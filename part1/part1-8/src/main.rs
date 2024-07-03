@@ -1,9 +1,10 @@
-use std::{error::Error, f64::consts::PI};
+use std::error::Error;
 
 use binlib::{bin_main, MainParms};
 use raytracer_lib::{
     ambient::gradient_light::GradientLight,
     camera::Camera,
+    float::*,
     hits::hittable_list::HittableList,
     materials::lambertian::Lambertian,
     shapes::sphere::Sphere,

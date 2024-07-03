@@ -1,4 +1,5 @@
 use crate::{
+    float::*,
     perlin::PerlinNoise,
     triple::{Colour, Point3},
 };
@@ -7,15 +8,15 @@ use super::texture::Texture;
 
 #[derive(Debug)]
 pub struct Turbulence {
-    scale: f64,
+    scale: Flt,
     depth: usize,
     perlin: PerlinNoise,
 }
 
 impl Turbulence {
-    pub fn new(scale: f64, depth: usize) -> Self {
+    pub fn new(scale: FltPrim, depth: usize) -> Self {
         Self {
-            scale,
+            scale: flt(scale),
             depth,
             perlin: PerlinNoise::new(),
         }
@@ -23,7 +24,7 @@ impl Turbulence {
 }
 
 impl Texture for Turbulence {
-    fn value(&self, _u: f64, _v: f64, p: &Point3) -> Colour {
-        Colour::new(1.0, 1.0, 1.0) * self.perlin.turbulence(&(self.scale * p), self.depth)
+    fn value(&self, _u: Flt, _v: Flt, p: &Point3) -> Colour {
+        Colour::new_white() * self.perlin.turbulence(&(self.scale * p), self.depth)
     }
 }
