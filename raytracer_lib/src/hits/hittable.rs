@@ -7,7 +7,9 @@ use crate::{float::*, hits::aabb::Aabb, ray::Ray};
 
 use super::hit::Hit;
 
-pub const T_MIN: FltPrim = 0.001;
+/// Ignore hits closer than distance
+pub const T_MIN: FltPrim = 0.00001;
+// TODO this is better at 0.001 for f32
 
 pub trait Hittable<'a>: Debug + Send + Sync {
     fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit>;
