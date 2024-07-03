@@ -147,8 +147,10 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
 
             // Display the output buffer
             window.set_title(&format!(
-                "Pass {} ({:.2} fps) - ESC to exit",
-                render_state.frame_no, render_state.fps
+                "Pass {} ({}%), {:.2} fps - ESC to exit",
+                render_state.frame_no,
+                (render_state.frame_no * 100) / max_frame,
+                render_state.fps
             ));
             window.update_with_buffer(&output_buffer, w as usize, h as usize)?;
         } else {
@@ -193,7 +195,10 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
             // Reached the end?
             if render_state.frame_no >= max_frame {
                 render_state.stop();
-                window.set_title(&format!("Finished ({:.2} fps) - ESC to exit", render_state.fps));
+                window.set_title(&format!(
+                    "Finished ({:.2} fps) - ESC to exit",
+                    render_state.fps
+                ));
             }
         }
     }
