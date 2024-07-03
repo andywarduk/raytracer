@@ -1,7 +1,7 @@
 use keys::{print_help, process_keys, setup_keys};
 use minifb::{Key, ScaleMode, Window, WindowOptions};
 use raytracer_lib::{float::*, hits::hittable::Hittable, triple::Colour};
-use std::error::Error;
+use std::{error::Error, time::Instant};
 
 use crate::MainParms;
 
@@ -11,6 +11,38 @@ mod keys;
 struct WinState {
     move_delta_big: Flt,
     move_delta_small: Flt,
+}
+
+#[derive(Default)]
+struct RenderState {
+    frame_no: u64,
+    started: Option<Instant>,
+    fps: Flt,
+}
+
+impl RenderState {
+    fn reset(&mut self) {
+        self.frame_no = 0;
+        self.started = Some(Instant::now());
+    }
+
+    fn frame_finished(&mut self) {
+        self.frame_no += 1;
+
+        if let Some(started) = self.started {
+            let dur = (Instant::now() - started).as_secs_f64();
+
+            self.fps = if dur > 0.0 {
+                flt(self.frame_no as FltPrim) / flt(dur)
+            } else {
+                flt(0.0)
+            };
+        }
+    }
+
+    fn stop(&mut self) {
+        self.started = None;
+    }
 }
 
 pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error>> {
@@ -85,19 +117,22 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
         },
     )?;
 
-    // Limit to max ~60 fps update rate
-    window.set_target_fps(60);
+    // Limit to max ~120 fps update rate
+    window.set_target_fps(600);
 
     // Set up key buffer
     let keys = setup_keys(&mut window);
 
+    // State
+    let mut render_state = RenderState::default();
+    render_state.reset();
+
     // Render the first frame
     let mut frame = state.cam.render(&state.world, &*state.ambience, None);
-    let mut frame_no = 1;
-    let mut iterating = true;
+    render_state.frame_finished();
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        if iterating {
+        if render_state.started.is_some() {
             // Build output buffer from the renderer frame
             let mut outelem = 0;
 
@@ -111,7 +146,10 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
             }
 
             // Display the output buffer
-            window.set_title(&format!("Rendering (pass {frame_no}) - ESC to exit"));
+            window.set_title(&format!(
+                "Pass {} ({:.2} fps) - ESC to exit",
+                render_state.frame_no, render_state.fps
+            ));
             window.update_with_buffer(&output_buffer, w as usize, h as usize)?;
         } else {
             // No buffer update
@@ -131,11 +169,10 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
             }
 
             // Reset frame count and iterating flag
-            frame_no = 0;
-            iterating = true;
+            render_state.reset();
         }
 
-        if iterating {
+        if render_state.started.is_some() {
             // Get the next frame
             let next_frame = state.cam.render(&state.world, &*state.ambience, None);
 
@@ -143,7 +180,7 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
             for (fl, nl) in frame.iter_mut().zip(next_frame.into_iter()) {
                 for (fc, nc) in fl.iter_mut().zip(nl.into_iter()) {
                     // Rolling average
-                    let cnt: Flt = flt(frame_no as FltPrim);
+                    let cnt: Flt = flt(render_state.frame_no as FltPrim);
                     *fc *= cnt;
                     *fc += nc;
                     *fc /= cnt + flt(1.0);
@@ -151,12 +188,12 @@ pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error
             }
 
             // Increment frame number
-            frame_no += 1;
+            render_state.frame_finished();
 
             // Reached the end?
-            if frame_no >= max_frame {
-                iterating = false;
-                window.set_title("Render finished - ESC to exit");
+            if render_state.frame_no >= max_frame {
+                render_state.stop();
+                window.set_title(&format!("Finished ({:.2} fps) - ESC to exit", render_state.fps));
             }
         }
     }
