@@ -30,7 +30,7 @@ impl RenderState {
         self.frame_no += 1;
 
         if let Some(started) = self.started {
-            let dur = (Instant::now() - started).as_secs_f64();
+            let dur = started.elapsed().as_secs_f64();
 
             self.fps = if dur > 0.0 {
                 flt(self.frame_no as FltPrim) / flt(dur)
