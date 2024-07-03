@@ -9,4 +9,4 @@ then
     exit 1
 fi
 
-cargo run --profile=release --package $package -- $*
+cargo run --profile=release-r32 --package $package -- $*

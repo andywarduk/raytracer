@@ -14,6 +14,9 @@ struct WinState {
 }
 
 pub(super) fn render_to_window(mut state: MainParms) -> Result<(), Box<dyn Error>> {
+    // Print float type
+    println!("Float type: {FLOAT_DESC} ({} bytes)", size_of::<FltPrim>());
+
     // Set up window state
     let mut winstate = WinState {
         move_delta_big: flt(100.0),

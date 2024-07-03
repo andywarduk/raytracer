@@ -1,3 +1,5 @@
+cargo-features = ["profile-rustflags"]
+
 [workspace]
 members = [
     "raytracer_lib",
@@ -37,10 +39,38 @@ members = [
 ]
 resolver = "2"
 
+[profile.dev]
+# Use r64 floats for dev build
+rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"r64\"", "--check-cfg", "cfg(float, values(any()))"]
+
 [profile.release]
 debug = true
+# Use r64 floats for release build
+rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"r64\"", "--check-cfg", "cfg(float, values(any()))"]
+
+# -- Custom profiles --
+
+# Release build with f64 bit floats
+[profile.release-f64]
+inherits = "release"
+rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"f64\"", "--check-cfg", "cfg(float, values(any()))"]
+
+# Release build with LTO
+[profile.release-lto]
+inherits = "release-f64"
 lto = true
 
-[profile.release-nolto]
+# Dev build with R32 floats
+[profile.dev-r32]
+inherits = "dev"
+rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"r32\"", "--check-cfg", "cfg(float, values(any()))"]
+
+# Release build with f32 floats
+[profile.release-f32]
 inherits = "release"
-lto = false
+rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"f32\"", "--check-cfg", "cfg(float, values(any()))"]
+
+# Release build with r32 bit floats
+[profile.release-r32]
+inherits = "release"
+rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"r32\"", "--check-cfg", "cfg(float, values(any()))"]
