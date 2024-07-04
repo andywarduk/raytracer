@@ -11,7 +11,7 @@ use super::material::{Material, Scattered};
 pub struct Normal {}
 
 impl Normal {
-    /// Create a new normal meterial
+    /// Create a new normal material
     pub fn new() -> Self {
         Self {}
     }
