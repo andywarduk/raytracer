@@ -39,9 +39,9 @@ impl Material for Metal {
         let scattered = Ray::new(hit.p.clone(), reflected, ray.time());
 
         if scattered.direction().dot(&hit.normal) > 0.0 {
-            (Some(self.albedo.clone()), None, Some(scattered))
+            (self.albedo.clone(), None, Some(scattered))
         } else {
-            (None, None, None)
+            (Colour::default(), None, None)
         }
     }
 }

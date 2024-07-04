@@ -6,7 +6,7 @@ use std::{fmt::Debug, ops::Deref};
 use crate::{hits::hit::Hit, ray::Ray, triple::Colour};
 
 /// Scattered light details
-pub type Scattered = (Option<Colour>, Option<Colour>, Option<Ray>);
+pub type Scattered = (Colour, Option<Colour>, Option<Ray>);
 
 /// Material trait
 pub trait Material: Debug + Send + Sync {

@@ -64,6 +64,6 @@ impl Material for Dielectric {
 
         let scattered = Ray::new(hit.p.clone(), direction, ray.time());
 
-        (Some(Colour::new_white()), None, Some(scattered))
+        (Colour::new_white(), None, Some(scattered))
     }
 }

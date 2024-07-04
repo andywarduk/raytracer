@@ -29,6 +29,6 @@ impl Material for Diffuse {
 
         let scattered = Ray::new(hit.p.clone(), direction, ray.time());
 
-        (Some(self.albedo.clone()), None, Some(scattered))
+        (self.albedo.clone(), None, Some(scattered))
     }
 }

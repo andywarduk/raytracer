@@ -2,11 +2,11 @@ use std::error::Error;
 
 use binlib::{bin_main, MainParms};
 use raytracer_lib::{
-    ambient::gradient_light::GradientLight,
+    ambient::ambient_light::AmbientLight,
     camera::Camera,
     float::*,
     hits::{bvh::BvhNode, hittable::Hittable, hittable_list::HittableList},
-    materials::{lambertian::Lambertian, material::MatRef, metal::Metal},
+    materials::{lambertian::Lambertian, material::MatRef},
     shapes::sphere::Sphere,
     triple::{Colour, Point3, Vec3},
 };
@@ -27,9 +27,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             for z in 0..COUNT {
                 let centre = Point3::new(x as FltPrim, y as FltPrim, z as FltPrim);
                 let colour = Colour::new_flt(centre.x(), centre.y(), centre.z())
-                    / flt(COUNT as FltPrim - 1.0);
+                    / (flt(COUNT as FltPrim - 1.0));
 
-                let material = MatRef::boxed(Metal::new(colour, 0.0));
+                let material = MatRef::boxed(Lambertian::new_with_colour(colour));
 
                 spheres.add(Sphere::new_with_matref(centre, RADIUS, material));
             }
@@ -73,11 +73,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     cam.set_focus(0.6, 10.0);
 
     // Set up parameters
-    let mut parms = MainParms::new_ambience(
-        cam,
-        world,
-        GradientLight::new(Colour::new_white(), Colour::new(0.5, 0.7, 1.0)),
-    );
+    let mut parms = MainParms::new_ambience(cam, world, AmbientLight::new(Colour::new_white()));
 
     // Set main bounding box to the spheres
     parms.set_main_bbox(spheres_bbox);

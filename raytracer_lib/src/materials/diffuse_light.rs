@@ -38,6 +38,10 @@ impl<'a> DiffuseLight<'a> {
 
 impl<'a> Material for DiffuseLight<'a> {
     fn scatter(&self, _rng: &mut ThreadRng, _ray: &Ray, hit: &Hit) -> Scattered {
-        (None, Some(self.texture.value(hit.u, hit.v, &hit.p)), None)
+        (
+            Colour::default(),
+            Some(self.texture.value(hit.u, hit.v, &hit.p)),
+            None,
+        )
     }
 }

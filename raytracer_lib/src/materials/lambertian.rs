@@ -49,7 +49,7 @@ impl<'a> Material for Lambertian<'a> {
         let scattered = Ray::new(hit.p.clone(), scatter_direction, ray.time());
 
         (
-            Some(self.texture.value(hit.u, hit.v, &hit.p)),
+            self.texture.value(hit.u, hit.v, &hit.p),
             None,
             Some(scattered),
         )

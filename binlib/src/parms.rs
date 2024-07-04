@@ -22,6 +22,7 @@ pub struct MainParms<'a> {
 }
 
 impl<'a> MainParms<'a> {
+    /// Prints the camera parameters
     pub fn dump_camera_parameters(&self, show_samples: bool) {
         println!("Camera parameters:");
 
@@ -61,6 +62,7 @@ impl<'a> MainParms<'a> {
 }
 
 impl<'a> MainParms<'a> {
+    /// Creates new parameters with given camera and hittable list
     pub fn new(cam: Camera, world: HittableList<'a>) -> Self {
         Self {
             cam,
@@ -71,6 +73,7 @@ impl<'a> MainParms<'a> {
         }
     }
 
+    /// Creates new parameters with given camera, hittable list and ambient light
     pub fn new_ambience(
         cam: Camera,
         world: HittableList<'a>,
@@ -85,10 +88,12 @@ impl<'a> MainParms<'a> {
         }
     }
 
+    /// Sets the gamma correction
     pub fn set_gamma(&mut self, factor: FltPrim) {
         self.gamma = Gamma::new(factor)
     }
 
+    /// Sets the bounding box for the scene main feature
     pub fn set_main_bbox(&mut self, bbox: Aabb) {
         self.main_bbox = Some(bbox)
     }

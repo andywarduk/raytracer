@@ -42,7 +42,7 @@ impl<'a> Material for Isotropic<'a> {
         let scattered = Ray::new(hit.p.clone(), Vec3::new_random_unit_vector(rng), ray.time());
 
         (
-            Some(self.texture.value(hit.u, hit.v, &hit.p)),
+            self.texture.value(hit.u, hit.v, &hit.p),
             None,
             Some(scattered),
         )

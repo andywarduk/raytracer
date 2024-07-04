@@ -365,11 +365,8 @@ impl Camera {
             Some(hit) => {
                 // Ray hit an object
 
-                // Get colour attenuation, emitted colour and the next ray (all optional)
-                let (attenuation, emitted, next_ray) = hit.material.scatter(rng, ray, &hit);
-
-                // Get attenuation colour, or black if none
-                let mut attenuation = attenuation.unwrap_or_else(Colour::default);
+                // Get colour attenuation, emitted colour (optional) and the next ray (optional) from the material
+                let (mut attenuation, emitted, next_ray) = hit.material.scatter(rng, ray, &hit);
 
                 // Is there a next ray?
                 if let Some(mut ray) = next_ray {

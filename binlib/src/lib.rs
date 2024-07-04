@@ -1,3 +1,7 @@
+#![warn(missing_docs)]
+
+//! Raytracer binary entry point
+
 use image::render_to_image;
 use raytracer_lib::float::*;
 use std::{error::Error, path::PathBuf};

@@ -41,16 +41,19 @@ pub type Colour = Triple<ColourMixin>;
 /// Common methods
 impl<Mixin> Triple<Mixin> {
     /// Create new triple from values of float type
+    #[inline]
     pub fn new_flt(e1: Flt, e2: Flt, e3: Flt) -> Self {
         Self::new_from_array([e1, e2, e3])
     }
 
     /// Create new triple from values of primary float type
+    #[inline]
     pub fn new(e1: FltPrim, e2: FltPrim, e3: FltPrim) -> Self {
         Self::new_from_array([flt(e1), flt(e2), flt(e3)])
     }
 
     /// Create new triple from a fixed array
+    #[inline]
     pub fn new_from_array(e: [Flt; 3]) -> Self {
         Self {
             e,
@@ -59,6 +62,7 @@ impl<Mixin> Triple<Mixin> {
     }
 
     /// Creates a new random triple with values in the range 0.0 to 1.0
+    #[inline]
     pub fn new_random(rng: &mut ThreadRng) -> Self {
         Self::new(
             rng.gen_range(0.0..1.0),
@@ -68,6 +72,7 @@ impl<Mixin> Triple<Mixin> {
     }
 
     /// Creates a new random triple with values in the given range
+    #[inline]
     pub fn new_random_clamped(rng: &mut ThreadRng, min: FltPrim, max: FltPrim) -> Self {
         Self::new(
             rng.gen_range(min..max),
@@ -112,6 +117,7 @@ impl<Mixin> Triple<Mixin> {
 /// Methods for vectors
 impl Vec3 {
     /// Creates a new random vector within a sphere if radius 1.0
+    #[inline]
     pub fn new_random_in_unit_sphere(rng: &mut ThreadRng) -> Self {
         loop {
             let p = Self::new_random_clamped(rng, -1.0, 1.0);
@@ -123,6 +129,7 @@ impl Vec3 {
     }
 
     /// Creates a new random vector within a disc of radius 1.0 on the xy plane
+    #[inline]
     pub fn new_random_in_unit_disk(rng: &mut ThreadRng) -> Self {
         loop {
             let p = Self::new(rng.gen_range(0.0..1.0), rng.gen_range(0.0..1.0), 0.0);
@@ -134,11 +141,13 @@ impl Vec3 {
     }
 
     /// Creates a new random unit vector for the surface of a sphere with radius 1.0
+    #[inline]
     pub fn new_random_unit_vector(rng: &mut ThreadRng) -> Self {
         Self::new_random_in_unit_sphere(rng).unit_vector()
     }
 
     /// Creates a new random unit vector for the surface of a hemisphere with radius 1.0
+    #[inline]
     pub fn new_random_on_hemisphere(rng: &mut ThreadRng, normal: &Vec3) -> Self {
         let on_unit_sphere = Self::new_random_unit_vector(rng);
 
@@ -151,21 +160,25 @@ impl Vec3 {
     }
 
     /// Returns the length of the vector
+    #[inline]
     pub fn length(&self) -> Flt {
         self.length_squared().sqrt()
     }
 
     /// Returns the length squared of the vector
+    #[inline]
     pub fn length_squared(&self) -> Flt {
         self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
     }
 
     /// Returns the dot product of this triple with another triple
+    #[inline]
     pub fn dot<T>(&self, other: &Triple<T>) -> Flt {
         self.e[0] * other.e[0] + self.e[1] * other.e[1] + self.e[2] * other.e[2]
     }
 
     /// Returns the cross product of this vector with another vector
+    #[inline]
     pub fn cross(&self, other: &Self) -> Vec3 {
         Vec3::new_flt(
             self.e[1] * other.e[2] - self.e[2] * other.e[1],
@@ -175,21 +188,25 @@ impl Vec3 {
     }
 
     /// Returns the reciprocal vector
+    #[inline]
     pub fn recip(&self) -> Self {
         Self::new_from_array([self.e[0].recip(), self.e[1].recip(), self.e[2].recip()])
     }
 
     /// Returns the unit vector for this vector
+    #[inline]
     pub fn unit_vector(&self) -> Vec3 {
         self / self.length()
     }
 
     /// Reflects the vector around a normal vector
+    #[inline]
     pub fn reflect(&self, n: &Vec3) -> Vec3 {
         self - flt(2.0) * self.dot(n) * n
     }
 
     /// Refracts the vector
+    #[inline]
     pub fn refract(&self, n: &Vec3, etai_over_etat: Flt) -> Vec3 {
         let cos_theta = -self.dot(n).min(flt(1.0));
         let r_out_perp = etai_over_etat * (self + cos_theta * n);
@@ -199,6 +216,7 @@ impl Vec3 {
     }
 
     /// Return true if the vector is close to zero in all dimensions.
+    #[inline]
     pub fn near_zero(&self) -> bool {
         let s = 1e-8;
         self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s
@@ -214,11 +232,13 @@ impl Display for Vec3 {
 /// Methods for points
 impl Point3 {
     /// Convert point to vector
+    #[inline]
     pub fn to_vec3(self) -> Vec3 {
         Vec3::new_from_array(self.e)
     }
 
     /// Returns the vector between two points
+    #[inline]
     pub fn vec_to(&self, to: &Point3) -> Vec3 {
         Vec3::new_flt(
             to.e[0] - self.e[0],
@@ -237,16 +257,19 @@ impl Display for Point3 {
 /// Methods for colours
 impl Colour {
     /// White constructor
+    #[inline]
     pub fn new_white() -> Self {
         Self::new(1.0, 1.0, 1.0)
     }
 
     /// Grey constructor
+    #[inline]
     pub fn new_grey(level: FltPrim) -> Self {
         Self::new(level, level, level)
     }
 
     /// Convert to RGB with optional gamma correction
+    #[inline]
     pub fn to_rgb(&self, gamma: &Gamma) -> (u8, u8, u8) {
         // Translate the [0,1] component values to the byte range [0,255].
         let (r, g, b) = match gamma {
@@ -265,6 +288,7 @@ impl Colour {
         )
     }
 
+    #[inline]
     fn linear_to_gamma(linear_component: Flt, power: Flt) -> Flt {
         if linear_component > 0.0 {
             linear_component.powf(power)

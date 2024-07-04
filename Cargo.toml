@@ -36,6 +36,7 @@ members = [
     "exp/exp4",
     "exp/exp5",
     "exp/exp6",
+    "exp/exp7",
 ]
 resolver = "2"
 

@@ -19,8 +19,8 @@ impl Normal {
 
 impl Material for Normal {
     fn scatter(&self, _rng: &mut ThreadRng, _ray: &Ray, hit: &Hit) -> Scattered {
-        let colour = Colour::new_flt(hit.normal[0],hit.normal[1],hit.normal[2]);
+        let colour = Colour::new_flt(hit.normal[0], hit.normal[1], hit.normal[2]);
 
-        (Some(colour), None, None)
+        (colour, None, None)
     }
 }
