@@ -1,3 +1,5 @@
+//! Image map texture
+
 use image::io::Reader as ImageReader;
 use std::path::{Path, PathBuf};
 
@@ -8,6 +10,7 @@ use crate::{
 
 use super::texture::Texture;
 
+/// Image map details
 #[derive(Debug)]
 pub struct Image {
     width: u32,
@@ -16,6 +19,7 @@ pub struct Image {
 }
 
 impl Image {
+    /// Create a new image map from an image file
     pub fn new_from_file(file: &Path) -> Self {
         let file_path = if file.exists() {
             PathBuf::from(file)

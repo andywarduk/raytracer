@@ -1,3 +1,5 @@
+//! Sphere shape
+
 use std::ops::Range;
 
 use crate::{
@@ -8,6 +10,7 @@ use crate::{
     triple::{Point3, Vec3},
 };
 
+/// Sphere details
 #[derive(Debug)]
 pub struct Sphere<'a> {
     /// Centre at time 0
@@ -25,14 +28,17 @@ pub struct Sphere<'a> {
 }
 
 impl<'a> Sphere<'a> {
+    /// Creates a new sphere with the center at a given point and a given radius. Material object
     pub fn new(center: Point3, radius: FltPrim, material: &'a dyn Material) -> Self {
         Self::new_moving(center.clone(), center, radius, material)
     }
 
+    /// Creates a new sphere with the center at a given point and a given radius. Material reference
     pub fn new_with_matref(center: Point3, radius: FltPrim, matref: MatRef<'a>) -> Self {
         Self::new_moving_with_matref(center.clone(), center, radius, matref)
     }
 
+    /// Creates a new moving sphere with given centres and radius. Material object
     pub fn new_moving(
         center0: Point3,
         center1: Point3,
@@ -42,6 +48,7 @@ impl<'a> Sphere<'a> {
         Self::new_moving_with_matref(center0, center1, radius, MatRef::Borrow(material))
     }
 
+    /// Creates a new moving sphere with given centres and radius. Material reference
     pub fn new_moving_with_matref(
         center0: Point3,
         center1: Point3,

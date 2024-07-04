@@ -1,3 +1,5 @@
+//! Bounding Volume Hierarchy
+
 use std::{cmp::Ordering, ops::Range};
 
 use crate::{
@@ -8,6 +10,7 @@ use crate::{
 
 use super::{hittable::HittableRef, hittable_list::HittableList};
 
+/// BVH node class
 #[derive(Debug)]
 pub struct BvhNode<'a> {
     bbox: Aabb,
@@ -16,6 +19,7 @@ pub struct BvhNode<'a> {
 }
 
 impl<'a> BvhNode<'a> {
+    /// Creates a new BVH from a hittable list
     pub fn new(hittable_list: HittableList<'a>) -> Self {
         let objects = hittable_list.into_objects();
 

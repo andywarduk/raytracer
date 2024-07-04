@@ -1,3 +1,5 @@
+//! Quadrilateral shape
+
 use std::ops::Range;
 
 use crate::{
@@ -8,6 +10,7 @@ use crate::{
     triple::{Point3, Vec3},
 };
 
+/// Quadrilateral details
 #[derive(Debug)]
 pub struct Quad<'a> {
     /// Anchor point at time 0
@@ -35,10 +38,12 @@ pub struct Quad<'a> {
 }
 
 impl<'a> Quad<'a> {
+    /// Creates a new quadrilateral at a given point and two edge vectors
     pub fn new(p: Point3, u: Vec3, v: Vec3, material: &'a dyn Material) -> Self {
         Self::new_moving(p.clone(), u.clone(), v.clone(), p, u, v, material)
     }
 
+    /// Creates a new moving quadrilateral given two sets of points and two edge vectors
     pub fn new_moving(
         p0: Point3,
         u0: Vec3,

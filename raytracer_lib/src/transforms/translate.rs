@@ -1,3 +1,5 @@
+//! Position translation
+
 use std::ops::Range;
 
 use crate::{
@@ -11,6 +13,7 @@ use crate::{
     triple::Vec3,
 };
 
+/// Translation details
 #[derive(Debug)]
 pub struct Translate<'a> {
     offset: Vec3,
@@ -19,6 +22,7 @@ pub struct Translate<'a> {
 }
 
 impl<'a> Translate<'a> {
+    /// Creates a new translation
     pub fn new(offset: Vec3, object: impl Hittable<'a> + 'a) -> Self {
         let bbox = object.bounding_box() + &offset;
 

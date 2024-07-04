@@ -1,3 +1,7 @@
+//! Raytracing library
+
+#![warn(missing_docs)]
+
 pub mod ambient;
 pub mod camera;
 pub mod float;

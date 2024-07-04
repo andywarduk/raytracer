@@ -1,3 +1,5 @@
+//! Objects relating to calculating ray and object intersections
+
 pub mod aabb;
 pub mod bvh;
 pub mod hit;

@@ -1,3 +1,5 @@
+//! Bounding box
+
 use std::{fmt::Display, ops::Range};
 
 use auto_ops::impl_op_ex_commutative;
@@ -8,12 +10,15 @@ use crate::{
     triple::{Point3, Vec3},
 };
 
+/// Bounding box class
 #[derive(Debug, Clone)]
 pub struct Aabb {
+    /// Bounding box range for each axis
     pub ranges: [Range<Flt>; 3],
 }
 
 impl Aabb {
+    /// Create new bounding box from axis ranges
     pub fn new_from_ranges(x: Range<Flt>, y: Range<Flt>, z: Range<Flt>) -> Self {
         let mut res = Self { ranges: [x, y, z] };
 
@@ -22,6 +27,7 @@ impl Aabb {
         res
     }
 
+    /// Create new bounding box from two points
     pub fn new_from_points(a: &Point3, b: &Point3) -> Self {
         let x = if a.x() <= b.x() {
             a.x()..b.x()
@@ -48,6 +54,7 @@ impl Aabb {
         res
     }
 
+    /// Combine two bounding boxes to a single bounding box
     pub fn new_from_bbox(a: &Aabb, b: &Aabb) -> Self {
         let mut res = Self {
             ranges: [
@@ -62,6 +69,7 @@ impl Aabb {
         res
     }
 
+    /// Tests if the bounding box is hit by a ray
     pub fn hit(&self, ray: &Ray, t_range: &Range<Flt>) -> bool {
         let mut start = t_range.start;
         let mut end = t_range.end;
@@ -88,6 +96,7 @@ impl Aabb {
         true
     }
 
+    /// Returns the longest axis index
     pub fn longest_axis(&self) -> usize {
         let mut largest = flt(0.0);
         let mut axis = 0;

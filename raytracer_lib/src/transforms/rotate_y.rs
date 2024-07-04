@@ -1,3 +1,5 @@
+//! Rotates an object in the y axis
+
 use std::ops::Range;
 
 use crate::{
@@ -11,6 +13,7 @@ use crate::{
     triple::{Point3, Vec3},
 };
 
+/// Rotation details
 #[derive(Debug)]
 pub struct RotateY<'a> {
     cos_theta: Flt,
@@ -20,6 +23,7 @@ pub struct RotateY<'a> {
 }
 
 impl<'a> RotateY<'a> {
+    /// Creates a new rotation object
     pub fn new(angle: FltPrim, object: impl Hittable<'a> + 'a) -> Self {
         let angle = flt(angle);
         let radians = angle.to_radians();

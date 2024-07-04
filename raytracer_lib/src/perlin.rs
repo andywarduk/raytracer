@@ -1,3 +1,5 @@
+//! Perlin noise
+
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 
 use crate::{
@@ -7,6 +9,7 @@ use crate::{
 
 const POINT_COUNT: usize = 256;
 
+/// Perlin noise generator
 #[derive(Debug)]
 pub struct PerlinNoise {
     randvec: Vec<Vec3>,
@@ -16,10 +19,12 @@ pub struct PerlinNoise {
 }
 
 impl PerlinNoise {
+    /// Create new perlin noise generator
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Get next noise value
     pub fn noise(&self, p: &Point3) -> Flt {
         let u = p.x() - (p.x().floor());
         let v = p.y() - (p.y().floor());
@@ -49,6 +54,7 @@ impl PerlinNoise {
         Self::perlin_interp(c, u, v, w)
     }
 
+    /// Get next turbulence value
     pub fn turbulence(&self, p: &Point3, depth: usize) -> Flt {
         let (accum, _, _) =
             (0..depth).fold((flt(0.0), p.clone(), flt(1.0)), |(accum, p, weight), _| {

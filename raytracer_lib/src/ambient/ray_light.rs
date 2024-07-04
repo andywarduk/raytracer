@@ -1,11 +1,15 @@
+//! Ambient light equal to the ray unit vector
+
 use crate::{float::*, ray::Ray, triple::Colour};
 
 use super::ambience::Ambience;
 
+/// Ray light class
 #[derive(Debug)]
 pub struct RayLight {}
 
 impl RayLight {
+    /// Create a new ray unit vector light
     pub fn new() -> Self {
         Self {}
     }

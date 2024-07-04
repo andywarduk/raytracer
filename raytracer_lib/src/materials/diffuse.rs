@@ -1,3 +1,5 @@
+//! Diffuse material
+
 use rand::rngs::ThreadRng;
 
 use crate::{
@@ -8,12 +10,14 @@ use crate::{
 
 use super::material::{Material, Scattered};
 
+/// Diffuse material details
 #[derive(Debug)]
 pub struct Diffuse {
     albedo: Colour,
 }
 
 impl Diffuse {
+    /// Creates a new diffuse material with a given colour
     pub fn new(albedo: Colour) -> Self {
         Self { albedo }
     }

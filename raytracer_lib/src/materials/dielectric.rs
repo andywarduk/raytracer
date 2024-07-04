@@ -1,9 +1,12 @@
+//! Dielectric material
+
 use rand::{rngs::ThreadRng, Rng};
 
 use crate::{float::*, hits::hit::Hit, ray::Ray, triple::Colour};
 
 use super::material::{Material, Scattered};
 
+/// Dielectric material details
 #[derive(Debug)]
 pub struct Dielectric {
     refraction_index: Flt,
@@ -13,6 +16,7 @@ pub struct Dielectric {
 }
 
 impl Dielectric {
+    /// Create a new dielectric with a given refraction index
     pub fn new(refraction_index: FltPrim) -> Self {
         let inv_refraction_index = flt(1.0) / refraction_index;
 

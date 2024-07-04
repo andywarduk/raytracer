@@ -1,3 +1,5 @@
+//! Metal material
+
 use rand::rngs::ThreadRng;
 
 use crate::{
@@ -9,6 +11,7 @@ use crate::{
 
 use super::material::{Material, Scattered};
 
+/// Metal material details
 #[derive(Debug)]
 pub struct Metal {
     albedo: Colour,
@@ -16,6 +19,7 @@ pub struct Metal {
 }
 
 impl Metal {
+    /// Creates a new metal material
     pub fn new(albedo: Colour, fuzz: FltPrim) -> Self {
         Self {
             albedo,

@@ -1,3 +1,5 @@
+//! Ray
+
 use std::fmt::Display;
 
 use crate::{
@@ -5,7 +7,7 @@ use crate::{
     triple::{Point3, Vec3},
 };
 
-/// A light ray
+/// Ray properties
 #[derive(Debug, Default)]
 pub struct Ray {
     /// The ray origin
@@ -21,6 +23,7 @@ pub struct Ray {
 }
 
 impl Ray {
+    /// Create a new light ray with given origin, direction and time
     pub fn new(orig: Point3, dir: Vec3, time: Flt) -> Self {
         let inv_dir = dir.recip();
 
@@ -33,30 +36,37 @@ impl Ray {
         }
     }
 
+    /// Returns the ray origin
     pub fn origin(&self) -> &Point3 {
         &self.orig
     }
 
+    /// Returns the ray direction
     pub fn direction(&self) -> &Vec3 {
         &self.dir
     }
 
+    /// Returns the ray inverse direction
     pub fn inv_direction(&self) -> &Vec3 {
         &self.inv_dir
     }
 
+    /// Returns the ray time
     pub fn time(&self) -> Flt {
         self.time
     }
 
+    /// Returns the ray position at given distance
     pub fn at(&self, t: Flt) -> Point3 {
         &self.orig + (&self.dir * t)
     }
 
+    /// Returns the ray depth (number of bounces)
     pub fn depth(&self) -> u64 {
         self.depth
     }
 
+    /// Sets the ray depth
     pub fn set_depth(&mut self, depth: u64) {
         self.depth = depth;
     }

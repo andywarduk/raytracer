@@ -1,3 +1,5 @@
+//! Camera
+
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use rand::{rngs::ThreadRng, thread_rng, Rng};
@@ -14,8 +16,10 @@ use crate::{
     triple::{Colour, Point3, Vec3},
 };
 
+/// Render progress callback
 pub type CamProgressCb = Option<fn(l: u64, h: u64)>;
 
+/// Camera definition
 #[derive(Debug, Default)]
 pub struct Camera {
     /// Image width

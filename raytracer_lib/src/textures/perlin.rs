@@ -1,3 +1,5 @@
+//! Perlin noise texture
+
 use crate::{
     float::*,
     perlin::PerlinNoise,
@@ -6,6 +8,7 @@ use crate::{
 
 use super::texture::Texture;
 
+/// Perlin noise details
 #[derive(Debug)]
 pub struct Perlin {
     scale: Flt,
@@ -13,6 +16,7 @@ pub struct Perlin {
 }
 
 impl Perlin {
+    /// Creates a new perlin noise texture
     pub fn new(scale: FltPrim) -> Self {
         Self {
             scale: flt(scale),

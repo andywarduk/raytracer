@@ -1,3 +1,5 @@
+//! Checkered texture
+
 use crate::{
     float::*,
     triple::{Colour, Point3},
@@ -8,6 +10,7 @@ use super::{
     texture::{TexRef, Texture},
 };
 
+/// Checker details
 #[derive(Debug)]
 pub struct Checker<'a> {
     inv_scale: Flt,
@@ -16,10 +19,12 @@ pub struct Checker<'a> {
 }
 
 impl<'a> Checker<'a> {
+    /// Create a new checker with textures
     pub fn new_with_textures(scale: FltPrim, even: &'a dyn Texture, odd: &'a dyn Texture) -> Self {
         Self::new_with_texref(scale, TexRef::Borrow(even), TexRef::Borrow(odd))
     }
 
+    /// Create a new checker with colours
     pub fn new_with_colours(scale: FltPrim, even: Colour, odd: Colour) -> Self {
         let even = TexRef::boxed(Solid::new(even));
         let odd = TexRef::boxed(Solid::new(odd));
@@ -27,6 +32,7 @@ impl<'a> Checker<'a> {
         Self::new_with_texref(scale, even, odd)
     }
 
+    /// Create a new checker with texture references
     pub fn new_with_texref(scale: FltPrim, even: TexRef<'a>, odd: TexRef<'a>) -> Self {
         Self {
             inv_scale: flt(1.0 / scale),

@@ -1,3 +1,5 @@
+//! Vector, point and colour classes
+
 use std::{fmt::Display, iter::Sum, ops::Index};
 
 use auto_ops::*;
@@ -48,6 +50,7 @@ impl<Mixin> Triple<Mixin> {
         Self::new_from_array([flt(e1), flt(e2), flt(e3)])
     }
 
+    /// Create new triple from a fixed array
     pub fn new_from_array(e: [Flt; 3]) -> Self {
         Self {
             e,
@@ -210,10 +213,12 @@ impl Display for Vec3 {
 
 /// Methods for points
 impl Point3 {
+    /// Convert point to vector
     pub fn to_vec3(self) -> Vec3 {
         Vec3::new_from_array(self.e)
     }
 
+    /// Returns the vector between two points
     pub fn vec_to(&self, to: &Point3) -> Vec3 {
         Vec3::new_flt(
             to.e[0] - self.e[0],

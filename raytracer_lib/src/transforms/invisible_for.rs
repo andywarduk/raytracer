@@ -1,3 +1,5 @@
+//! Make an object invisible for a given number of ray bounces
+
 use std::ops::Range;
 
 use crate::{
@@ -10,6 +12,7 @@ use crate::{
     ray::Ray,
 };
 
+/// Invisibility details
 #[derive(Debug)]
 pub struct InvisibleFor<'a> {
     bounces: u64,
@@ -17,6 +20,7 @@ pub struct InvisibleFor<'a> {
 }
 
 impl<'a> InvisibleFor<'a> {
+    /// Creates a new invisibility object
     pub fn new(bounces: u64, object: impl Hittable<'a> + 'a) -> Self {
         Self {
             bounces,

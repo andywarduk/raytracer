@@ -1,7 +1,10 @@
+//! Gradient ambient light in the y axis
+
 use crate::{float::*, ray::Ray, triple::Colour};
 
 use super::ambience::Ambience;
 
+/// Gradient light properties
 #[derive(Debug)]
 pub struct GradientLight {
     colour1: Colour,
@@ -9,6 +12,7 @@ pub struct GradientLight {
 }
 
 impl GradientLight {
+    /// Creates a new gradient ambient light
     pub fn new(colour1: Colour, colour2: Colour) -> Self {
         Self { colour1, colour2 }
     }

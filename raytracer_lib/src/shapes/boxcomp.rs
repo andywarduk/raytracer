@@ -1,3 +1,5 @@
+//! A box object (composed of 6 Quads)
+
 use std::ops::Range;
 
 use crate::{
@@ -10,6 +12,7 @@ use crate::{
 
 use super::quad::Quad;
 
+/// Box details
 #[derive(Debug)]
 pub struct BoxComp<'a> {
     sides: HittableList<'a>,

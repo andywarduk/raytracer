@@ -1,3 +1,5 @@
+//! Turbulence texture
+
 use crate::{
     float::*,
     perlin::PerlinNoise,
@@ -6,6 +8,7 @@ use crate::{
 
 use super::texture::Texture;
 
+/// Turbulence details
 #[derive(Debug)]
 pub struct Turbulence {
     scale: Flt,
@@ -14,6 +17,7 @@ pub struct Turbulence {
 }
 
 impl Turbulence {
+    /// Creates a new turbulence texture
     pub fn new(scale: FltPrim, depth: usize) -> Self {
         Self {
             scale: flt(scale),

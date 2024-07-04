@@ -1,3 +1,5 @@
+//! Lambertian material
+
 use rand::rngs::ThreadRng;
 
 use crate::{
@@ -12,20 +14,24 @@ use crate::{
 
 use super::material::{Material, Scattered};
 
+/// Lambertian material details
 #[derive(Debug)]
 pub struct Lambertian<'a> {
     texture: TexRef<'a>,
 }
 
 impl<'a> Lambertian<'a> {
+    /// Create a new lambertian material with a given colour
     pub fn new_with_colour(albedo: Colour) -> Self {
         Self::new_with_texref(TexRef::boxed(Solid::new(albedo)))
     }
 
+    /// Create a new lambertian material with a given texture
     pub fn new_with_texture(texture: &'a dyn Texture) -> Self {
         Self::new_with_texref(TexRef::Borrow(texture))
     }
 
+    /// Create a new lambertian material with a given texture reference
     pub fn new_with_texref(texture: TexRef<'a>) -> Self {
         Self { texture }
     }

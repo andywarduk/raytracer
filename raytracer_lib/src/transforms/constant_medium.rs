@@ -1,3 +1,5 @@
+//! Constant medium
+
 use std::ops::Range;
 
 use rand::{thread_rng, Rng};
@@ -15,6 +17,7 @@ use crate::{
     triple::{Colour, Vec3},
 };
 
+/// Constant medium class
 #[derive(Debug)]
 pub struct ConstantMedium<'a> {
     boundary: HittableRef<'a>,
@@ -23,6 +26,7 @@ pub struct ConstantMedium<'a> {
 }
 
 impl<'a> ConstantMedium<'a> {
+    /// Creates a new constant medium
     pub fn new_with_colour(
         boundary: impl Hittable<'a> + 'a,
         density: FltPrim,
@@ -35,6 +39,7 @@ impl<'a> ConstantMedium<'a> {
         )
     }
 
+    /// Creates a new constant medium with a texture
     pub fn new_with_texture(
         boundary: impl Hittable<'a> + 'a,
         density: FltPrim,

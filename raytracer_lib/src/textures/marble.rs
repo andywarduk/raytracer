@@ -1,3 +1,5 @@
+//! Marble texture
+
 use crate::{
     float::*,
     perlin::PerlinNoise,
@@ -6,6 +8,7 @@ use crate::{
 
 use super::texture::Texture;
 
+/// Marble texture details
 #[derive(Debug)]
 pub struct Marble {
     scale: Flt,
@@ -15,6 +18,7 @@ pub struct Marble {
 }
 
 impl Marble {
+    /// Create a new marble texture
     pub fn new(scale: FltPrim, depth: usize, axis: usize) -> Self {
         Self {
             scale: flt(scale),
