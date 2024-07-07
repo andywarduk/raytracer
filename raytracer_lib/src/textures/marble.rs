@@ -31,9 +31,17 @@ impl Marble {
 
 impl Texture for Marble {
     fn value(&self, _u: Flt, _v: Flt, p: &Point3) -> Colour {
-        Colour::new_grey(0.5)
-            * (flt(1.0)
-                + (self.scale * p.e[self.axis] + flt(10.0) * self.perlin.turbulence(p, self.depth))
-                    .sin())
+        // Get noise value
+        let noise = self.perlin.turbulence(p, self.depth);
+
+        // Calculate grey level between -1 and 1
+        let mut level = (self.scale * p[self.axis] + flt(10.0) * noise).sin();
+
+        // Convert to 0..1
+        level += flt(1.0);
+        level *= flt(0.5);
+
+        // Return grey level
+        Colour::new_grey(flt_prim(level))
     }
 }

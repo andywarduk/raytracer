@@ -16,21 +16,21 @@ pub struct Dielectric {
 }
 
 impl Dielectric {
-    /// Create a new dielectric with a given refraction index
+    /// Create a new dielectric with a given refractive index
     pub fn new(refraction_index: FltPrim) -> Self {
-        let inv_refraction_index = flt(1.0) / refraction_index;
+        let refraction_index = flt(refraction_index);
+        let inv_refraction_index = refraction_index.recip();
 
-        let r0 = (flt(1.0) - refraction_index) / (flt(1.0) + refraction_index);
-        let r0_sq = r0 * r0;
-
-        let inv_r0 = (flt(1.0) - inv_refraction_index) / (flt(1.0) + inv_refraction_index);
-        let inv_r0_sq = inv_r0 * inv_r0;
+        let r0_sq = |v| -> Flt {
+            let r0 = (flt(1.0) - v) / (flt(1.0) + v);
+            r0 * r0
+        };
 
         Self {
-            refraction_index: flt(refraction_index),
+            refraction_index,
             inv_refraction_index,
-            r0_sq,
-            inv_r0_sq,
+            r0_sq: r0_sq(refraction_index),
+            inv_r0_sq: r0_sq(inv_refraction_index),
         }
     }
 
@@ -43,8 +43,10 @@ impl Dielectric {
 impl Material for Dielectric {
     fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
         let (ri, r0_sq) = if hit.front_face {
+            // Front face hit
             (self.inv_refraction_index, self.inv_r0_sq)
         } else {
+            // Back face hit
             (self.refraction_index, self.r0_sq)
         };
 
@@ -57,8 +59,10 @@ impl Material for Dielectric {
 
         let direction =
             if cannot_refract || self.reflectance(cos_theta, r0_sq) > rng.gen_range(0.0..1.0) {
+                // Ray is reflected
                 unit_direction.reflect(&hit.normal)
             } else {
+                // Ray is refracted
                 unit_direction.refract(&hit.normal, ri)
             };
 

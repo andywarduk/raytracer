@@ -131,9 +131,9 @@ impl Aabb {
 // Operator implementations
 impl_op_ex_commutative!(+ |a: &Aabb, b: &Vec3| -> Aabb {
     let ranges = [
-        (a.ranges[0].start + b.e[0])..(a.ranges[0].end + b.e[0]),
-        (a.ranges[1].start + b.e[1])..(a.ranges[1].end + b.e[1]),
-        (a.ranges[2].start + b.e[2])..(a.ranges[2].end + b.e[2]),
+        (a.ranges[0].start + b[0])..(a.ranges[0].end + b[0]),
+        (a.ranges[1].start + b[1])..(a.ranges[1].end + b[1]),
+        (a.ranges[2].start + b[2])..(a.ranges[2].end + b[2]),
     ];
 
     Aabb { ranges }

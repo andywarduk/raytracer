@@ -18,13 +18,14 @@ impl RayLight {
 impl Ambience for RayLight {
     fn value(&self, ray: &Ray) -> Colour {
         // Get ray unit vector
-        let unit_direction = ray.direction().unit_vector();
-
-        // Convert to colour
-        let col = Colour::new_flt(unit_direction.x(), unit_direction.y(), unit_direction.z());
+        let mut unit_direction = ray.direction().unit_vector();
 
         // Map -1..1 to 0..1
-        (col + Colour::new_white()) / flt(2.0)
+        unit_direction += flt(1.0);
+        unit_direction *= flt(0.5);
+
+        // Convert to colour
+        Colour::new_from_array(unit_direction.e)
     }
 }
 

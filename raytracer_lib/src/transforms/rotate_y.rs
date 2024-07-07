@@ -53,8 +53,8 @@ impl<'a> RotateY<'a> {
                     let tester = Vec3::new_flt(newx, y, newz);
 
                     for c in 0..3 {
-                        min.e[c] = min.e[c].min(tester.e[c]);
-                        max.e[c] = max.e[c].max(tester.e[c]);
+                        min.e[c] = min[c].min(tester[c]);
+                        max.e[c] = max[c].max(tester[c]);
                     }
                 }
             }
@@ -77,13 +77,11 @@ impl<'a> Hittable<'a> for RotateY<'a> {
         let mut origin = ray.origin().clone();
         let mut direction = ray.direction().clone();
 
-        origin.e[0] = self.cos_theta * ray.origin().e[0] - self.sin_theta * ray.origin().e[2];
-        origin.e[2] = self.sin_theta * ray.origin().e[0] + self.cos_theta * ray.origin().e[2];
+        origin.e[0] = self.cos_theta * ray.origin()[0] - self.sin_theta * ray.origin()[2];
+        origin.e[2] = self.sin_theta * ray.origin()[0] + self.cos_theta * ray.origin()[2];
 
-        direction.e[0] =
-            self.cos_theta * ray.direction().e[0] - self.sin_theta * ray.direction().e[2];
-        direction.e[2] =
-            self.sin_theta * ray.direction().e[0] + self.cos_theta * ray.direction().e[2];
+        direction.e[0] = self.cos_theta * ray.direction()[0] - self.sin_theta * ray.direction()[2];
+        direction.e[2] = self.sin_theta * ray.direction()[0] + self.cos_theta * ray.direction()[2];
 
         let rotated = Ray::new(origin, direction, ray.time());
 
@@ -93,13 +91,13 @@ impl<'a> Hittable<'a> for RotateY<'a> {
             Some(mut hit) => {
                 // Change the intersection point from object space to world space
                 let mut p = hit.p.clone();
-                p.e[0] = self.cos_theta * hit.p.e[0] + self.sin_theta * hit.p.e[2];
-                p.e[2] = -self.sin_theta * hit.p.e[0] + self.cos_theta * hit.p.e[2];
+                p.e[0] = self.cos_theta * hit.p[0] + self.sin_theta * hit.p[2];
+                p.e[2] = -self.sin_theta * hit.p[0] + self.cos_theta * hit.p[2];
 
                 // Change the normal from object space to world space
                 let mut normal = hit.normal.clone();
-                normal.e[0] = self.cos_theta * hit.normal.e[0] + self.sin_theta * hit.normal.e[2];
-                normal.e[2] = -self.sin_theta * hit.normal.e[0] + self.cos_theta * hit.normal.e[2];
+                normal.e[0] = self.cos_theta * hit.normal[0] + self.sin_theta * hit.normal[2];
+                normal.e[2] = -self.sin_theta * hit.normal[0] + self.cos_theta * hit.normal[2];
 
                 hit.p = p;
                 hit.normal = normal;

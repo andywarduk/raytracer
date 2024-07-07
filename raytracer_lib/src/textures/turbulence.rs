@@ -29,6 +29,10 @@ impl Turbulence {
 
 impl Texture for Turbulence {
     fn value(&self, _u: Flt, _v: Flt, p: &Point3) -> Colour {
-        Colour::new_white() * self.perlin.turbulence(&(self.scale * p), self.depth)
+        // Get noise value
+        let noise = self.perlin.turbulence(&(self.scale * p), self.depth);
+
+        // Return colour (greyscale)
+        Colour::new_grey(flt_prim(noise))
     }
 }

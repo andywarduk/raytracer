@@ -1,6 +1,10 @@
+use std::io::{stdout, Write};
+use std::time::Instant;
 use std::{error::Error, path::Path};
 
+use atty::Stream;
 use raytracer_lib::{gamma::Gamma, triple::Colour};
+use simple_process_stats::ProcessStats;
 
 use crate::MainParms;
 
@@ -8,20 +12,47 @@ pub(super) fn render_to_image(state: MainParms, output: &Path) -> Result<(), Box
     // Output camera parameters
     state.dump_camera_parameters(true);
 
+    // Start time
+    let start = Instant::now();
+
     // Render the image
     let image = state.cam.render(
         &state.world,
         &*state.ambience,
         Some(|l, h| {
             // Print progress
-            eprint!("\r{} / {}  ", l, h);
+            let tty = atty::is(Stream::Stdout);
+            let msg = format!("{} / {} ({}%)", l, h, (l * 100) / h);
+
+            let mut lock = stdout().lock();
+            lock.write_all(msg.as_bytes()).unwrap();
+            if tty {
+                lock.write_all("\r".as_bytes()).unwrap();
+            } else {
+                lock.write_all("\n".as_bytes()).unwrap();
+            }
+            lock.flush().unwrap();
+            drop(lock);
         }),
     );
 
-    eprintln!("\nDone!");
+    println!("Render completed in {:?}", start.elapsed());
 
     // Save the image
     save_image(image, output, &state.gamma)?;
+
+    println!("Written to {}", output.display());
+
+    // Print CPU statistics
+    match ProcessStats::get() {
+        Ok(stats) => {
+            println!(
+                "CPU time: {:?} user, {:?} kernel",
+                stats.cpu_time_user, stats.cpu_time_kernel
+            );
+        }
+        Err(e) => println!("Failed to get process stats ({e})"),
+    }
 
     Ok(())
 }

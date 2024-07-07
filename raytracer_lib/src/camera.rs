@@ -376,16 +376,12 @@ impl Camera {
                 }
 
                 // Any colour emitted?
-                match emitted {
-                    None => {
-                        // No - just return attenuation colour
-                        attenuation
-                    }
-                    Some(emitted) => {
-                        // Yes - add emitted colour to ray colour
-                        emitted + attenuation
-                    }
+                if let Some(emitted) = emitted {
+                    // Yes - add it on
+                    attenuation += emitted
                 }
+
+                attenuation
             }
         }
     }

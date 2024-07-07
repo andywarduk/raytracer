@@ -49,6 +49,10 @@ debug = true
 # Use r64 floats for release build
 rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"r64\"", "--check-cfg", "cfg(float, values(any()))"]
 
+[profile.test]
+# Use r64 floats for test build
+rustflags = ["-Ctarget-cpu=native", "--cfg", "float=\"r64\"", "--check-cfg", "cfg(float, values(any()))"]
+
 # -- Custom profiles --
 
 # Release build with f64 bit floats
