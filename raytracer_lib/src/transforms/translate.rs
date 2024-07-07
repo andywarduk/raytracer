@@ -2,6 +2,8 @@
 
 use std::ops::Range;
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{
@@ -35,7 +37,7 @@ impl<'a> Translate<'a> {
 }
 
 impl<'a> Hittable<'a> for Translate<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         // Move the ray backwards by the offset
         let offset_ray = Ray::new(
             ray.origin() - &self.offset,
@@ -44,7 +46,7 @@ impl<'a> Hittable<'a> for Translate<'a> {
         );
 
         // Determine whether an intersection exists along the offset ray (and if so, where)
-        match self.object.hit(&offset_ray, t_range) {
+        match self.object.hit(rng, &offset_ray, t_range) {
             None => None,
             Some(mut hit) => {
                 // Move the intersection point forwards by the offset

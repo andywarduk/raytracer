@@ -2,7 +2,7 @@
 
 use std::ops::Range;
 
-use rand::{thread_rng, Rng};
+use rand::{rngs::ThreadRng, thread_rng, Rng};
 
 use crate::{
     float::*,
@@ -11,9 +11,11 @@ use crate::{
         hit::Hit,
         hittable::{Hittable, HittableRef, T_MIN},
     },
-    materials::{isotropic::Isotropic, material::MatRef},
+    materials::{
+        isotropic::Isotropic,
+        material::{MatRef, Material},
+    },
     ray::Ray,
-    textures::texture::Texture,
     triple::{Colour, Vec3},
 };
 
@@ -22,59 +24,60 @@ use crate::{
 pub struct ConstantMedium<'a> {
     boundary: HittableRef<'a>,
     neg_inv_density: Flt,
-    phase_funtion: MatRef<'a>,
+    phase_function: MatRef<'a>,
 }
 
 impl<'a> ConstantMedium<'a> {
-    /// Creates a new constant medium
+    /// Creates a new constant medium with colour
     pub fn new_with_colour(
         boundary: impl Hittable<'a> + 'a,
         density: FltPrim,
         colour: Colour,
     ) -> Self {
-        Self::new_with_phase_function(
+        Self::new_with_matref(
             HittableRef::boxed(boundary),
             density,
             MatRef::boxed(Isotropic::new_with_colour(colour)),
         )
     }
 
-    /// Creates a new constant medium with a texture
-    pub fn new_with_texture(
+    /// Creates a new constant medium with material
+    pub fn new_with_material(
         boundary: impl Hittable<'a> + 'a,
         density: FltPrim,
-        texture: &'a dyn Texture,
+        material: &'a dyn Material,
     ) -> Self {
-        Self::new_with_phase_function(
+        Self::new_with_matref(
             HittableRef::boxed(boundary),
             density,
-            MatRef::boxed(Isotropic::new_with_texture(texture)),
+            MatRef::Borrow(material),
         )
     }
 
-    fn new_with_phase_function(
+    /// Creates a new constant medium with material reference
+    pub fn new_with_matref(
         boundary: HittableRef<'a>,
         density: FltPrim,
-        phase_funtion: MatRef<'a>,
+        phase_function: MatRef<'a>,
     ) -> Self {
         Self {
             boundary,
-            neg_inv_density: flt(-1.0 / density),
-            phase_funtion,
+            neg_inv_density: flt(-1.0) / flt(density),
+            phase_function,
         }
     }
 }
 
 impl<'a> Hittable<'a> for ConstantMedium<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         // Does this ray enter the boundary?
-        let mut hit1 = match self.boundary.hit(ray, flt_min()..flt_max()) {
+        let mut hit1 = match self.boundary.hit(rng, ray, flt_min()..flt_max()) {
             None => return None,
             Some(hit) => hit,
         };
 
         // Does the ray exit the boundary again?
-        let mut hit2 = match self.boundary.hit(ray, (hit1.t + T_MIN)..flt_max()) {
+        let mut hit2 = match self.boundary.hit(rng, ray, (hit1.t + T_MIN)..flt_max()) {
             None => return None,
             Some(hit) => hit,
         };
@@ -114,7 +117,7 @@ impl<'a> Hittable<'a> for ConstantMedium<'a> {
             flt(0.0),
             ray,
             &Vec3::new(1.0, 0.0, 0.0),
-            self.phase_funtion.get_ref(),
+            self.phase_function.get_ref(),
         ))
     }
 

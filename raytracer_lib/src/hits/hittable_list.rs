@@ -2,6 +2,8 @@
 
 use std::{mem, ops::Range};
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
@@ -60,12 +62,12 @@ impl<'a> HittableList<'a> {
 }
 
 impl<'a> Hittable<'a> for HittableList<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         let mut closest = t_range.end;
         let mut closest_hit = None;
 
         for obj in &self.objects {
-            match obj.hit(ray, t_range.start..closest) {
+            match obj.hit(rng, ray, t_range.start..closest) {
                 None => (),
                 Some(hit) => {
                     closest = hit.t;

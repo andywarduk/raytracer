@@ -10,8 +10,9 @@ use raytracer_lib::{
     float::*,
     hits::hittable_list::HittableList,
     materials::{
-        dielectric::Dielectric, diffuse::Diffuse, diffuse_light::DiffuseLight,
+        dielectric::Dielectric, diffuse::Diffuse, diffuse_light::DiffuseLight, dir_light::DirLight,
         isotropic::Isotropic, lambertian::Lambertian, metal::Metal, normal::Normal,
+        polar_light::PolarLight,
     },
     shapes::{quad::Quad, sphere::Sphere},
     triple::{Colour, Point3, Vec3},
@@ -26,11 +27,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mat5 = DiffuseLight::new_with_colour(Colour::new(1.0, 1.0, 1.0));
     let mat6 = Metal::new(Colour::new(1.0, 1.0, 1.0), 0.0);
     let mat7 = Normal::new();
+    let mat8 = DirLight::new_with_colour(Colour::new(1.0, 1.0, 1.0));
+    let mat9 = PolarLight::new_with_colour(45.0, Colour::new(1.0, 1.0, 1.0));
 
     println!("Materials:");
     println!("  Isotropic   Diffuse       Lambertian");
     println!("  Dielectric  DiffuseLight  Metal");
-    println!("  Normal");
+    println!("  Normal      DirLight      PolarLight");
 
     // World
     let mut world = HittableList::new();
@@ -53,6 +56,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     world.add(Sphere::new(Point3::new(0.0, 0.0, 0.0), 0.4, &mat5));
     world.add(Sphere::new(Point3::new(1.0, 0.0, 0.0), 0.4, &mat6));
     world.add(Sphere::new(Point3::new(-1.0, -1.0, 0.0), 0.4, &mat7));
+    world.add(Sphere::new(Point3::new(0.0, -1.0, 0.0), 0.4, &mat8));
+    world.add(Sphere::new(Point3::new(1.0, -1.0, 0.0), 0.4, &mat9));
 
     // Ambient light
     let ambience = RayLight::new();

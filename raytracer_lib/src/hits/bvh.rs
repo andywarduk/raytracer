@@ -2,6 +2,8 @@
 
 use std::{cmp::Ordering, ops::Range};
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
@@ -88,18 +90,18 @@ impl<'a> BvhNode<'a> {
 }
 
 impl<'a> Hittable<'a> for BvhNode<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         // Any hit at all?
         if !self.bbox.hit(ray, &t_range) {
             return None;
         }
 
         // Check for left hit
-        match self.left.hit(ray, t_range.clone()) {
+        match self.left.hit(rng, ray, t_range.clone()) {
             None => {
                 // No left hit - check right
                 if let Some(right) = &self.right {
-                    right.hit(ray, t_range)
+                    right.hit(rng, ray, t_range)
                 } else {
                     // No right hit either
                     None
@@ -109,7 +111,7 @@ impl<'a> Hittable<'a> for BvhNode<'a> {
                 // Got left hit - check right
                 if let Some(right) = &self.right {
                     // Got right - check it
-                    match right.hit(ray, t_range.start..lhit.t) {
+                    match right.hit(rng, ray, t_range.start..lhit.t) {
                         None => Some(lhit),
                         rhit => rhit,
                     }

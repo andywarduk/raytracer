@@ -15,19 +15,19 @@ use crate::{
 
 use super::material::{Material, Scattered};
 
-/// Diffuse light details
+/// Directional light details
 #[derive(Debug)]
-pub struct DiffuseLight<'a> {
+pub struct DirLight<'a> {
     texture: TexRef<'a>,
 }
 
-impl<'a> DiffuseLight<'a> {
-    /// Create a new diffuse light with a given colour
+impl<'a> DirLight<'a> {
+    /// Create a new directional light with a given colour
     pub fn new_with_colour(albedo: Colour) -> Self {
         Self::new_with_texref(TexRef::boxed(Solid::new(albedo)))
     }
 
-    /// Create a new diffuse light with a given texture
+    /// Create a new directional light with a given texture
     pub fn new_with_texture(texture: &'a dyn Texture) -> Self {
         Self::new_with_texref(TexRef::Borrow(texture))
     }
@@ -37,16 +37,16 @@ impl<'a> DiffuseLight<'a> {
     }
 }
 
-impl<'a> Material for DiffuseLight<'a> {
+impl<'a> Material for DirLight<'a> {
     fn hit(&self, rng: &mut ThreadRng, u: Flt, v: Flt, p: &Point3) -> bool {
         self.texture.hit(rng, u, v, p)
     }
 
-    fn scatter(&self, _rng: &mut ThreadRng, _ray: &Ray, hit: &Hit) -> Scattered {
-        (
-            Colour::default(),
-            Some(self.texture.value(hit.u, hit.v, &hit.p)),
-            None,
-        )
+    fn scatter(&self, _rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
+        let factor = ray.direction().unit_vector().dot(&hit.normal).abs();
+
+        let colour = self.texture.value(hit.u, hit.v, &hit.p) * factor;
+
+        (Colour::default(), Some(colour), None)
     }
 }

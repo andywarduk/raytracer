@@ -2,6 +2,8 @@
 
 use std::ops::Range;
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
@@ -105,7 +107,7 @@ impl<'a> Sphere<'a> {
 }
 
 impl<'a> Hittable<'a> for Sphere<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         let center = self.position_at_time(ray.time());
         let oc = ray.origin().vec_to(&center);
         let a = ray.direction().length_squared();
@@ -135,6 +137,11 @@ impl<'a> Hittable<'a> for Sphere<'a> {
         let outward_normal = center.vec_to(&p) / self.radius;
 
         let (u, v) = Self::get_uv(&outward_normal);
+
+        // Check material registers a hit
+        if !self.material.hit(rng, u, v, &p) {
+            return None;
+        }
 
         Some(Hit::new(
             p,

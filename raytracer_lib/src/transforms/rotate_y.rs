@@ -2,6 +2,8 @@
 
 use std::ops::Range;
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{
@@ -72,7 +74,7 @@ impl<'a> RotateY<'a> {
 }
 
 impl<'a> Hittable<'a> for RotateY<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         // Change the ray from world space to object space
         let mut origin = ray.origin().clone();
         let mut direction = ray.direction().clone();
@@ -86,7 +88,7 @@ impl<'a> Hittable<'a> for RotateY<'a> {
         let rotated = Ray::new(origin, direction, ray.time());
 
         // Determine whether an intersection exists in object space (and if so, where)
-        match self.object.hit(&rotated, t_range) {
+        match self.object.hit(rng, &rotated, t_range) {
             None => None,
             Some(mut hit) => {
                 // Change the intersection point from object space to world space

@@ -357,7 +357,7 @@ impl Camera {
             return Colour::default();
         }
 
-        match world.hit(ray, flt(T_MIN)..flt_max()) {
+        match world.hit(rng, ray, flt(T_MIN)..flt_max()) {
             None => {
                 // Ray hit nothing - return background colour
                 ambience.value(ray)

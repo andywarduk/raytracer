@@ -3,13 +3,14 @@
 use rand::rngs::ThreadRng;
 
 use crate::{
+    float::*,
     hits::hit::Hit,
     ray::Ray,
     textures::{
         solid::Solid,
         texture::{TexRef, Texture},
     },
-    triple::{Colour, Vec3},
+    triple::{Colour, Point3, Vec3},
 };
 
 use super::material::{Material, Scattered};
@@ -38,6 +39,10 @@ impl<'a> Isotropic<'a> {
 }
 
 impl<'a> Material for Isotropic<'a> {
+    fn hit(&self, rng: &mut ThreadRng, u: Flt, v: Flt, p: &Point3) -> bool {
+        self.texture.hit(rng, u, v, p)
+    }
+
     fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered {
         let scattered = Ray::new(hit.p.clone(), Vec3::new_random_unit_vector(rng), ray.time());
 

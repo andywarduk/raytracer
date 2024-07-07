@@ -2,6 +2,8 @@
 
 use std::ops::Range;
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{
@@ -30,11 +32,11 @@ impl<'a> InvisibleFor<'a> {
 }
 
 impl<'a> Hittable<'a> for InvisibleFor<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         if ray.depth() < self.bounces {
             None
         } else {
-            self.object.hit(ray, t_range)
+            self.object.hit(rng, ray, t_range)
         }
     }
 

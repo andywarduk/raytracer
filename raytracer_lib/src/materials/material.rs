@@ -3,13 +3,23 @@
 use rand::rngs::ThreadRng;
 use std::{fmt::Debug, ops::Deref};
 
-use crate::{hits::hit::Hit, ray::Ray, triple::Colour};
+use crate::{
+    float::*,
+    hits::hit::Hit,
+    ray::Ray,
+    triple::{Colour, Point3},
+};
 
 /// Scattered light details
 pub type Scattered = (Colour, Option<Colour>, Option<Ray>);
 
 /// Material trait
 pub trait Material: Debug + Send + Sync {
+    /// Tests material for a hit
+    fn hit(&self, _rng: &mut ThreadRng, _u: Flt, _v: Flt, _p: &Point3) -> bool {
+        true
+    }
+
     /// Returns details of scattered light
     fn scatter(&self, rng: &mut ThreadRng, ray: &Ray, hit: &Hit) -> Scattered;
 }

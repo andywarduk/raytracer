@@ -2,6 +2,8 @@
 
 use std::ops::Range;
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable, hittable_list::HittableList},
@@ -73,8 +75,8 @@ impl<'a> BoxComp<'a> {
 }
 
 impl<'a> Hittable<'a> for BoxComp<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
-        self.sides.hit(ray, t_range)
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+        self.sides.hit(rng, ray, t_range)
     }
 
     fn bounding_box(&self) -> &Aabb {

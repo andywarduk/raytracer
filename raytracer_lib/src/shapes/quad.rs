@@ -2,6 +2,8 @@
 
 use std::ops::Range;
 
+use rand::rngs::ThreadRng;
+
 use crate::{
     float::*,
     hits::{aabb::Aabb, hit::Hit, hittable::Hittable},
@@ -119,7 +121,7 @@ impl<'a> Quad<'a> {
 }
 
 impl<'a> Hittable<'a> for Quad<'a> {
-    fn hit(&self, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
+    fn hit(&self, rng: &mut ThreadRng, ray: &Ray, t_range: Range<Flt>) -> Option<Hit> {
         let (p, u, v, normal) = self.position_at_time(ray.time());
 
         let dot = normal.dot(&p);
@@ -155,6 +157,11 @@ impl<'a> Hittable<'a> for Quad<'a> {
         let beta = w.dot(&u.cross(&planar_hitpt_vector));
 
         if !(flt(0.0)..flt(1.0)).contains(&beta) {
+            return None;
+        }
+
+        // Check material registers a hit
+        if !self.material.hit(rng, alpha, beta, &intersection) {
             return None;
         }
 

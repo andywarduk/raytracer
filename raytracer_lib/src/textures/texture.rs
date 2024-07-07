@@ -1,13 +1,20 @@
 //! Texture trait
 
+use rand::rngs::ThreadRng;
+use std::{fmt::Debug, ops::Deref};
+
 use crate::{
     float::*,
     triple::{Colour, Point3},
 };
-use std::{fmt::Debug, ops::Deref};
 
 /// Texture trait
 pub trait Texture: Debug + Sync + Send {
+    /// Tests texture for a hit
+    fn hit(&self, _rng: &mut ThreadRng, _u: Flt, _v: Flt, _p: &Point3) -> bool {
+        true
+    }
+
     /// Return the colour of a texture at a given point
     fn value(&self, u: Flt, v: Flt, p: &Point3) -> Colour;
 }
