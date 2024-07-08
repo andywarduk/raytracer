@@ -30,10 +30,10 @@ impl RenderState {
         self.frame_no += 1;
 
         if let Some(started) = self.started {
-            let dur = started.elapsed().as_secs_f64();
+            let dur = flt(started.elapsed().as_secs_f64() as FltPrim);
 
             self.fps = if dur > 0.0 {
-                flt(self.frame_no as FltPrim) / flt(dur)
+                flt(self.frame_no as FltPrim) / dur
             } else {
                 flt(0.0)
             };
