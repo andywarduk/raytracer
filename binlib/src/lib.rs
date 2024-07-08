@@ -32,7 +32,7 @@ struct Args {
     height: Option<u16>,
 
     /// No gamma correction
-    #[clap(short = 'g', long = "gamma", default_value_t = 0.0)]
+    #[clap(short = 'g', long = "gamma", default_value_t = 2.2)]
     gamma: FltPrim,
 }
 
